@@ -16,3 +16,13 @@ Version: 1.2.2
 Publisher: tomoki1207
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf
 
+
+- Compilador Turbo C 
+
+https://www.onlinegdb.com/online_c_compiler
+Habilitar la opcion de language en Turbo C
+
+- ChatGPT Code Copilot
+
+https://chatgpt.com/g/g-2DQzU5UZl-code-copilot
+
