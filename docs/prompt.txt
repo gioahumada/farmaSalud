@@ -1,0 +1,6 @@
+Turbo C++ Version 3.00 Copyright (c) 1992 Borland International
+main.c：
+Warning main.c 200: Parameter 'farmasalud' is never used in function analizarDat
+Error main.c 207: Declaration is not allowed here in function main Error main.c Z08: Declaration is not allowed here in function main
+Warning main.c 216: 'farmasalud' is assigned a value that is never used in funct ion main
+e* Z errors in Compile ***
