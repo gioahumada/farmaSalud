@@ -115,6 +115,11 @@ void menuAdmin(struct FarmaSalud *farmacia);
 void menuCajero(struct FarmaSalud *farmacia);
 void menuSucursal(struct FarmaSalud *farmacia);
 
+// Console
+struct NodoClientes* crearClienteConsole(int id, char* rutCliente, int edadCliente, int afiliado, char** comprasCliente);
+void agregarClienteConsole(struct FarmaSalud *farmacia, struct NodoClientes *nuevoCliente);
+
+
 // SuperSU
 void agregarCliente(struct FarmaSalud *farmacia);
 void agregarSucursal(struct FarmaSalud *farmacia);
@@ -140,56 +145,91 @@ void quitarProductosVencidos(struct FarmaSalud *farmacia); /* */
 
 */
 
-int main() 
-{
-    struct FarmaSalud farmacia;
+int main() {
+    struct FarmaSalud *farmacia;
+    farmacia = (struct FarmaSalud *) malloc(sizeof(struct FarmaSalud));
+
+    farmacia->clientes = NULL;
+    farmacia->sucursales = NULL;
+    farmacia->proveedores = NULL;
+
+    char* compras1[] = {"Producto A", "Producto B", NULL};
+    struct NodoClientes* cliente1 = crearClienteConsole(1, "11111111-1", 30, 1, compras1);
+    agregarClienteConsole(farmacia, cliente1);
+
+    char* compras2[] = {"Producto C", "Producto D", NULL};
+    struct NodoClientes* cliente2 = crearClienteConsole(2, "22222222-2", 25, 0, compras2);
+    agregarClienteConsole(farmacia, cliente2);
 
     // Desplegar Menu
-    menuPrincipal(&farmacia);
+    menuPrincipal(farmacia);
 
     return 0;
 }
 
-/* 
-
+/*
 
 ███╗   ███╗███████╗███╗   ██╗██╗   ██╗
 ████╗ ████║██╔════╝████╗  ██║██║   ██║
 ██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║
 ██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║
 ██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝
-╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ 
-
+╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝
 
 */
 
-void imprimirSaltosDeLinea() 
-{
+void imprimirSaltosDeLinea() {
     int i;
-    for(i = 0;i<20;i++) printf("\n");
+    for(i = 0; i < 20; i++) printf("\n");
+}
+
+struct NodoClientes* crearClienteConsole(int id, char* rutCliente, int edadCliente, int afiliado, char** comprasCliente) {
+    struct NodoClientes* nuevoNodo = (struct NodoClientes*)malloc(sizeof(struct NodoClientes));
+    struct Clientes* nuevoCliente = (struct Clientes*)malloc(sizeof(struct Clientes));
+
+    nuevoCliente->id = id;
+    nuevoCliente->rutCliente = strdup(rutCliente);
+    nuevoCliente->edadCliente = edadCliente;
+    nuevoCliente->afiliado = afiliado;
+    nuevoCliente->comprasCliente = comprasCliente;
+
+    nuevoNodo->datosClientes = nuevoCliente;
+    nuevoNodo->ant = nuevoNodo->sig = NULL;
+
+    return nuevoNodo;
+}
+
+void agregarClienteConsole(struct FarmaSalud *farmacia, struct NodoClientes *nuevoCliente) {
+    if (farmacia->clientes == NULL) {
+        farmacia->clientes = nuevoCliente;
+    } else {
+        struct NodoClientes *temp = farmacia->clientes;
+        while (temp->sig != NULL) {
+            temp = temp->sig;
+        }
+        temp->sig = nuevoCliente;
+        nuevoCliente->ant = temp;
+    }
 }
 
 /*
 
-        Menu 
+Menu
 
 */
 
-void menuPrincipal(struct FarmaSalud *farmacia) 
-{
+void menuPrincipal(struct FarmaSalud *farmacia) {
     int opcion;
-    do 
-    {
+    do {
         printf("\n--- FarmaSalud ---\n");
-        printf("1. Acceso Admistrador\n");
+        printf("1. Acceso Administrador\n");
         printf("2. Acceso Cajero\n");
         printf("3. Acceso Sucursal\n");
         printf("\n9. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
 
-        switch (opcion) 
-        {
+        switch (opcion) {
             case 1:
                 // Acceso Administrador
                 imprimirSaltosDeLinea();
@@ -201,7 +241,7 @@ void menuPrincipal(struct FarmaSalud *farmacia)
                 menuCajero(farmacia);
                 break;
             case 3:
-                // Acceso Sucursal 
+                // Acceso Sucursal
                 imprimirSaltosDeLinea();
                 menuSucursal(farmacia);
                 break;
@@ -217,11 +257,9 @@ void menuPrincipal(struct FarmaSalud *farmacia)
     } while (opcion != 9);
 }
 
-void menuAdmin(struct FarmaSalud *farmacia) 
-{
+void menuAdmin(struct FarmaSalud *farmacia) {
     int opcion;
-    do 
-    {
+    do {
         printf("\n--- Administrador ---\n\n");
         printf("1. Agregar Cliente\n");
         printf("2. Agregar Sucursal\n");
@@ -230,7 +268,7 @@ void menuAdmin(struct FarmaSalud *farmacia)
         printf("4. Eliminar Cliente\n");
         printf("5. Eliminar Sucursal\n");
         printf("6. Eliminar Proveedor\n");
-        
+
         printf("7. Ver TODOS los Clientes\n");
         printf("8. Ver TODAS las Sucursales\n");
         printf("9. Ver TODOS los Productos\n");
@@ -243,8 +281,7 @@ void menuAdmin(struct FarmaSalud *farmacia)
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
 
-        switch (opcion) 
-        {
+        switch (opcion) {
             case 1:
                 // Agregar Cliente
                 imprimirSaltosDeLinea();
@@ -267,13 +304,13 @@ void menuAdmin(struct FarmaSalud *farmacia)
                 break;
             case 5:
                 // Eliminar Sucursal
-                //No la hizo el gpt
                 imprimirSaltosDeLinea();
+                eliminarSucursal(farmacia);
                 break;
             case 6:
                 // Eliminar Proveedor
-                //No la hizo el gpt
                 imprimirSaltosDeLinea();
+                eliminarProveedor(farmacia);
                 break;
             case 7:
                 // Ver TODOS los Clientes
@@ -292,29 +329,29 @@ void menuAdmin(struct FarmaSalud *farmacia)
                 break;
             case 10:
                 // Agregar Productos
-                //No la hizo el gpt
                 imprimirSaltosDeLinea();
+                agregarProducto(farmacia);
+                break;
             case 11:
                 //Quitar Productos
-                //No la hizo el gpt
                 imprimirSaltosDeLinea();
+                quitarProducto(farmacia);
                 break;
             case 12:
                 // Quitar Productos Vencidos
-                quitarProductosVencidos(farmacia);
                 imprimirSaltosDeLinea();
+                quitarProductosVencidos(farmacia);
                 break;
             case 13:
                 imprimirSaltosDeLinea();
                 printf("Volviendo al menu principal...\n");
-                menuPrincipal(farmacia);
                 break;
             default:
                 imprimirSaltosDeLinea();
                 printf("Opcion no valida. Intente nuevamente.\n");
                 break;
         }
-    } while (opcion != 9);
+    } while (opcion != 13);
 }
 
 void menuCajero(struct FarmaSalud *farmacia) 
