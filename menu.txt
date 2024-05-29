@@ -1,0 +1,263 @@
++---FarmaSalud---+
+1. Acceso SuperUsuario
+2. Acceso Cajero
+3. Acceso Sucursal 
+
+
+9. Salir del Programa
++----------------+
+
+
++------Sudo------+
+1. Agregar Cliente
+2. Agregar Sucursal
+3. Agregar Proveedor
+
+4. Eliminar Cliente 
+5. Eliminar Sucursal
+6. Eliminar Proveedor
+
+7. Ver TODOS los Clientes
+8. Ver TODAS las Sucursales
+9. Ver TODOS los Productos
+
+10. Agregar Producto
+11. Quitar Producto
+
+12. Quitar Productos Vencidos
++-----------------+
+
++------Cajero-----+
+1. Agregar Cliente
+2. Productos en stock
+3. Revisar Receta medica Cliente
+4. Revisar Receta medica Producto
+5. Historial de compras Cliente
++-----------------+
+
++----Sucursal-----+
+1. Ver productos sucursal
+2. Nombrar productos Vencidos
+3. Quitar Productos Vencidos
+
+4. Estadisticas Sucursal
++-----------------+
+
+ - - -- - - - - - -
+// Prototipos de funciones
+void agregarCliente(struct FarmaSalud *farmacia);
+void agregarSucursal(struct FarmaSalud *farmacia);
+void agregarProveedor(struct FarmaSalud *farmacia);
+void eliminarCliente(struct FarmaSalud *farmacia);
+void eliminarSucursal(struct FarmaSalud *farmacia);
+void eliminarProveedor(struct FarmaSalud *farmacia);
+void verTodosLosClientes(struct FarmaSalud *farmacia);
+void verTodasLasSucursales(struct FarmaSalud *farmacia);
+void verTodosLosProductos(struct FarmaSalud *farmacia);
+void agregarProducto(struct FarmaSalud *farmacia);
+void quitarProducto(struct FarmaSalud *farmacia);
+void quitarProductosVencidos(struct FarmaSalud *farmacia);
+
+-- - - - - - - --  
+void agregarCliente(struct FarmaSalud *farmacia) {
+    struct NodoClientes *nuevoNodo = (struct NodoClientes *)malloc(sizeof(struct NodoClientes));
+    nuevoNodo->datosClientes = (struct Clientes *)malloc(sizeof(struct Clientes));
+    
+    printf("Ingrese ID del cliente: ");
+    scanf("%d", &nuevoNodo->datosClientes->id);
+    printf("Ingrese RUT del cliente: ");
+    nuevoNodo->datosClientes->rutCliente = (char *)malloc(20 * sizeof(char));
+    scanf("%s", nuevoNodo->datosClientes->rutCliente);
+    printf("Ingrese edad del cliente: ");
+    scanf("%d", &nuevoNodo->datosClientes->edadCliente);
+    printf("¿Es afiliado? (1-Si, 0-No): ");
+    scanf("%d", &nuevoNodo->datosClientes->afiliado);
+    
+    // Inicializar comprasCliente
+    nuevoNodo->datosClientes->comprasCliente = NULL;
+    
+    nuevoNodo->ant = NULL;
+    nuevoNodo->sig = farmacia->clientes;
+    if (farmacia->clientes != NULL) {
+        farmacia->clientes->ant = nuevoNodo;
+    }
+    farmacia->clientes = nuevoNodo;
+    
+    printf("Cliente agregado con éxito.\n");
+}
+
+-- - - - - -- - - 
+void agregarSucursal(struct FarmaSalud *farmacia) {
+    struct NodoSucursales *nuevoNodo = (struct NodoSucursales *)malloc(sizeof(struct NodoSucursales));
+    nuevoNodo->datosSucursal = (struct Sucursal *)malloc(sizeof(struct Sucursal));
+    
+    printf("Ingrese ID de la sucursal: ");
+    scanf("%d", &nuevoNodo->datosSucursal->id);
+    printf("Ingrese nombre de la sucursal: ");
+    nuevoNodo->datosSucursal->nombre = (char *)malloc(50 * sizeof(char));
+    scanf("%s", nuevoNodo->datosSucursal->nombre);
+    printf("Ingrese dirección de la sucursal: ");
+    nuevoNodo->datosSucursal->direccion = (char *)malloc(100 * sizeof(char));
+    scanf("%s", nuevoNodo->datosSucursal->direccion);
+    printf("Ingrese capacidad de almacenamiento de la sucursal: ");
+    scanf("%d", &nuevoNodo->datosSucursal->capacidadAlmacenamiento);
+    
+    nuevoNodo->datosSucursal->productos = NULL;
+    
+    nuevoNodo->ant = farmacia->sucursales;
+    nuevoNodo->sig = farmacia->sucursales->sig;
+    farmacia->sucursales->sig = nuevoNodo;
+    nuevoNodo->sig->ant = nuevoNodo;
+
+    printf("Sucursal agregada con éxito.\n");
+}
+
+ - - -- - - - - - -
+void agregarProveedor(struct FarmaSalud *farmacia) {
+    struct NodoProveedor *nuevoNodo = (struct NodoProveedor *)malloc(sizeof(struct NodoProveedor));
+    nuevoNodo->datosProveedor = (struct Proveedor *)malloc(sizeof(struct Proveedor));
+    
+    printf("Ingrese ID del proveedor: ");
+    scanf("%d", &nuevoNodo->datosProveedor->id);
+    printf("Ingrese nombre del proveedor: ");
+    nuevoNodo->datosProveedor->nombre = (char *)malloc(50 * sizeof(char));
+    scanf("%s", nuevoNodo->datosProveedor->nombre);
+    printf("Ingrese dirección del proveedor: ");
+    nuevoNodo->datosProveedor->direccion = (char *)malloc(100 * sizeof(char));
+    scanf("%s", nuevoNodo->datosProveedor->direccion);
+    printf("Ingrese teléfono del proveedor: ");
+    nuevoNodo->datosProveedor->telefono = (char *)malloc(20 * sizeof(char));
+    scanf("%s", nuevoNodo->datosProveedor->telefono);
+    
+    nuevoNodo->datosProveedor->productos = NULL;
+    
+    nuevoNodo->ant = NULL;
+    nuevoNodo->sig = farmacia->proveedores;
+    if (farmacia->proveedores != NULL) {
+        farmacia->proveedores->ant = nuevoNodo;
+    }
+    farmacia->proveedores = nuevoNodo;
+    
+    printf("Proveedor agregado con éxito.\n");
+}
+
+ - - -- - - - - - -
+void eliminarCliente(struct FarmaSalud *farmacia) {
+    int id;
+    printf("Ingrese ID del cliente a eliminar: ");
+    scanf("%d", &id);
+    
+    struct NodoClientes *actual = farmacia->clientes;
+    while (actual != NULL && actual->datosClientes->id != id) {
+        actual = actual->sig;
+    }
+    
+    if (actual != NULL) {
+        if (actual->ant != NULL) {
+            actual->ant->sig = actual->sig;
+        } else {
+            farmacia->clientes = actual->sig;
+        }
+        if (actual->sig != NULL) {
+            actual->sig->ant = actual->ant;
+        }
+        free(actual->datosClientes->rutCliente);
+        free(actual->datosClientes);
+        free(actual);
+        printf("Cliente eliminado con éxito.\n");
+    } else {
+        printf("Cliente no encontrado.\n");
+    }
+}
+
+ - - -- - - - - - -
+void verTodosLosClientes(struct FarmaSalud *farmacia) {
+    struct NodoClientes *actual = farmacia->clientes;
+    printf("\n--- Lista de Clientes ---\n");
+    while (actual != NULL) {
+        printf("ID: %d\n", actual->datosClientes->id);
+        printf("RUT: %s\n", actual->datosClientes->rutCliente);
+        printf("Edad: %d\n", actual->datosClientes->edadCliente);
+        printf("Afiliado: %d\n\n", actual->datosClientes->afiliado);
+        actual = actual->sig;
+    }
+}
+
+ - - -- - - - - - -
+void verTodasLasSucursales(struct FarmaSalud *farmacia) {
+    struct NodoSucursales *actual = farmacia->sucursales->sig;
+    printf("\n--- Lista de Sucursales ---\n");
+    do {
+        printf("ID: %d\n", actual->datosSucursal->id);
+        printf("Nombre: %s\n", actual->datosSucursal->nombre);
+        printf("Dirección: %s\n", actual->datosSucursal->direccion);
+        printf("Capacidad de Almacenamiento: %d\n\n", actual->datosSucursal->capacidadAlmacenamiento);
+        actual = actual->sig;
+    } while (actual != farmacia->sucursales);
+}
+
+ - - -- - - - - - -
+void verTodosLosProductos(struct FarmaSalud *farmacia) {
+    struct NodoSucursales *sucursal = farmacia->sucursales->sig;
+    printf("\n--- Lista de Productos en Todas las Sucursales ---\n");
+    do {
+        printf("Sucursal: %s\n", sucursal->datosSucursal->nombre);
+        struct NodoProducto *producto = sucursal->datosSucursal->productos->sig;
+        while (producto != sucursal->datosSucursal->productos) {
+            printf("Código: %s\n", producto->datosProducto->codigo);
+            printf("Nombre: %s\n", producto->datosProducto->nombreProducto);
+            printf("Descripción: %s\n", producto->datosProducto->descripcion);
+            printf("Categoría: %s\n", producto->datosProducto->categoria);
+            printf("Precio: %d\n", producto->datosProducto->precio);
+            printf("Proveedor: %s\n", producto->datosProducto->nombreProveedor);
+            printf("Lote: %s\n", producto->datosProducto->lote);
+            printf("Fecha de Caducidad: %s\n", producto->datosProducto->fechaCaducidad);
+            printf("Cantidad: %d\n", producto->datosProducto->cantidad);
+            printf("Requiere Receta: %d\n\n", producto->datosProducto->requiereReceta);
+            producto = producto->sig;
+        }
+        sucursal = sucursal->sig;
+    } while (sucursal != farmacia->sucursales);
+}
+
+ - - -- - - - - - -
+void quitarProductosVencidos(struct FarmaSalud *farmacia) {
+    struct NodoSucursales *sucursal = farmacia->sucursales->sig;
+    char fechaActual[11];
+    printf("Ingrese la fecha actual (DD/MM/AAAA): ");
+    scanf("%s", fechaActual);
+    
+    printf("\n--- Eliminando Productos Vencidos ---\n");
+    do {
+        struct NodoProducto *producto = sucursal->datosSucursal->productos->sig;
+        while (producto != sucursal->datosSucursal->productos) {
+            if (strcmp(producto->datosProducto->fechaCaducidad, fechaActual) < 0) {
+                struct NodoProducto *aEliminar = producto;
+                if (producto->ant != NULL) {
+                    producto->ant->sig = producto->sig;
+                } else {
+                    sucursal->datosSucursal->productos = producto->sig;
+                }
+                if (producto->sig != NULL) {
+                    producto->sig->ant = producto->ant;
+                }
+                producto = producto->sig;
+                free(aEliminar->datosProducto->nombreProducto);
+                free(aEliminar->datosProducto->descripcion);
+                free(aEliminar->datosProducto->categoria);
+                free(aEliminar->datosProducto->nombreProveedor);
+                free(aEliminar->datosProducto->lote);
+                free(aEliminar->datosProducto->fechaCaducidad);
+                free(aEliminar->datosProducto);
+                free(aEliminar);
+                printf("Producto vencido eliminado.\n");
+            } else {
+                producto = producto->sig;
+            }
+        }
+        sucursal = sucursal->sig;
+    } while (sucursal != farmacia->sucursales);
+}
+ - - -- - - - - - -
+
+ 

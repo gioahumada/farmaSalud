@@ -29,3 +29,8 @@ https://chatgpt.com/g/g-2DQzU5UZl-code-copilot
 - Informe
 
 https://docs.google.com/document/d/1QAbOabQdfY1oavinI0NzInlTi_CAsqqxpFqd3Mi2YHc/edit?usp=sharing
+
+- Compilar
+
+gcc proyectoC.c -o proyectoC
+./proyectoC

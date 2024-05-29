@@ -1,0 +1,20 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/gioahumada/Documents/GitHub/farmaSalud/output/proyectoC'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000024C4, symSize: 0x30 }
+  - { offsetInCU: 0x2C8, offset: 0x2C8, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000024C4, symSize: 0x30 }
+  - { offsetInCU: 0x2F0, offset: 0x2F0, size: 0x8, addend: 0x0, symName: _menuPrincipal, symObjAddr: 0x30, symBinAddr: 0x1000024F4, symSize: 0x124 }
+  - { offsetInCU: 0x322, offset: 0x322, size: 0x8, addend: 0x0, symName: _imprimirSaltosDeLinea, symObjAddr: 0x178, symBinAddr: 0x10000263C, symSize: 0x54 }
+  - { offsetInCU: 0x346, offset: 0x346, size: 0x8, addend: 0x0, symName: _menuAdmin, symObjAddr: 0x1CC, symBinAddr: 0x100002690, symSize: 0x208 }
+  - { offsetInCU: 0x378, offset: 0x378, size: 0x8, addend: 0x0, symName: _menuCajero, symObjAddr: 0x408, symBinAddr: 0x1000028CC, symSize: 0x12C }
+  - { offsetInCU: 0x3AD, offset: 0x3AD, size: 0x8, addend: 0x0, symName: _menuSucursal, symObjAddr: 0x558, symBinAddr: 0x100002A1C, symSize: 0x118 }
+  - { offsetInCU: 0x3E2, offset: 0x3E2, size: 0x8, addend: 0x0, symName: _agregarCliente, symObjAddr: 0x694, symBinAddr: 0x100002B58, symSize: 0x15C }
+  - { offsetInCU: 0x417, offset: 0x417, size: 0x8, addend: 0x0, symName: _agregarSucursal, symObjAddr: 0x7F0, symBinAddr: 0x100002CB4, symSize: 0x16C }
+  - { offsetInCU: 0x44C, offset: 0x44C, size: 0x8, addend: 0x0, symName: _agregarProveedor, symObjAddr: 0x95C, symBinAddr: 0x100002E20, symSize: 0x18C }
+  - { offsetInCU: 0x481, offset: 0x481, size: 0x8, addend: 0x0, symName: _eliminarCliente, symObjAddr: 0xAE8, symBinAddr: 0x100002FAC, symSize: 0x174 }
+  - { offsetInCU: 0x4C5, offset: 0x4C5, size: 0x8, addend: 0x0, symName: _verTodosLosClientes, symObjAddr: 0xC5C, symBinAddr: 0x100003120, symSize: 0x140 }
+  - { offsetInCU: 0x4FA, offset: 0x4FA, size: 0x8, addend: 0x0, symName: _verTodasLasSucursales, symObjAddr: 0xD9C, symBinAddr: 0x100003260, symSize: 0xF0 }
+  - { offsetInCU: 0x52F, offset: 0x52F, size: 0x8, addend: 0x0, symName: _verTodosLosProductos, symObjAddr: 0xE8C, symBinAddr: 0x100003350, symSize: 0x218 }
+  - { offsetInCU: 0x579, offset: 0x579, size: 0x8, addend: 0x0, symName: _quitarProductosVencidos, symObjAddr: 0x10A4, symBinAddr: 0x100003568, symSize: 0x240 }
+...

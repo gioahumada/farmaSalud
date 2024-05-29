@@ -384,15 +384,15 @@ int leerOpcion(int limiteSuperior) {
 	char buffer[MAX];
 	int comando;                 //OPCION QUE ESCOGIO EL USUARIO.
 	do {
-		scanf("%s", buffer);    //LEER OPCIÓN ESCOGIDA POR EL USUARIO.
+		scanf("%s", buffer);    //LEER OPCIï¿½N ESCOGIDA POR EL USUARIO.
 		fflush(stdin);
 		printf("\n");
 		if (soloNumerosCmd(buffer)) {
 			comando = atoi(buffer);
-			if ((comando >= 1) && (comando <= limiteSuperior)) {    //SI LA OPCIÓN ESTÁ ENTRE LAS OPCIONES DEL MENÚ.
-				return comando;                                     //RETORNA OPCIÓN.
+			if ((comando >= 1) && (comando <= limiteSuperior)) {    //SI LA OPCIï¿½N ESTï¿½ ENTRE LAS OPCIONES DEL MENï¿½.
+				return comando;                                     //RETORNA OPCIï¿½N.
 			}
-			else {                                                                        //SI LA OPCIÓN NO ESTÁ ENTE LAS OPCIONES DEL MENÚ.
+			else {                                                                        //SI LA OPCIï¿½N NO ESTï¿½ ENTE LAS OPCIONES DEL MENï¿½.
 				printf("        ===============================================================\n\n");
 				printf("                  OPCION INVALIDA, INGRESE UNA OPCION VALIDA: ");   //RETORNA MENSAJE.
 			}
@@ -410,15 +410,15 @@ int validarHorario(int limiteSuperior) {
 	int horas;                 //CLAVES ESCOGIDA POR EL USUARIO
 
 	do {
-		scanf("%s", buffer);    //LEER OPCIÓN ESCOGIDA POR EL USUARIO.
+		scanf("%s", buffer);    //LEER OPCIï¿½N ESCOGIDA POR EL USUARIO.
 		fflush(stdin);
 		printf("\n");
 		if (soloNumerosCmd(buffer)) {
 			horas = atoi(buffer);
-			if ((horas >= 0) && (horas <= limiteSuperior)) {    //SI LA CLAVE ESTÁ ENTRE CLAVE 1-8
+			if ((horas >= 0) && (horas <= limiteSuperior)) {    //SI LA CLAVE ESTï¿½ ENTRE CLAVE 1-8
 				return horas;                                   //RETORNA CLAVE.
 			}
-			else {                                                                        //SI LA CLAVE NO ESTÁ ENTRE CLAVE 1-8.
+			else {                                                                        //SI LA CLAVE NO ESTï¿½ ENTRE CLAVE 1-8.
 				printf("           CLAVE INVALIDA, INGRESE UNA CLAVE VALIDA :");
 			}
 		}
@@ -1365,13 +1365,13 @@ void agregarCurso(struct nodoCurso **headC) {
 		}
 	} while (auxiliar == NULL);
 
-	if ((*headC) == NULL) {  //SI NO EXISTE UNA LISTA DE CURSOS, SE CREARÁ EL HEAD
+	if ((*headC) == NULL) {  //SI NO EXISTE UNA LISTA DE CURSOS, SE CREARï¿½ EL HEAD
 		(*headC) = (struct nodoCurso *)malloc(sizeof(struct nodoCurso));
 		errorMemoria(*headC);
 		(*headC) = auxiliar;
 		(*headC)->sig = NULL;
 	}
-	else { //SI EXISTE UNA LISTA DE CURSOS, SE AGREGARÁ AL FINAL
+	else { //SI EXISTE UNA LISTA DE CURSOS, SE AGREGARï¿½ AL FINAL
 		rec = (*headC);
 		while (rec->sig != NULL) {
 			rec = rec->sig;
@@ -2461,10 +2461,6 @@ void cargarProfesores(struct nodoProfesor **head) {
 	char buffer[MAX];
 	int control, i, j;
 	int numeroHorario;
-		
-		
-		fscanf y el scanf
-		int
 	
 	DBProfesores = fopen("profesores.txt", "r");				//ABRE EL ARCHIVO
 	if (DBProfesores == NULL) {									//SI OCURRE UN ERROR AL ABRIR
@@ -2558,7 +2554,8 @@ void guardarProfesores(struct nodoProfesor *head) {
 	} while (rec != head);
 }
 
-void cargarCursos(struct nodoCurso **headCurso){
+void cargarCursos(struct nodoCurso **headCurso)
+{
 	FILE *DBCursos;
 	struct nodoCurso *rec = NULL;
 	struct nodoAsignatura *recAsig = NULL;
@@ -2568,7 +2565,7 @@ void cargarCursos(struct nodoCurso **headCurso){
 	struct nodoNotas *recNotas = NULL;
 	char separador[6] = "~ * ~";
 	char finalDeCurso[6] = "/////";
-	char finalMaterias[6] = "_____"
+	char finalMaterias[6] = "_____";
 	char buffer[MAX];
 	int control, aux;
 
