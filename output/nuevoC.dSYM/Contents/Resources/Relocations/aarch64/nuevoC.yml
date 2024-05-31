@@ -2,16 +2,22 @@
 triple:          'arm64-apple-darwin'
 binary-path:     '/Users/gioahumada/Documents/GitHub/farmaSalud/output/nuevoC'
 relocations:
-  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _pause, symObjAddr: 0x0, symBinAddr: 0x1000031AC, symSize: 0x3C }
-  - { offsetInCU: 0x2EE, offset: 0x2EE, size: 0x8, addend: 0x0, symName: _pause, symObjAddr: 0x0, symBinAddr: 0x1000031AC, symSize: 0x3C }
-  - { offsetInCU: 0x303, offset: 0x303, size: 0x8, addend: 0x0, symName: _cls, symObjAddr: 0x3C, symBinAddr: 0x1000031E8, symSize: 0x54 }
-  - { offsetInCU: 0x327, offset: 0x327, size: 0x8, addend: 0x0, symName: _crearClienteConsole, symObjAddr: 0x90, symBinAddr: 0x10000323C, symSize: 0x154 }
-  - { offsetInCU: 0x3BF, offset: 0x3BF, size: 0x8, addend: 0x0, symName: _agregarClienteConsole, symObjAddr: 0x1E4, symBinAddr: 0x100003390, symSize: 0x90 }
-  - { offsetInCU: 0x40D, offset: 0x40D, size: 0x8, addend: 0x0, symName: _crearSucursalConsole, symObjAddr: 0x274, symBinAddr: 0x100003420, symSize: 0xA4 }
-  - { offsetInCU: 0x47B, offset: 0x47B, size: 0x8, addend: 0x0, symName: _agregarSucursalConsole, symObjAddr: 0x318, symBinAddr: 0x1000034C4, symSize: 0xB8 }
-  - { offsetInCU: 0x4C9, offset: 0x4C9, size: 0x8, addend: 0x0, symName: _leerClientes, symObjAddr: 0x3D0, symBinAddr: 0x10000357C, symSize: 0x184 }
-  - { offsetInCU: 0x517, offset: 0x517, size: 0x8, addend: 0x0, symName: _agregarCliente, symObjAddr: 0x554, symBinAddr: 0x100003700, symSize: 0x1A4 }
-  - { offsetInCU: 0x565, offset: 0x565, size: 0x8, addend: 0x0, symName: _eliminarCliente, symObjAddr: 0x6F8, symBinAddr: 0x1000038A4, symSize: 0x198 }
-  - { offsetInCU: 0x5B3, offset: 0x5B3, size: 0x8, addend: 0x0, symName: _menuPrincipal, symObjAddr: 0x890, symBinAddr: 0x100003A3C, symSize: 0x120 }
-  - { offsetInCU: 0x5E8, offset: 0x5E8, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x9D4, symBinAddr: 0x100003B80, symSize: 0x138 }
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _pause, symObjAddr: 0x0, symBinAddr: 0x100001EB0, symSize: 0x3C }
+  - { offsetInCU: 0x308, offset: 0x308, size: 0x8, addend: 0x0, symName: _pause, symObjAddr: 0x0, symBinAddr: 0x100001EB0, symSize: 0x3C }
+  - { offsetInCU: 0x31D, offset: 0x31D, size: 0x8, addend: 0x0, symName: _cls, symObjAddr: 0x3C, symBinAddr: 0x100001EEC, symSize: 0x54 }
+  - { offsetInCU: 0x341, offset: 0x341, size: 0x8, addend: 0x0, symName: _crearClienteConsole, symObjAddr: 0x90, symBinAddr: 0x100001F40, symSize: 0x14C }
+  - { offsetInCU: 0x403, offset: 0x403, size: 0x8, addend: 0x0, symName: _agregarClienteConsole, symObjAddr: 0x1DC, symBinAddr: 0x10000208C, symSize: 0x90 }
+  - { offsetInCU: 0x451, offset: 0x451, size: 0x8, addend: 0x0, symName: _crearSucursalConsole, symObjAddr: 0x26C, symBinAddr: 0x10000211C, symSize: 0xA4 }
+  - { offsetInCU: 0x4BF, offset: 0x4BF, size: 0x8, addend: 0x0, symName: _agregarSucursalConsole, symObjAddr: 0x310, symBinAddr: 0x1000021C0, symSize: 0xB8 }
+  - { offsetInCU: 0x50D, offset: 0x50D, size: 0x8, addend: 0x0, symName: _leerClientes, symObjAddr: 0x3C8, symBinAddr: 0x100002278, symSize: 0x1E4 }
+  - { offsetInCU: 0x577, offset: 0x577, size: 0x8, addend: 0x0, symName: _agregarCliente, symObjAddr: 0x5AC, symBinAddr: 0x10000245C, symSize: 0x200 }
+  - { offsetInCU: 0x5E1, offset: 0x5E1, size: 0x8, addend: 0x0, symName: _eliminarCliente, symObjAddr: 0x7AC, symBinAddr: 0x10000265C, symSize: 0x28C }
+  - { offsetInCU: 0x651, offset: 0x651, size: 0x8, addend: 0x0, symName: _agregarProductoACliente, symObjAddr: 0xA38, symBinAddr: 0x1000028E8, symSize: 0x34C }
+  - { offsetInCU: 0x6A4, offset: 0x6A4, size: 0x8, addend: 0x0, symName: _leerSucursales, symObjAddr: 0xD84, symBinAddr: 0x100002C34, symSize: 0x1C0 }
+  - { offsetInCU: 0x6F6, offset: 0x6F6, size: 0x8, addend: 0x0, symName: _crearSucursal, symObjAddr: 0xF44, symBinAddr: 0x100002DF4, symSize: 0x13C }
+  - { offsetInCU: 0x73A, offset: 0x73A, size: 0x8, addend: 0x0, symName: _eliminarSucursal, symObjAddr: 0x1080, symBinAddr: 0x100002F30, symSize: 0x1F4 }
+  - { offsetInCU: 0x78D, offset: 0x78D, size: 0x8, addend: 0x0, symName: _menuPrincipal, symObjAddr: 0x1274, symBinAddr: 0x100003124, symSize: 0x190 }
+  - { offsetInCU: 0x7C2, offset: 0x7C2, size: 0x8, addend: 0x0, symName: _crearProveedorConsole, symObjAddr: 0x1428, symBinAddr: 0x1000032D8, symSize: 0x124 }
+  - { offsetInCU: 0x828, offset: 0x828, size: 0x8, addend: 0x0, symName: _agregarProveedorConsole, symObjAddr: 0x154C, symBinAddr: 0x1000033FC, symSize: 0xF8 }
+  - { offsetInCU: 0x86C, offset: 0x86C, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x1644, symBinAddr: 0x1000034F4, symSize: 0x1F8 }
 ...

@@ -33,6 +33,9 @@ struct Clientes
     char **comprasCliente; // Array
 };
 
+Paracetal - 20
+Pañales -20
+
 /* ----------
     Centro
 */
