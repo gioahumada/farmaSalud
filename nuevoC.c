@@ -1,3 +1,17 @@
+/* 
+To-do list:
+
+* Funcion 12 preguntar el stock de cada producto a agregar para ser registrado en sucursal
+* Crear Funcion para agregar un producto en especifico a una sucursal
+* Crear Funcion que actualice el espacio de una sucursal
+* Crear Funcion Estadisticas (sucursal con mas items, proveedor con mas items, etc etc)
+* Crear Funcion para concretar ventas y que se le agregue a cliente, que de una boleta 
+* Crear Funcion para quitar productos con vencimiento
+
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,5 +1,4 @@
-#include "menu.h"
-
+// 7. MenÃº principal
 void menuPrincipal(struct FarmaSalud *farmacia) {
     int opcion;
     do {
