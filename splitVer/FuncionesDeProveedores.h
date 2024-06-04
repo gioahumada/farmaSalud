@@ -43,11 +43,11 @@ void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
     } else {
         requiereReceta = "No";
     }
-    printf("  - Código: %s      ", producto->codigo);
-    printf("Nombre: %s      ", producto->nombreProducto);
-    printf("Descripción: %s     ", producto->descripcion);
-    printf("Precio: %d      ", producto->precio);
-    printf("Requiere Receta: %s     \n", requiereReceta);
+
+    printf("%-10s", producto->codigo);
+    printf("%-40s", producto->nombreProducto);
+    printf("$%-20d", producto->precio);
+    printf("%-18s\n", requiereReceta);
 
     mostrarProductosProveedor(nodoProducto->der);
 }
@@ -61,6 +61,7 @@ void leerProveedores(struct FarmaSalud *farmacia) {
         return;
     }
 
+
     while (nodoActual != NULL) {
         printf("ID: %d\n", nodoActual->datosProveedor->id);
         printf("Nombre: %s\n", nodoActual->datosProveedor->nombre);
@@ -72,7 +73,9 @@ void leerProveedores(struct FarmaSalud *farmacia) {
             printf("No hay productos asociados a este proveedor.\n\n");
         } else {
             printf("Productos:\n\n");
+            printf("ID          Nombre                                    Precio                Requiere receta\n\n");
             mostrarProductosProveedor(nodoActual->datosProveedor->productos);
+            printf("\n");
         }
 
         nodoActual = nodoActual->sig;
@@ -328,29 +331,12 @@ struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idPr
     return proveedorActual;
 }
 
-void transferirProductos(struct NodoArbolProducto *nodoProducto, struct NodoSucursales *sucursalActual) {
-    if (nodoProducto == NULL) {
-        return;
+void mostrarProveedores(struct FarmaSalud *farmacia) {
+    struct NodoProveedor *proveedorActual = farmacia->proveedores;
+    printf("Proveedores disponibles:\n");
+    while (proveedorActual != NULL) {
+        printf("ID: %d, Nombre: %s\n", proveedorActual->datosProveedor->id, proveedorActual->datosProveedor->nombre);
+        proveedorActual = proveedorActual->sig;
     }
-
-    // Recursivamente transferir los productos de los subárboles izquierdo y derecho
-    transferirProductos(nodoProducto->izq, sucursalActual);
-    transferirProductos(nodoProducto->der, sucursalActual);
-
-    // Crear un nodo de producto para la sucursal
-    struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
-    nuevoNodoProducto->datosProducto = nodoProducto->datosProducto;
-    nuevoNodoProducto->ant = nuevoNodoProducto->sig = NULL;
-
-    // Agregar el producto a la lista de productos de la sucursal
-    if (sucursalActual->datosSucursal->productos == NULL) {
-        sucursalActual->datosSucursal->productos = nuevoNodoProducto;
-    } else {
-        struct NodoProducto *temp = sucursalActual->datosSucursal->productos;
-        while (temp->sig != NULL) {
-            temp = temp->sig;
-        }
-        temp->sig = nuevoNodoProducto;
-        nuevoNodoProducto->ant = temp;
-    }
+    printf("\n");
 }

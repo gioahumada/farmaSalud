@@ -1,4 +1,3 @@
-// 7. MenÃº principal
 void menuPrincipal(struct FarmaSalud *farmacia) {
     int opcion;
     do {
@@ -15,9 +14,10 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
         printf("10. eliminarProveedor\n");
         printf("11. agregarProductoProveedor\n");
         printf("12. transferirProductosProveedorASucursal\n");
+        printf("13. agregarProductoASucursal\n");
+        printf("14. eliminarProductosVencidos\n");
 
-
-        printf("\n13. Salir\n");
+        printf("\n15. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
 
@@ -71,6 +71,14 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
                 cls();
                 break;
             case 13:
+                agregarProductoEspecificoASucursalDesdeProveedor(farmacia);
+                cls();
+                break;
+            case 14:
+                menuEliminarProductosVencidos(farmacia);
+                cls();
+                break;      
+            case 15:
                 printf("Saliendo...\n");
                 exit(0);
                 break;
@@ -78,5 +86,5 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
                 printf("Opcion no valida. Intente nuevamente.\n");
                 break;
         }
-    } while (opcion != 13);
+    } while (opcion != 15);
 }
