@@ -10,6 +10,7 @@
         "funcionesdeclientes.h": "c",
         "funcionesdeproveedores.h": "c",
         "funcionesdesucursales.h": "c",
-        "menuprincipal.h": "c"
+        "menuprincipal.h": "c",
+        "realizarcompra.h": "c"
     }
 }

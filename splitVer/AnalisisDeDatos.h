@@ -1,4 +1,3 @@
-
 void productoMasVendido(struct FarmaSalud *farmacia) {
     struct NodoSucursales *nodoSucursal = farmacia->sucursales;
     do {
@@ -25,48 +24,46 @@ void productoMasVendido(struct FarmaSalud *farmacia) {
     } while (nodoSucursal != farmacia->sucursales);
 }
 
-
-
-// Implementación de la función
-void obtenerProductosMasVendidosPorSucursal(struct FarmaSalud *farmaSalud) 
-{
-    struct NodoSucursales *nodoSucursal = farmaSalud->sucursales;
-
-    if (nodoSucursal == NULL) 
-    {
-        printf("No hay sucursales registradas.\n");
-        return;
+struct Sucursal *sucursalConMasVentas(struct FarmaSalud *farmaSalud) {
+    if (farmaSalud == NULL || farmaSalud->sucursales == NULL) {
+        return NULL;
     }
 
-    do {
-        struct Sucursal *sucursal = nodoSucursal->datosSucursal;
-        struct NodoProducto *nodoProducto = sucursal->productosVendidos;
+    struct NodoSucursales *actual = farmaSalud->sucursales;
+    struct Sucursal *sucursalMasVentas = actual->datosSucursal;
+    int maxVentas = sucursalMasVentas->cantidadDeVentas;
 
-        if (nodoProducto == NULL) {
-            printf("La sucursal %s no ha vendido ningún producto.\n", sucursal->nombre);
-            nodoSucursal = nodoSucursal->sig;
-            continue;
+    actual = actual->sig;
+    while (actual != farmaSalud->sucursales) {
+        if (actual->datosSucursal->cantidadDeVentas > maxVentas) {
+            sucursalMasVentas = actual->datosSucursal;
+            maxVentas = sucursalMasVentas->cantidadDeVentas;
         }
+        actual = actual->sig;
+    }
 
-        struct Producto *productoMasVendido = NULL;
-        int maxVentas = 0;
-
-        do {
-            struct Producto *producto = nodoProducto->datosProducto;
-
-            if (producto->cantidad > maxVentas) {
-                maxVentas = producto->cantidad;
-                productoMasVendido = producto;
-            }
-
-            nodoProducto = nodoProducto->sig;
-        } while (nodoProducto != sucursal->productosVendidos);
-
-        if (productoMasVendido) {
-            printf("El producto más vendido en la sucursal %s es %s con %d ventas.\n", 
-                sucursal->nombre, productoMasVendido->nombreProducto, maxVentas);
-        }
-
-        nodoSucursal = nodoSucursal->sig;
-    } while (nodoSucursal != farmaSalud->sucursales);
+    return sucursalMasVentas;
 }
+
+char* nombreProductoMasVendidoPorSucursal(struct Sucursal *sucursal) 
+{
+    if (sucursal == NULL || sucursal->productosVendidos == NULL) {
+        return NULL;
+    }
+
+    struct NodoProducto *actual = sucursal->productosVendidos->sig;
+    char *nombreProductoMasVendido = NULL;
+    int maxVentas = 0;
+
+    while (actual != sucursal->productosVendidos) {
+        if (actual->datosProducto->cantidad > maxVentas) {
+            maxVentas = actual->datosProducto->cantidad;
+            nombreProductoMasVendido = actual->datosProducto->nombreProducto;
+        }
+        actual = actual->sig;
+    }
+
+    return nombreProductoMasVendido;
+}
+
+void M

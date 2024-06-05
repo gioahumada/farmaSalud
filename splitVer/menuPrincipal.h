@@ -16,8 +16,9 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
         printf("12. transferirProductosProveedorASucursal\n");
         printf("13. agregarProductoASucursal\n");
         printf("14. eliminarProductosVencidos\n");
+        printf("15. realizarCompra\n");
 
-        printf("\n15. Salir\n");
+        printf("\n16. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
 
@@ -79,6 +80,10 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
                 cls();
                 break;      
             case 15:
+                realizarCompra(farmacia);
+                cls();
+                break;
+            case 16:
                 printf("Saliendo...\n");
                 exit(0);
                 break;
@@ -86,5 +91,5 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
                 printf("Opcion no valida. Intente nuevamente.\n");
                 break;
         }
-    } while (opcion != 15);
+    } while (opcion != 16);
 }

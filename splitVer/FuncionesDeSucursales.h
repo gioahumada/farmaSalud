@@ -15,10 +15,10 @@ int espacioRestante(struct Sucursal *sucursal) {
     return espacioRestante;
 }
 
-
 void leerSucursales(struct FarmaSalud *farmacia) {
-    cls();
+    int espacio;
     struct NodoSucursales *nodoActual = farmacia->sucursales;
+    cls();
     if (nodoActual == NULL) {
         printf("No hay sucursales registradas.\n");
         pause();
@@ -34,22 +34,25 @@ void leerSucursales(struct FarmaSalud *farmacia) {
             printf("Productos:\n");
             struct NodoProducto *productoNodo = nodoActual->datosSucursal->productos;
             while (productoNodo != NULL) {
-                printf("\t%s - %s\n", productoNodo->datosProducto->codigo, productoNodo->datosProducto->nombreProducto);
+                printf("\t%s - %s", productoNodo->datosProducto->codigo, productoNodo->datosProducto->nombreProducto);
+                printf("\tCantidad en stock: %d", productoNodo->datosProducto->cantidad);
+                printf("\tFecha de caducidad: %s", productoNodo->datosProducto->fechaCaducidad);
+                printf("\tLote: %s\n", productoNodo->datosProducto->lote);
                 productoNodo = productoNodo->sig;
             }
             printf("\n");
-        } else {
+        } 
+        else 
+        {
             printf("Sucursal sin productos\n");
         }
-
-        int espacio = espacioRestante(nodoActual->datosSucursal);
+        
+        espacio = espacioRestante(nodoActual->datosSucursal);
         printf("Espacio restante en la sucursal: %d\n\n", espacio);
-
         nodoActual = nodoActual->sig;
     } while (nodoActual != farmacia->sucursales);
     pause();
 }
-
 
 struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccion, int capacidadAlmacenamiento) {
     struct NodoSucursales* nuevoNodo = (struct NodoSucursales*)malloc(sizeof(struct NodoSucursales));
@@ -69,7 +72,6 @@ struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccio
     return nuevoNodo;
 }
 
-
 void agregarSucursalConsole(struct FarmaSalud *farmacia, struct NodoSucursales *nuevaSucursal) {
     if (farmacia->sucursales == NULL) {
         farmacia->sucursales = nuevaSucursal;
@@ -84,6 +86,34 @@ void agregarSucursalConsole(struct FarmaSalud *farmacia, struct NodoSucursales *
         farmacia->sucursales->ant = nuevaSucursal;
     }
 }
+
+struct NodoProducto* crearNodoProducto(struct Producto* producto) {
+    struct NodoProducto* nuevoNodo = (struct NodoProducto*)malloc(sizeof(struct NodoProducto));
+    nuevoNodo->datosProducto = producto;
+    nuevoNodo->ant = nuevoNodo->sig = NULL;
+    return nuevoNodo;
+}
+
+void agregarProductoASucursal(struct Sucursal* sucursal, struct Producto* producto) {
+    if (sucursal == NULL || producto == NULL) {
+        printf("Sucursal o producto no válido.\n");
+        return;
+    }
+
+    // Crear nodo producto
+    struct NodoProducto* nuevoNodo = crearNodoProducto(producto);
+
+    // Insertar al principio de la lista de productos de la sucursal
+    if (sucursal->productos == NULL) {
+        sucursal->productos = nuevoNodo;
+    } else {
+        nuevoNodo->sig = sucursal->productos;
+        sucursal->productos->ant = nuevoNodo;
+        sucursal->productos = nuevoNodo;
+    }
+}
+
+
 
 void crearSucursal(struct FarmaSalud *farmacia) {
     cls();
@@ -204,7 +234,6 @@ void mostrarSucursales(struct FarmaSalud *farmacia) {
     } while (sucursalActual != inicio);
     printf("\n");
 }
-
 
 void eliminarProductosVencidos(struct FarmaSalud* farmacia, int idSucursal, char* fechaEliminacion) {
     struct NodoSucursales* nodoSucursal = farmacia->sucursales;

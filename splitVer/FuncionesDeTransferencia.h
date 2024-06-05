@@ -35,9 +35,11 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
         cls();
-        printf("Ingrese la fecha de vencimiento para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
+        printf("Ingrese la fecha de vencimiento para el producto (formato DD/MM/AAAA) [%s]: ", nodoProducto->datosProducto->nombreProducto);
         scanf("%s", fechaCaducidad);
-        cls();
+        cls();{
+            
+        }
         printf("Ingrese el lote para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
         scanf("%s", lote);
         cls();
@@ -72,59 +74,58 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     cls();
 }
 
-struct Producto *buscarProductoPorCodigo(struct NodoProveedor *proveedor, char *codigoProducto) {
-    struct NodoProducto *productoActual = proveedor->datosProveedor->productos;
 
-    // Recorrer la lista de productos
-    while (productoActual != NULL) {
-        if (strcmp(productoActual->datosProducto->codigo, codigoProducto) == 0) {
-            // Si el producto con el código dado se encuentra, devolver el producto
-            return productoActual->datosProducto;
-        }
-        productoActual = productoActual->sig;
+
+struct Producto *buscarProductoPorCodigo(struct NodoArbolProducto *raiz, char *codigoProducto) {
+    // Si la raíz es NULL, el producto no se encuentra
+    if (raiz == NULL) {
+        return NULL;
     }
 
-    // Si el producto con el código dado no se encuentra, devolver NULL
-    return NULL;
+    // Comparar el código del producto con el código del producto en la raíz
+    int cmp = strcmp(raiz->datosProducto->codigo, codigoProducto);
+
+    if (cmp == 0) {
+        // Si los códigos son iguales, hemos encontrado el producto
+        return raiz->datosProducto;
+    } else if (cmp > 0) {
+        // Si el código del producto es menor que el código de la raíz, buscar en el subárbol izquierdo
+        return buscarProductoPorCodigo(raiz->izq, codigoProducto);
+    } else {
+        // Si el código del producto es mayor que el código de la raíz, buscar en el subárbol derecho
+        return buscarProductoPorCodigo(raiz->der, codigoProducto);
+    }
 }
 
-void agregarProducto(struct Producto *producto, struct NodoSucursales *sucursal) {
+void agregarProducto(struct Producto *producto, struct NodoSucursales *sucursal, int cantidad, char *fechaCaducidad, char *lote) {
     // Buscar el producto en la lista de productos de la sucursal
     struct NodoProducto *productoActual = sucursal->datosSucursal->productos;
     while (productoActual != NULL) {
         if (strcmp(productoActual->datosProducto->codigo, producto->codigo) == 0) {
-            // Si el producto ya existe en la lista, incrementar su cantidad
-            productoActual->datosProducto->cantidad += 1;
-            printf("Cantidad del producto con codigo %s incrementada en la sucursal con ID %d.\n", producto->codigo, sucursal->datosSucursal->id);
+            // Si el producto ya existe en la lista, incrementar su cantidad y actualizar la fecha de caducidad
+            productoActual->datosProducto->cantidad += cantidad;
+            strcpy(productoActual->datosProducto->fechaCaducidad, fechaCaducidad);
+            strcpy(productoActual->datosProducto->lote, lote);
+            printf("Cantidad, fecha de caducidad y lote del producto con codigo %s actualizadas en la sucursal con ID %d.\n", producto->codigo, sucursal->datosSucursal->id);
             return;
         }
         productoActual = productoActual->sig;
     }
 
-    // Si el producto no existe en la lista, agregarlo a la lista
+    // Si el producto no existe en la lista, agregarlo
     struct NodoProducto *nuevoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
     nuevoProducto->datosProducto = producto;
-    nuevoProducto->sig = NULL;
-
-    if (sucursal->datosSucursal->productos == NULL) {
-        // Si la lista de productos está vacía, hacer que el nuevo producto sea el primer nodo
-        sucursal->datosSucursal->productos = nuevoProducto;
-    } else {
-        // Si la lista de productos no está vacía, agregar el nuevo producto al final de la lista
-        productoActual = sucursal->datosSucursal->productos;
-        while (productoActual->sig != NULL) {
-            productoActual = productoActual->sig;
-        }
-        productoActual->sig = nuevoProducto;
-    }
-
-    printf("Producto con codigo %s agregado a la sucursal con ID %d.\n", producto->codigo, sucursal->datosSucursal->id);
+    nuevoProducto->datosProducto->cantidad = cantidad;
+    strcpy(nuevoProducto->datosProducto->fechaCaducidad, fechaCaducidad);
+    strcpy(nuevoProducto->datosProducto->lote, lote);
+    nuevoProducto->sig = sucursal->datosSucursal->productos;
+    sucursal->datosSucursal->productos = nuevoProducto;
+    printf("Producto con codigo %s, fecha de caducidad %s y lote %s agregado a la sucursal con ID %d.\n", producto->codigo, fechaCaducidad, lote, sucursal->datosSucursal->id);
 }
 
-
 void agregarProductoEspecificoASucursalDesdeProveedor(struct FarmaSalud *farmacia) {
-    int idProveedor, idSucursal;
-    char codigoProducto[10];
+    int idProveedor, idSucursal, cantidadProducto;
+    char codigoProducto[10], fechaCaducidad[10], lote[10];
     struct NodoProveedor *proveedorActual;
     struct Producto *productoActual;
     struct NodoSucursales *sucursalActual;
@@ -145,7 +146,7 @@ void agregarProductoEspecificoASucursalDesdeProveedor(struct FarmaSalud *farmaci
         scanf("%s", codigoProducto);
 
         // Buscar el producto por codigo
-        productoActual = buscarProductoPorCodigo(proveedorActual, codigoProducto);
+        productoActual = buscarProductoPorCodigo(proveedorActual->datosProveedor->productos, codigoProducto);
         if (productoActual == NULL) {
             printf("Producto con codigo %s no encontrado en el proveedor con ID %d. Por favor, ingrese un codigo valido.\n", codigoProducto, idProveedor);
         }
@@ -162,12 +163,17 @@ void agregarProductoEspecificoASucursalDesdeProveedor(struct FarmaSalud *farmaci
         }
     } while (sucursalActual == NULL);
 
-    // Agregar producto a la sucursal
-    agregarProducto(productoActual, sucursalActual);
+    printf("Ingrese la cantidad del producto: ");
+    scanf("%d", &cantidadProducto);
 
+    printf("Ingrese la fecha de caducidad del producto (formato MM/AAAA): ");
+    scanf("%s", fechaCaducidad);
+
+    printf("Ingrese el lote del producto: ");
+    scanf("%s", lote);
+
+    // Agregar producto a la sucursal
+    agregarProducto(productoActual, sucursalActual, cantidadProducto, fechaCaducidad, lote);
 
     printf("Producto con codigo %s transferido del proveedor con ID %d a la sucursal con ID %d.\n", codigoProducto, idProveedor, idSucursal);
-
-    pause();
-    cls();
 }
