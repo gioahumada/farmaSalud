@@ -62,12 +62,32 @@ int calcularTotal(struct Producto *productos[], int cantidades[], int cantidadCo
     return total;
 }
 
+void mostrarClientes(struct FarmaSalud *farmacia) {
+    struct NodoClientes *actual = farmacia->clientes;
+    
+    if (actual == NULL) {
+        printf("No hay clientes registrados.\n");
+        return;
+    }
+
+    printf("Clientes registrados:\n");
+    printf("ID\tNombre\t\tRUT\n");
+    printf("-----------------------------------\n");
+    
+    while (actual != NULL) {
+        printf("%d\t%s\t\n", actual->datosClientes->id, actual->datosClientes->rutCliente);
+        actual = actual->sig;
+    }
+}
+
+
 void realizarCompra(struct FarmaSalud *farmacia) {
     int idSucursal, idCliente, cantidadCompras, cantidadProducto, i, j;
     char codigoProducto[10];
     struct NodoSucursales *sucursal = NULL;
     struct NodoClientes *cliente = NULL;
     int esClienteRegistrado = 0;
+    int tieneReceta = 0;
 
     cls();
     mostrarSucursales(farmacia);
@@ -82,11 +102,12 @@ void realizarCompra(struct FarmaSalud *farmacia) {
         return;
     }
 
-    printf("¿El cliente está registrado? (1-Sí, 0-No): ");
+    printf("El cliente está registrado (1-Sí, 0-No): ");
     scanf("%d", &esClienteRegistrado);
 
     if (esClienteRegistrado) {
         cls();
+        mostrarClientes(farmacia);
         printf("Ingrese el ID del cliente: ");
         scanf("%d", &idCliente);
         cls();
@@ -122,6 +143,18 @@ void realizarCompra(struct FarmaSalud *farmacia) {
             pause();
             return;
         }
+
+        // Verificar si el producto requiere receta
+        if (producto->requiereReceta) {
+            printf("El producto %s requiere receta. El cliente tiene la receta (1-Sí, 0-No): ", producto->nombreProducto);
+            scanf("%d", &tieneReceta);
+            if (!tieneReceta) {
+                printf("No se puede completar la compra del producto %s sin receta.\n", producto->nombreProducto);
+                pause();
+                return;
+            }
+        }
+
         producto->cantidad -= cantidadProducto;
         productosComprados[i] = producto;
         cantidades[i] = cantidadProducto;
@@ -170,5 +203,4 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     printf("=======================================\n");
 
     pause();
-    
 }
