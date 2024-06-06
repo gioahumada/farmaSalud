@@ -101,6 +101,35 @@ struct Producto *buscarProductoPorCodigo(struct NodoArbolProducto *raiz, char *c
     // Si la raíz es NULL, el producto no se encuentra
     if (raiz == NULL) {
         return NULL;
+
+void obtenerDetallesProducto(char* fechaCaducidad, char* lote, int* cantidad, char* nombreProducto) {
+    printf("Ingrese la fecha de vencimiento para el producto (formato MM/AAAA) [%s]: ", nombreProducto);
+    scanf("%s", fechaCaducidad);
+    printf("Ingrese el lote para el producto [%s]: ", nombreProducto);
+    scanf("%s", lote);
+    printf("Ingrese la cantidad para el producto [%s]: ", nombreProducto);
+    scanf("%d", cantidad);
+}
+
+void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
+    int idProveedor, idSucursal;
+    char fechaCaducidad[11];
+    char lote[50];
+    int cantidad;
+    char codigoProducto[10];
+
+    cls();
+
+    mostrarProveedores(farmacia);
+    printf("Ingrese el ID del proveedor: ");
+    scanf("%d", &idProveedor);
+
+    // Buscar el proveedor por ID
+    struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
+    if (proveedorActual == NULL) {
+        printf("Proveedor con ID %d no encontrado.\n", idProveedor);
+        pause();
+        return;
     }
 
     // Comparar el código del producto con el código del producto en la raíz
@@ -117,6 +146,7 @@ struct Producto *buscarProductoPorCodigo(struct NodoArbolProducto *raiz, char *c
         return buscarProductoPorCodigo(raiz->der, codigoProducto);
     }
 }
+<<<<<<< HEAD
 
 void agregarProducto(struct Producto *producto, struct NodoSucursales *sucursal, int cantidad, char *fechaCaducidad, char *lote) {
     // Buscar el producto en la lista de productos de la sucursal
@@ -198,3 +228,5 @@ void agregarProductoEspecificoASucursalDesdeProveedor(struct FarmaSalud *farmaci
 
     printf("Producto con codigo %s transferido del proveedor con ID %d a la sucursal con ID %d.\n", codigoProducto, idProveedor, idSucursal);
 }
+=======
+>>>>>>> 9a98c0fe93cc8328c5f3582a35ff5633bf6b81b3
