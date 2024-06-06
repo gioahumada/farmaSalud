@@ -17,9 +17,9 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
         printf("13. agregarProductoASucursal\n");
         printf("14. eliminarProductosVencidos\n");
         printf("15. realizarCompra\n");
-        printf("16. Ver sucursal con más ventas\n"); // Nueva opción
-
-        printf("\n17. Salir\n"); // Cambiamos a 17 para que se ajuste
+        printf("16. Ver sucursal con mas ventas\n");
+        printf("17. Ver sucursal con mas productos\n");
+        printf("\n18. Salir\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
 

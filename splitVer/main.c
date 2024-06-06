@@ -4,11 +4,11 @@ To-do list:
 * (LISTA) Funcion 12 preguntar el stock de cada producto a agregar para ser registrado en sucursal 
 * (LISTA ARREGLADA) Crear Funcion para agregar un producto en especifico a una sucursal 
 * (LISTA, no se verifica si es que necesita espacio) Crear Funcion que actualice el espacio disponible de una sucursal (debe verificar stock y no cantidad de productos)
-* Crear Funcion Estadisticas (sucursal con mas items, proveedor con mas items, etc etc)
+* //ARREGLAR\\ Crear Funcion Estadisticas (sucursal con mas items, proveedor con mas items, etc etc)
 * (LISTA) Crear Funcion para concretar ventas y que se le agregue a cliente, que de una boleta (cliente registado o no)
-* Crear Funcion para quitar productos con vencimiento DE UNA SUCURSAL o DE TODAS
+* //YA TERMINADA\\Crear Funcion para quitar productos con vencimiento DE UNA SUCURSAL o DE TODAS
 
-(CORECCION YO) 3. Gestión de productos controlados: Algunos medicamentos requieren receta médica y están sujetos a controles legales especiales. La 
+(CORRECCION YO) 3. Gestión de productos controlados: Algunos medicamentos requieren receta médica y están sujetos a controles legales especiales. La 
 aplicación debe garantizar el cumplimiento de estos requisitos y mantener un registro detallado de la venta de productos controlados. 
 
 (PREGUNTAR PROFE) 4. Abastecimiento y relaciones con proveedores: FarmaSalud trabaja con múltiples proveedores y fabricantes de medicamentos. La 
@@ -157,16 +157,16 @@ int main() {
     farmacia->proveedores = NULL;
 
     // Inicialización de datos de prueba
-    struct Producto prod1 = {"1", "Ibuprofeno", "Recomendado para el dolor de garganta", "Anti-inflamatorio", 100, "Bioequivalente", "Lote A", "2023-12-31", 10, 0};
-    struct Producto prod2 = {"2", "Condones", "Ultra resistente y ultra delgado", "Anticonceptivo", 200, "Condoneria Nacional", "Lote B", "2024-12-31", 20, 1};
-    struct Producto prod3 = {"3", "Paracetamol", "Recomendado para el dolor de cabeza", "Analgesico", 300, "Lab. de Chile", "Lote C", "2022-12-31", 30, 0}; // Producto vencido
-    struct Producto prod4 = {"4", "Tapsin", "Perfecto Para los resfriados", "Analgésico", 400, "Tapsin Chile", "Lote D", "2026-12-31", 40, 1};
-    struct Producto prod5 = {"5", "Amoxicilina", "Antibiótico de amplio espectro", "Antibiótico", 500, "Lab. de Chile", "Lote E", "2025-11-30", 50, 1};
-    struct Producto prod6 = {"6", "Loratadina", "Para aliviar la alergia", "Antihistamínico", 600, "PharmaCorp", "Lote F", "2024-10-30", 60, 0};
-    struct Producto prod7 = {"7", "Diclofenaco", "Alivia el dolor e inflamación", "Analgesico", 700, "Lab. de Chile", "Lote G", "2025-09-29", 70, 0};
-    struct Producto prod8 = {"8", "Aspirina", "Reduce el dolor y la fiebre", "Analgesico", 800, "Bioequivalente", "Lote H", "2024-08-28", 80, 0};
-    struct Producto prod9 = {"9", "Omeprazol", "Para el tratamiento de la acidez", "Antiácido", 900, "PharmaCorp", "Lote I", "2023-07-27", 90, 1};
-    struct Producto prod10 = {"10", "Vitamina C", "Suplemento vitamínico", "Suplemento", 1000, "Lab. Maver", "Lote J", "2026-06-26", 100, 0};
+    struct Producto prod1 = {"1", "Ibuprofeno", "Recomendado para el dolor de garganta", "Anti-inflamatorio", 100, "Bioequivalente", "Lote A", "10/2020", 10, 0};
+    struct Producto prod2 = {"2", "Condones", "Ultra resistente y ultra delgado", "Anticonceptivo", 200, "Condoneria Nacional", "Lote B", "06/2019", 20, 1};
+    struct Producto prod3 = {"3", "Paracetamol", "Recomendado para el dolor de cabeza", "Analgesico", 300, "Lab. de Chile", "Lote C", "12/2022", 30, 0}; // Producto vencido
+    struct Producto prod4 = {"4", "Tapsin", "Perfecto Para los resfriados", "Analgésico", 400, "Tapsin Chile", "Lote D", "02/2017", 40, 1};
+    struct Producto prod5 = {"5", "Amoxicilina", "Antibiótico de amplio espectro", "Antibiótico", 500, "Lab. de Chile", "Lote E", "11/2025", 50, 1};
+    struct Producto prod6 = {"6", "Loratadina", "Para aliviar la alergia", "Antihistamínico", 600, "PharmaCorp", "Lote F", "10/2024", 60, 0};
+    struct Producto prod7 = {"7", "Diclofenaco", "Alivia el dolor e inflamación", "Analgesico", 700, "Lab. de Chile", "Lote G", "09/2026", 70, 0};
+    struct Producto prod8 = {"8", "Aspirina", "Reduce el dolor y la fiebre", "Analgesico", 800, "Bioequivalente", "Lote H", "08/2029", 80, 0};
+    struct Producto prod9 = {"9", "Omeprazol", "Para el tratamiento de la acidez", "Antiácido", 900, "PharmaCorp", "Lote I", "07/2016", 90, 1};
+    struct Producto prod10 = {"10", "Vitamina C", "Suplemento vitamínico", "Suplemento", 1000, "Lab. Maver", "Lote J", "06/2026", 100, 0};
 
     // Creación de compras de prueba
     struct Producto* compras1[] = {&prod1, &prod2};
@@ -245,15 +245,32 @@ int main() {
     agregarProductoAProveedor(proveedor2->datosProveedor, producto3);
     agregarProductoAProveedor(proveedor2->datosProveedor, producto4);
     agregarProductoAProveedor(proveedor2->datosProveedor, producto9);
+
     agregarProductoAProveedor(proveedor3->datosProveedor, producto6);
     agregarProductoAProveedor(proveedor3->datosProveedor, producto7);
+
     agregarProductoAProveedor(proveedor4->datosProveedor, producto8);
 
+// Agregar productos de prueba a las sucursales
+agregarProductoASucursal(sucursal1->datosSucursal, &prod1);
+agregarProductoASucursal(sucursal1->datosSucursal, &prod2);
+agregarProductoASucursal(sucursal1->datosSucursal, &prod3);
+
+agregarProductoASucursal(sucursal2->datosSucursal, &prod4);
+agregarProductoASucursal(sucursal2->datosSucursal, &prod5);
+agregarProductoASucursal(sucursal2->datosSucursal, &prod6);
+
+agregarProductoASucursal(sucursal3->datosSucursal, &prod7);
+agregarProductoASucursal(sucursal3->datosSucursal, &prod8);
+agregarProductoASucursal(sucursal3->datosSucursal, &prod9);
+
+agregarProductoASucursal(sucursal4->datosSucursal, &prod10);
+agregarProductoASucursal(sucursal4->datosSucursal, &prod1);
+agregarProductoASucursal(sucursal4->datosSucursal, &prod2);
 
     while (1) {
         cls();
         menuPrincipal(farmacia);
     }
-
     return 0;
 }
