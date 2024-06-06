@@ -14,6 +14,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
     if (proveedorActual == NULL) {
         printf("Proveedor con ID %d no encontrado.\n", idProveedor);
+        pause();
         return;
     }
 
@@ -35,24 +36,46 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
         cls();
-        printf("Ingrese la fecha de vencimiento para el producto (formato DD/MM/AAAA) [%s]: ", nodoProducto->datosProducto->nombreProducto);
+        printf("Ingrese la fecha de vencimiento para el producto (formato MM/AAAA) [%s]: ", nodoProducto->datosProducto->nombreProducto);
         scanf("%s", fechaCaducidad);
-        cls();{
-            
-        }
+        cls();
         printf("Ingrese el lote para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
         scanf("%s", lote);
         cls();
         printf("Ingrese la cantidad para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
         scanf("%d", &cantidad);
 
+        // Crear una copia completa del producto
+        struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
+        if (nuevoProducto == NULL) {
+            printf("Error al asignar memoria para el nuevo producto.\n");
+            pause();
+            return;
+        }
+        // Copiar datos del producto original al nuevo producto
+        strcpy(nuevoProducto->codigo, nodoProducto->datosProducto->codigo);
+        nuevoProducto->nombreProducto = strdup(nodoProducto->datosProducto->nombreProducto);
+        nuevoProducto->descripcion = strdup(nodoProducto->datosProducto->descripcion);
+        nuevoProducto->categoria = strdup(nodoProducto->datosProducto->categoria);
+        nuevoProducto->precio = nodoProducto->datosProducto->precio;
+        nuevoProducto->idProveedor = strdup(nodoProducto->datosProducto->idProveedor);
+        nuevoProducto->lote = strdup(lote);  // Usar el valor ingresado por el usuario
+        nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);  // Usar el valor ingresado por el usuario
+        nuevoProducto->cantidad = cantidad;  // Usar el valor ingresado por el usuario
+        nuevoProducto->requiereReceta = nodoProducto->datosProducto->requiereReceta;
+
+        // Crear un nuevo nodo producto
         struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
-        nuevoNodoProducto->datosProducto = nodoProducto->datosProducto;
-        strcpy(nuevoNodoProducto->datosProducto->fechaCaducidad, fechaCaducidad);
-        strcpy(nuevoNodoProducto->datosProducto->lote, lote);
-        nuevoNodoProducto->datosProducto->cantidad = cantidad;
+        if (nuevoNodoProducto == NULL) {
+            printf("Error al asignar memoria para el nuevo nodo de producto.\n");
+            free(nuevoProducto);
+            pause();
+            return;
+        }
+        nuevoNodoProducto->datosProducto = nuevoProducto;
         nuevoNodoProducto->ant = nuevoNodoProducto->sig = NULL;
 
+        // Insertar el nuevo nodo producto en la lista de productos de la sucursal
         if (sucursalActual->datosSucursal->productos == NULL) {
             sucursalActual->datosSucursal->productos = nuevoNodoProducto;
         } else {
@@ -64,17 +87,15 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
             nuevoNodoProducto->ant = temp;
         }
 
+        // Mover al siguiente producto del proveedor
         nodoProducto = nodoProducto->der;
     }
 
     cls();
     printf("Productos transferidos del proveedor con ID %d a la sucursal con ID %d.\n", idProveedor, idSucursal);
-
     pause();
     cls();
 }
-
-
 
 struct Producto *buscarProductoPorCodigo(struct NodoArbolProducto *raiz, char *codigoProducto) {
     // Si la raíz es NULL, el producto no se encuentra

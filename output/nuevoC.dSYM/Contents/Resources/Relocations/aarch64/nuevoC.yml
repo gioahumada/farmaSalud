@@ -11,25 +11,25 @@ relocations:
   - { offsetInCU: 0x4BF, offset: 0x4BF, size: 0x8, addend: 0x0, symName: _agregarSucursalConsole, symObjAddr: 0x310, symBinAddr: 0x100000B18, symSize: 0xB8 }
   - { offsetInCU: 0x50D, offset: 0x50D, size: 0x8, addend: 0x0, symName: _leerClientes, symObjAddr: 0x3C8, symBinAddr: 0x100000BD0, symSize: 0x1E4 }
   - { offsetInCU: 0x577, offset: 0x577, size: 0x8, addend: 0x0, symName: _agregarCliente, symObjAddr: 0x5AC, symBinAddr: 0x100000DB4, symSize: 0x25C }
-  - { offsetInCU: 0x5E1, offset: 0x5E1, size: 0x8, addend: 0x0, symName: _eliminarCliente, symObjAddr: 0x808, symBinAddr: 0x100001010, symSize: 0x28C }
-  - { offsetInCU: 0x651, offset: 0x651, size: 0x8, addend: 0x0, symName: _agregarProductoACliente, symObjAddr: 0xA94, symBinAddr: 0x10000129C, symSize: 0x34C }
-  - { offsetInCU: 0x6A4, offset: 0x6A4, size: 0x8, addend: 0x0, symName: _espacioRestante, symObjAddr: 0xDE0, symBinAddr: 0x1000015E8, symSize: 0xA4 }
-  - { offsetInCU: 0x6FB, offset: 0x6FB, size: 0x8, addend: 0x0, symName: _leerSucursales, symObjAddr: 0xE84, symBinAddr: 0x10000168C, symSize: 0x1C8 }
-  - { offsetInCU: 0x762, offset: 0x762, size: 0x8, addend: 0x0, symName: _crearSucursal, symObjAddr: 0x104C, symBinAddr: 0x100001854, symSize: 0x114 }
-  - { offsetInCU: 0x7A6, offset: 0x7A6, size: 0x8, addend: 0x0, symName: _eliminarSucursal, symObjAddr: 0x1160, symBinAddr: 0x100001968, symSize: 0x1F4 }
-  - { offsetInCU: 0x7F9, offset: 0x7F9, size: 0x8, addend: 0x0, symName: _crearProveedorConsole, symObjAddr: 0x1354, symBinAddr: 0x100001B5C, symSize: 0xA4 }
-  - { offsetInCU: 0x86E, offset: 0x86E, size: 0x8, addend: 0x0, symName: _agregarProveedorConsole, symObjAddr: 0x13F8, symBinAddr: 0x100001C00, symSize: 0x90 }
-  - { offsetInCU: 0x8C0, offset: 0x8C0, size: 0x8, addend: 0x0, symName: _mostrarProductosProveedor, symObjAddr: 0x1488, symBinAddr: 0x100001C90, symSize: 0x11C }
-  - { offsetInCU: 0x904, offset: 0x904, size: 0x8, addend: 0x0, symName: _leerProveedores, symObjAddr: 0x15A4, symBinAddr: 0x100001DAC, symSize: 0x154 }
-  - { offsetInCU: 0x939, offset: 0x939, size: 0x8, addend: 0x0, symName: _crearProveedor, symObjAddr: 0x16F8, symBinAddr: 0x100001F00, symSize: 0x1CC }
-  - { offsetInCU: 0x97D, offset: 0x97D, size: 0x8, addend: 0x0, symName: _eliminarProveedor, symObjAddr: 0x18C4, symBinAddr: 0x1000020CC, symSize: 0x1A8 }
-  - { offsetInCU: 0x9D0, offset: 0x9D0, size: 0x8, addend: 0x0, symName: _agregarProductoProveedor, symObjAddr: 0x1A6C, symBinAddr: 0x100002274, symSize: 0x474 }
-  - { offsetInCU: 0xA5E, offset: 0xA5E, size: 0x8, addend: 0x0, symName: _crearProductoFalso, symObjAddr: 0x1EE0, symBinAddr: 0x1000026E8, symSize: 0xEC }
-  - { offsetInCU: 0xB1E, offset: 0xB1E, size: 0x8, addend: 0x0, symName: _agregarProductoAProveedor, symObjAddr: 0x1FCC, symBinAddr: 0x1000027D4, symSize: 0x128 }
-  - { offsetInCU: 0xB8E, offset: 0xB8E, size: 0x8, addend: 0x0, symName: _buscarProveedorPorID, symObjAddr: 0x20F4, symBinAddr: 0x1000028FC, symSize: 0x80 }
-  - { offsetInCU: 0xBD6, offset: 0xBD6, size: 0x8, addend: 0x0, symName: _buscarSucursalPorID, symObjAddr: 0x2174, symBinAddr: 0x10000297C, symSize: 0xA8 }
-  - { offsetInCU: 0xC2D, offset: 0xC2D, size: 0x8, addend: 0x0, symName: _transferirProductos, symObjAddr: 0x221C, symBinAddr: 0x100002A24, symSize: 0x10C }
-  - { offsetInCU: 0xC8E, offset: 0xC8E, size: 0x8, addend: 0x0, symName: _transferirProductosProveedorASucursal, symObjAddr: 0x2328, symBinAddr: 0x100002B30, symSize: 0x140 }
-  - { offsetInCU: 0xCF0, offset: 0xCF0, size: 0x8, addend: 0x0, symName: _menuPrincipal, symObjAddr: 0x2468, symBinAddr: 0x100002C70, symSize: 0x21C }
-  - { offsetInCU: 0xD25, offset: 0xD25, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x26B8, symBinAddr: 0x100002EC0, symSize: 0x38C }
+  - { offsetInCU: 0x5E2, offset: 0x5E2, size: 0x8, addend: 0x0, symName: _eliminarCliente, symObjAddr: 0x808, symBinAddr: 0x100001010, symSize: 0x28C }
+  - { offsetInCU: 0x652, offset: 0x652, size: 0x8, addend: 0x0, symName: _agregarProductoACliente, symObjAddr: 0xA94, symBinAddr: 0x10000129C, symSize: 0x34C }
+  - { offsetInCU: 0x6A5, offset: 0x6A5, size: 0x8, addend: 0x0, symName: _espacioRestante, symObjAddr: 0xDE0, symBinAddr: 0x1000015E8, symSize: 0xA4 }
+  - { offsetInCU: 0x6FC, offset: 0x6FC, size: 0x8, addend: 0x0, symName: _leerSucursales, symObjAddr: 0xE84, symBinAddr: 0x10000168C, symSize: 0x1C8 }
+  - { offsetInCU: 0x763, offset: 0x763, size: 0x8, addend: 0x0, symName: _crearSucursal, symObjAddr: 0x104C, symBinAddr: 0x100001854, symSize: 0x114 }
+  - { offsetInCU: 0x7A7, offset: 0x7A7, size: 0x8, addend: 0x0, symName: _eliminarSucursal, symObjAddr: 0x1160, symBinAddr: 0x100001968, symSize: 0x1F4 }
+  - { offsetInCU: 0x7FA, offset: 0x7FA, size: 0x8, addend: 0x0, symName: _crearProveedorConsole, symObjAddr: 0x1354, symBinAddr: 0x100001B5C, symSize: 0xA4 }
+  - { offsetInCU: 0x86F, offset: 0x86F, size: 0x8, addend: 0x0, symName: _agregarProveedorConsole, symObjAddr: 0x13F8, symBinAddr: 0x100001C00, symSize: 0x90 }
+  - { offsetInCU: 0x8C1, offset: 0x8C1, size: 0x8, addend: 0x0, symName: _mostrarProductosProveedor, symObjAddr: 0x1488, symBinAddr: 0x100001C90, symSize: 0x11C }
+  - { offsetInCU: 0x905, offset: 0x905, size: 0x8, addend: 0x0, symName: _leerProveedores, symObjAddr: 0x15A4, symBinAddr: 0x100001DAC, symSize: 0x154 }
+  - { offsetInCU: 0x93A, offset: 0x93A, size: 0x8, addend: 0x0, symName: _crearProveedor, symObjAddr: 0x16F8, symBinAddr: 0x100001F00, symSize: 0x1CC }
+  - { offsetInCU: 0x97E, offset: 0x97E, size: 0x8, addend: 0x0, symName: _eliminarProveedor, symObjAddr: 0x18C4, symBinAddr: 0x1000020CC, symSize: 0x1A8 }
+  - { offsetInCU: 0x9D1, offset: 0x9D1, size: 0x8, addend: 0x0, symName: _agregarProductoProveedor, symObjAddr: 0x1A6C, symBinAddr: 0x100002274, symSize: 0x474 }
+  - { offsetInCU: 0xA5F, offset: 0xA5F, size: 0x8, addend: 0x0, symName: _crearProductoFalso, symObjAddr: 0x1EE0, symBinAddr: 0x1000026E8, symSize: 0xEC }
+  - { offsetInCU: 0xB1F, offset: 0xB1F, size: 0x8, addend: 0x0, symName: _agregarProductoAProveedor, symObjAddr: 0x1FCC, symBinAddr: 0x1000027D4, symSize: 0x128 }
+  - { offsetInCU: 0xB8F, offset: 0xB8F, size: 0x8, addend: 0x0, symName: _buscarProveedorPorID, symObjAddr: 0x20F4, symBinAddr: 0x1000028FC, symSize: 0x80 }
+  - { offsetInCU: 0xBD7, offset: 0xBD7, size: 0x8, addend: 0x0, symName: _buscarSucursalPorID, symObjAddr: 0x2174, symBinAddr: 0x10000297C, symSize: 0xA8 }
+  - { offsetInCU: 0xC2E, offset: 0xC2E, size: 0x8, addend: 0x0, symName: _transferirProductos, symObjAddr: 0x221C, symBinAddr: 0x100002A24, symSize: 0x10C }
+  - { offsetInCU: 0xC8F, offset: 0xC8F, size: 0x8, addend: 0x0, symName: _transferirProductosProveedorASucursal, symObjAddr: 0x2328, symBinAddr: 0x100002B30, symSize: 0x140 }
+  - { offsetInCU: 0xCF1, offset: 0xCF1, size: 0x8, addend: 0x0, symName: _menuPrincipal, symObjAddr: 0x2468, symBinAddr: 0x100002C70, symSize: 0x21C }
+  - { offsetInCU: 0xD26, offset: 0xD26, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x26B8, symBinAddr: 0x100002EC0, symSize: 0x38C }
 ...

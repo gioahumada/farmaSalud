@@ -145,6 +145,9 @@ void realizarCompra(struct FarmaSalud *farmacia) {
         }
     }
 
+    // Incrementar el contador de ventas de la sucursal
+    sucursal->datosSucursal->cantidadDeVentas++;
+
     printf("\n=======================================\n");
     printf("                 FarmaSalud\n");
     printf("           La farmacia del pueblo\n");
@@ -167,4 +170,5 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     printf("=======================================\n");
 
     pause();
+    
 }

@@ -8,7 +8,25 @@ To-do list:
 * (LISTA) Crear Funcion para concretar ventas y que se le agregue a cliente, que de una boleta (cliente registado o no)
 * Crear Funcion para quitar productos con vencimiento DE UNA SUCURSAL o DE TODAS
 
-(LISTA) Quizas hay que actualizar el Struct Sucursal para que tenga un contador de ventas efectuadas, ojop con eso, porque puede
+(CORECCION YO) 3. Gestión de productos controlados: Algunos medicamentos requieren receta médica y están sujetos a controles legales especiales. La 
+aplicación debe garantizar el cumplimiento de estos requisitos y mantener un registro detallado de la venta de productos controlados. 
+
+(PREGUNTAR PROFE) 4. Abastecimiento y relaciones con proveedores: FarmaSalud trabaja con múltiples proveedores y fabricantes de medicamentos. La 
+aplicación debe facilitar la generación de órdenes de compra, el seguimiento de envíos y la actualización del inventario cuando se reciben 
+nuevos productos.
+
+(CORRECCION YO ) 5. Alertas de desabastecimiento: La aplicación debe generar alertas cuando el stock de un producto esté por debajo de un umbral 
+predefinido, considerando el promedio de ventas y el tiempo de reabastecimiento.
+
+(CORRECCION YO) 5. Generación de alertas de caducidad próxima y desabastecimiento.
+
+(CORRECCION YO) 6. Control especial para productos que requieren receta médica
+
+7. Generación de órdenes de compra a proveedores basadas en niveles de stock y demanda. MANUALMANUALMANUAL
+
+(FALTA) 8. Análisis de datos y generación de informes de ventas, productos más vendidos, tendencias estacionales, etc.
+
+(LISTA) Quizas hay que actualizar  Struct Sucursal para que tenga un contador de ventas efectuadas, ojop con eso, porque puede
 que existan productos que se le vendan a un cliente no registrado por ejemplo, pero igual hay que llevar la cuenta de las ventas
 */
 
@@ -154,8 +172,8 @@ int main() {
     struct Producto* compras1[] = {&prod1, &prod2};
     struct Producto* compras2[] = {&prod3, &prod4};
     struct Producto* compras3[] = {&prod5, &prod6};
-    .
-    6
+    
+    
     struct Producto* compras4[] = {&prod7, &prod8};
     struct Producto* compras5[] = {&prod9, &prod10};
     struct Producto* compras6[] = {&prod1, &prod3};
@@ -221,16 +239,14 @@ int main() {
     // Agregar productos a proveedores
     agregarProductoAProveedor(proveedor1->datosProveedor, producto1);
     agregarProductoAProveedor(proveedor1->datosProveedor, producto2);
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto5);
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto10);
+    //agregarProductoAProveedor(proveedor1->datosProveedor, producto5);
+    //agregarProductoAProveedor(proveedor1->datosProveedor, producto10);
 
     agregarProductoAProveedor(proveedor2->datosProveedor, producto3);
     agregarProductoAProveedor(proveedor2->datosProveedor, producto4);
     agregarProductoAProveedor(proveedor2->datosProveedor, producto9);
-
     agregarProductoAProveedor(proveedor3->datosProveedor, producto6);
     agregarProductoAProveedor(proveedor3->datosProveedor, producto7);
-
     agregarProductoAProveedor(proveedor4->datosProveedor, producto8);
 
 
