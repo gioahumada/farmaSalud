@@ -1,15 +1,8 @@
 /* 
 To-do list:
 
-* (LISTA) Funcion 12 preguntar el stock de cada producto a agregar para ser registrado en sucursal 
-* (LISTA ARREGLADA) Crear Funcion para agregar un producto en especifico a una sucursal 
-* (LISTA, no se verifica si es que necesita espacio) Crear Funcion que actualice el espacio disponible de una sucursal (debe verificar stock y no cantidad de productos)
-* //ARREGLAR\\ Crear Funcion Estadisticas (sucursal con mas items, proveedor con mas items, etc etc)
-* (LISTA) Crear Funcion para concretar ventas y que se le agregue a cliente, que de una boleta (cliente registado o no)
-* //YA TERMINADA\\Crear Funcion para quitar productos con vencimiento DE UNA SUCURSAL o DE TODAS
-
-(CORRECCION YO) 3. Gestión de productos controlados: Algunos medicamentos requieren receta médica y están sujetos a controles legales especiales. La 
-aplicación debe garantizar el cumplimiento de estos requisitos y mantener un registro detallado de la venta de productos controlados. 
+* Crear Funcion Estadisticas (sucursal con mas items, proveedor con mas items, etc etc)
+* Crear Funcion para quitar productos con vencimiento DE UNA SUCURSAL o DE TODAS
 
 (PREGUNTAR PROFE) 4. Abastecimiento y relaciones con proveedores: FarmaSalud trabaja con múltiples proveedores y fabricantes de medicamentos. La 
 aplicación debe facilitar la generación de órdenes de compra, el seguimiento de envíos y la actualización del inventario cuando se reciben 
@@ -20,14 +13,13 @@ predefinido, considerando el promedio de ventas y el tiempo de reabastecimiento.
 
 (CORRECCION YO) 5. Generación de alertas de caducidad próxima y desabastecimiento.
 
-(CORRECCION YO) 6. Control especial para productos que requieren receta médica
-
 7. Generación de órdenes de compra a proveedores basadas en niveles de stock y demanda. MANUALMANUALMANUAL
 
 (FALTA) 8. Análisis de datos y generación de informes de ventas, productos más vendidos, tendencias estacionales, etc.
 
 (LISTA) Quizas hay que actualizar  Struct Sucursal para que tenga un contador de ventas efectuadas, ojop con eso, porque puede
 que existan productos que se le vendan a un cliente no registrado por ejemplo, pero igual hay que llevar la cuenta de las ventas
+
 */
 
 #include <stdio.h>
@@ -35,6 +27,7 @@ que existan productos que se le vendan a un cliente no registrado por ejemplo, p
 #include <string.h>
 
 #define MAX_PRODUCTOS_POR_CLIENTE 10000
+#define MAX_ENVIOS 30000
 
 /* ----------
     Estructura Principal
@@ -61,6 +54,7 @@ struct NodoClientes
 struct Clientes 
 {
     int id;
+    char *nombreCliente;
     char *rutCliente;
     int edadCliente; 
     int afiliado;
@@ -88,7 +82,10 @@ struct Sucursal
     int capacidadAlmacenamiento;
     struct NodoProducto *productos;
     struct NodoProducto *productosVendidos;
+    char *registrosEnvios[MAX_ENVIOS]; // Array de strings para los registros de envíos
+    int numRegistros; // Número de registros
 };
+
 
 // Lista doblemente enlazada con nodo fantasma
 struct NodoProducto 
@@ -157,9 +154,9 @@ int main() {
     farmacia->proveedores = NULL;
 
     // Inicialización de datos de prueba
-    struct Producto prod1 = {"1", "Ibuprofeno", "Recomendado para el dolor de garganta", "Anti-inflamatorio", 100, "Bioequivalente", "Lote A", "10/2020", 10, 0};
-    struct Producto prod2 = {"2", "Condones", "Ultra resistente y ultra delgado", "Anticonceptivo", 200, "Condoneria Nacional", "Lote B", "06/2019", 20, 1};
-    struct Producto prod3 = {"3", "Paracetamol", "Recomendado para el dolor de cabeza", "Analgesico", 300, "Lab. de Chile", "Lote C", "12/2022", 30, 0}; // Producto vencido
+    struct Producto prod1 = {"1", "Ibuprofeno", "Recomendado para el dolor de garganta", "Anti-inflamatorio", 100, "Bioequivalente", "Lote A", "10/2020", 8, 0};
+    struct Producto prod2 = {"2", "Condones", "Ultra resistente y ultra delgado", "Anticonceptivo", 200, "Condoneria Nacional", "Lote B", "06/2019", 10, 1};
+    struct Producto prod3 = {"3", "Paracetamol", "Recomendado para el dolor de cabeza", "Analgesico", 300, "Lab. de Chile", "Lote C", "12/2022", 9, 0}; // Producto vencido
     struct Producto prod4 = {"4", "Tapsin", "Perfecto Para los resfriados", "Analgésico", 400, "Tapsin Chile", "Lote D", "02/2017", 40, 1};
     struct Producto prod5 = {"5", "Amoxicilina", "Antibiótico de amplio espectro", "Antibiótico", 500, "Lab. de Chile", "Lote E", "11/2025", 50, 1};
     struct Producto prod6 = {"6", "Loratadina", "Para aliviar la alergia", "Antihistamínico", 600, "PharmaCorp", "Lote F", "10/2024", 60, 0};
@@ -252,21 +249,21 @@ int main() {
     agregarProductoAProveedor(proveedor4->datosProveedor, producto8);
 
 // Agregar productos de prueba a las sucursales
-agregarProductoASucursal(sucursal1->datosSucursal, &prod1);
-agregarProductoASucursal(sucursal1->datosSucursal, &prod2);
-agregarProductoASucursal(sucursal1->datosSucursal, &prod3);
+    agregarProductoASucursal(sucursal1->datosSucursal, &prod1);
+    agregarProductoASucursal(sucursal1->datosSucursal, &prod2);
+    agregarProductoASucursal(sucursal1->datosSucursal, &prod3);
 
-agregarProductoASucursal(sucursal2->datosSucursal, &prod4);
-agregarProductoASucursal(sucursal2->datosSucursal, &prod5);
-agregarProductoASucursal(sucursal2->datosSucursal, &prod6);
+    agregarProductoASucursal(sucursal2->datosSucursal, &prod4);
+    agregarProductoASucursal(sucursal2->datosSucursal, &prod5);
+    agregarProductoASucursal(sucursal2->datosSucursal, &prod6);
 
-agregarProductoASucursal(sucursal3->datosSucursal, &prod7);
-agregarProductoASucursal(sucursal3->datosSucursal, &prod8);
-agregarProductoASucursal(sucursal3->datosSucursal, &prod9);
+    agregarProductoASucursal(sucursal3->datosSucursal, &prod7);
+    agregarProductoASucursal(sucursal3->datosSucursal, &prod8);
+    agregarProductoASucursal(sucursal3->datosSucursal, &prod9);
 
-agregarProductoASucursal(sucursal4->datosSucursal, &prod10);
-agregarProductoASucursal(sucursal4->datosSucursal, &prod1);
-agregarProductoASucursal(sucursal4->datosSucursal, &prod2);
+    agregarProductoASucursal(sucursal4->datosSucursal, &prod10);
+    agregarProductoASucursal(sucursal4->datosSucursal, &prod1);
+    agregarProductoASucursal(sucursal4->datosSucursal, &prod2);
 
     while (1) {
         cls();

@@ -78,6 +78,10 @@ void leerSucursales(struct FarmaSalud *farmacia) {
         printf("Nombre: %s\n", nodoActual->datosSucursal->nombre);
         printf("Dirección: %s\n", nodoActual->datosSucursal->direccion);
         printf("Cantidad de Ventas: %d\n", nodoActual->datosSucursal->cantidadDeVentas);
+        printf("Número de Registros de Envíos: %d\n", nodoActual->datosSucursal->numRegistros);
+        for (int i = 0; i < nodoActual->datosSucursal->numRegistros; i++) {
+            printf("\tRegistro de Envío %d: %s\n", i + 1, nodoActual->datosSucursal->registrosEnvios[i]);
+        }
 
         if (nodoActual->datosSucursal->productos != NULL) {
             printf("Productos:\n");
@@ -87,12 +91,16 @@ void leerSucursales(struct FarmaSalud *farmacia) {
                 printf("\tCantidad en stock: %d", productoNodo->datosProducto->cantidad);
                 printf("\tFecha de caducidad: %s", productoNodo->datosProducto->fechaCaducidad);
                 printf("\tLote: %s\n", productoNodo->datosProducto->lote);
+
+                // Comprobar si el producto tiene bajo stock
+                if (productoNodo->datosProducto->cantidad < 10) {
+                    printf("\t*** ALERTA: Bajo stock! ***\n");
+                }
+
                 productoNodo = productoNodo->sig;
             }
             printf("\n");
-        } 
-        else 
-        {
+        } else {
             printf("Sucursal sin productos\n");
         }
         
@@ -102,6 +110,7 @@ void leerSucursales(struct FarmaSalud *farmacia) {
     } while (nodoActual != farmacia->sucursales);
     pause();
 }
+
 
 struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccion, int capacidadAlmacenamiento) {
     struct NodoSucursales* nuevoNodo = (struct NodoSucursales*)malloc(sizeof(struct NodoSucursales));
@@ -114,12 +123,17 @@ struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccio
     nuevaSucursal->capacidadAlmacenamiento = capacidadAlmacenamiento;
     nuevaSucursal->productos = NULL;
     nuevaSucursal->productosVendidos = NULL; // Inicializar a NULL
-    
+    nuevaSucursal->numRegistros = 0; // Inicializar a 0
+    for (int i = 0; i < MAX_ENVIOS; i++) {
+        nuevaSucursal->registrosEnvios[i] = NULL; // Inicializar a NULL
+    }
+
     nuevoNodo->datosSucursal = nuevaSucursal;
     nuevoNodo->ant = nuevoNodo->sig = nuevoNodo;
     
     return nuevoNodo;
 }
+
 
 void agregarSucursalConsole(struct FarmaSalud *farmacia, struct NodoSucursales *nuevaSucursal) {
     if (farmacia->sucursales == NULL) {
@@ -183,6 +197,10 @@ void crearSucursal(struct FarmaSalud *farmacia) {
     nuevaSucursal->capacidadAlmacenamiento = 0; // Cambiar si se necesita un valor específico
     nuevaSucursal->productos = NULL;
     nuevaSucursal->productosVendidos = NULL; // Inicializar a NULL
+    nuevaSucursal->numRegistros = 0; // Inicializar a 0
+    for (int i = 0; i < MAX_ENVIOS; i++) {
+        nuevaSucursal->registrosEnvios[i] = NULL; // Inicializar a NULL
+    }
 
     agregarSucursalConsole(farmacia, nuevoNodo);
 
@@ -190,6 +208,7 @@ void crearSucursal(struct FarmaSalud *farmacia) {
     printf("Sucursal agregada con éxito.\n");
     pause();
 }
+
 
 void eliminarSucursal(struct FarmaSalud *farmacia) {
     cls();
@@ -238,7 +257,9 @@ void eliminarSucursal(struct FarmaSalud *farmacia) {
     // Liberar la memoria asociada a la sucursal
     free(temp->datosSucursal->nombre);
     free(temp->datosSucursal->direccion);
-    // Aquí podrías añadir código para liberar productos asociados si es necesario
+    for (int i = 0; i < temp->datosSucursal->numRegistros; i++) {
+        free(temp->datosSucursal->registrosEnvios[i]);
+    }
     free(temp->datosSucursal);
     free(temp);
 
@@ -254,13 +275,19 @@ void mostrarSucursales(struct FarmaSalud *farmacia) {
         return;
     }
 
-    struct NodoSucursales *inicio = sucursalActual;
-    printf("Sucursales disponibles:\n");
     do {
-        printf("ID: %d, Nombre: %s\n", sucursalActual->datosSucursal->id, sucursalActual->datosSucursal->nombre);
+        printf("ID: %d\n", sucursalActual->datosSucursal->id);
+        printf("Nombre: %s\n", sucursalActual->datosSucursal->nombre);
+        printf("Dirección: %s\n", sucursalActual->datosSucursal->direccion);
+        printf("Cantidad de Ventas: %d\n", sucursalActual->datosSucursal->cantidadDeVentas);
+        printf("Capacidad de Almacenamiento: %d / 10000\n", sucursalActual->datosSucursal->capacidadAlmacenamiento);
+        printf("Número de Registros de Envíos: %d\n", sucursalActual->datosSucursal->numRegistros);
+        for (int i = 0; i < sucursalActual->datosSucursal->numRegistros; i++) {
+            printf("\tRegistro de Envío %d: %s\n", i + 1, sucursalActual->datosSucursal->registrosEnvios[i]);
+        }
+        printf("--------------------------------------------------\n");
         sucursalActual = sucursalActual->sig;
-    } while (sucursalActual != inicio);
-    printf("\n");
+    } while (sucursalActual != farmacia->sucursales);
 }
 
 // CODIGO NO AGREGADO AL GITHUB

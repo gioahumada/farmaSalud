@@ -1,3 +1,32 @@
+/* - - - - MODIFICAR, USA COSAS RARAS - - - - -*/
+
+void obtenerFecha(char *fecha) {
+    int dia, mes;
+    printf("Ingrese el mes (MM): ");
+    scanf("%d", &mes);
+    printf("Ingrese el dia (DD): ");
+    scanf("%d", &dia);
+    sprintf(fecha, "%02d/%02d", mes, dia);
+}
+
+void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre) {
+    if (sucursal->numRegistros >= MAX_ENVIOS) {
+        printf("Error: No se puede agregar más registros de envíos, capacidad máxima alcanzada.\n");
+        return;
+    }
+    
+
+    char fecha[6];
+    obtenerFecha(fecha);
+
+    char registro[200];
+    snprintf(registro, sizeof(registro), "Productos enviados de Proveedor %s a Sucursal %s el día %s", proveedorNombre, sucursal->nombre, fecha);
+
+    sucursal->registrosEnvios[sucursal->numRegistros] = strdup(registro);
+    sucursal->numRegistros++;
+}
+
+/*  - - - - - - -*/
 void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     int idProveedor, idSucursal;
     char fechaCaducidad[11];
@@ -90,6 +119,8 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
         // Mover al siguiente producto del proveedor
         nodoProducto = nodoProducto->der;
     }
+
+     agregarRegistroEnvio(sucursalActual->datosSucursal, proveedorActual->datosProveedor->nombre);
 
     cls();
     printf("Productos transferidos del proveedor con ID %d a la sucursal con ID %d.\n", idProveedor, idSucursal);
