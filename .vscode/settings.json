@@ -11,6 +11,7 @@
         "funcionesdeproveedores.h": "c",
         "funcionesdesucursales.h": "c",
         "menuprincipal.h": "c",
-        "realizarcompra.h": "c"
+        "realizarcompra.h": "c",
+        "analisisdedatos.h": "c"
     }
 }

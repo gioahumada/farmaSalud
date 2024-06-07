@@ -44,12 +44,9 @@ void leerClientes(struct FarmaSalud *farmacia) {
         printf("ID: %d\n", nodoActual->datosClientes->id);
         printf("RUT: %s\n", nodoActual->datosClientes->rutCliente);
         printf("Edad: %d\n", nodoActual->datosClientes->edadCliente);
-        if((nodoActual->datosClientes->afiliado)==1)
-        {
-            printf("Afiliado: Si\n");
-        }
-        else
-        {
+        if((nodoActual->datosClientes->afiliado) == 1) {
+            printf("Afiliado: Sí\n");
+        } else {
             printf("Afiliado: No\n");
         }
         
@@ -59,7 +56,7 @@ void leerClientes(struct FarmaSalud *farmacia) {
             for (int i = 0; i < nodoActual->datosClientes->numCompras; i++) {
                 struct Producto *producto = nodoActual->datosClientes->comprasCliente[i];
                 if (producto != NULL) {
-                    printf("\t%s - %s\n", producto->codigo, producto->nombreProducto);
+                    printf("\t%s - %s - Fecha de compra: %s\n", producto->codigo, producto->nombreProducto, producto->fechaDeCompra);
                 }
             }
             printf("\n");
@@ -71,6 +68,7 @@ void leerClientes(struct FarmaSalud *farmacia) {
     }
     pause();
 }
+
 
 void agregarCliente(struct FarmaSalud *farmacia) 
 {
@@ -168,6 +166,7 @@ void eliminarCliente(struct FarmaSalud *farmacia) {
         free(temp->datosClientes->comprasCliente[i]->idProveedor);
         free(temp->datosClientes->comprasCliente[i]->lote);
         free(temp->datosClientes->comprasCliente[i]->fechaCaducidad);
+        free(temp->datosClientes->comprasCliente[i]->fechaDeCompra); // Liberar fechaDeCompra
         free(temp->datosClientes->comprasCliente[i]);
     }
     free(temp->datosClientes);
@@ -177,6 +176,7 @@ void eliminarCliente(struct FarmaSalud *farmacia) {
     printf("Cliente eliminado con éxito.\n");
     pause();
 }
+
 
 void agregarProductoACliente(struct FarmaSalud *farmacia) {
     cls();

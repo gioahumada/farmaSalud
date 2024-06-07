@@ -36,6 +36,7 @@ void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
                 free(productoActual->datosProducto->idProveedor);
                 free(productoActual->datosProducto->lote);
                 free(productoActual->datosProducto->fechaCaducidad);
+                free(productoActual->datosProducto->fechaDeCompra);  // Liberar fecha de compra
                 free(productoActual->datosProducto);
                 free(productoActual);
             }
@@ -46,6 +47,7 @@ void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
 
     printf("Inventarios actualizados. Productos con stock 0 eliminados.\n");
 }
+
 
 
 int espacioRestante(struct Sucursal *sucursal) {
@@ -175,6 +177,7 @@ void agregarProductoASucursal(struct Sucursal* sucursal, struct Producto* produc
         sucursal->productos = nuevoNodo;
     }
 }
+
 
 void crearSucursal(struct FarmaSalud *farmacia) {
     cls();

@@ -1,4 +1,14 @@
 // 5. Funciones de proveedores
+void mostrarProveedores(struct FarmaSalud *farmacia) {
+    struct NodoProveedor *proveedorActual = farmacia->proveedores;
+    printf("Proveedores disponibles:\n");
+    while (proveedorActual != NULL) {
+        printf("ID: %d, Nombre: %s\n", proveedorActual->datosProveedor->id, proveedorActual->datosProveedor->nombre);
+        proveedorActual = proveedorActual->sig;
+    }
+    printf("\n");
+}
+
 struct NodoProveedor* crearProveedorConsole(int id, char* nombre, char* direccion, char* telefono) {
     struct NodoProveedor* nuevoNodo = (struct NodoProveedor*)malloc(sizeof(struct NodoProveedor));
     struct Proveedor* nuevoProveedor = (struct Proveedor*)malloc(sizeof(struct Proveedor));
@@ -170,73 +180,62 @@ void eliminarProveedor(struct FarmaSalud *farmacia) {
 void agregarProductoProveedor(struct FarmaSalud *farmacia) {
     cls();
 
-    // Crear y llenar los datos del nuevo producto
     struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
+
     printf("Ingrese código del producto: ");
-    scanf("%s", nuevoProducto->codigo);
-    getchar(); // Para consumir el '\n' que queda en el buffer después de scanf
+    char codigoTemp[20];
+    scanf("%19s", codigoTemp);
+    strncpy(nuevoProducto->codigo, codigoTemp, sizeof(nuevoProducto->codigo) - 1);
+    nuevoProducto->codigo[sizeof(nuevoProducto->codigo) - 1] = '\0';  // Asegurar null-termination
+    getchar();
+
     nuevoProducto->nombreProducto = (char *)malloc(50 * sizeof(char));
-    cls();
     printf("Ingrese nombre del producto: ");
     fgets(nuevoProducto->nombreProducto, 50, stdin);
     quitarNuevaLinea(nuevoProducto->nombreProducto);
+
     nuevoProducto->descripcion = (char *)malloc(100 * sizeof(char));
-    cls();
     printf("Ingrese descripción del producto: ");
     fgets(nuevoProducto->descripcion, 100, stdin);
     quitarNuevaLinea(nuevoProducto->descripcion);
+
     nuevoProducto->categoria = (char *)malloc(50 * sizeof(char));
-    cls();
     printf("Ingrese categoría del producto: ");
     fgets(nuevoProducto->categoria, 50, stdin);
     quitarNuevaLinea(nuevoProducto->categoria);
-    cls();
+
     printf("Ingrese precio del producto: ");
     scanf("%d", &nuevoProducto->precio);
-    getchar(); // Para consumir el '\n' que queda en el buffer después de scanf
+    getchar();
 
-    // Mostrar todos los proveedores disponibles
-    struct NodoProveedor *proveedorActual = farmacia->proveedores;
-    cls();
-    printf("Proveedores disponibles:\n");
-    while (proveedorActual != NULL) {
-        printf("ID: %d, Nombre: %s\n", proveedorActual->datosProveedor->id, proveedorActual->datosProveedor->nombre);
-        proveedorActual = proveedorActual->sig;
-    }
+    mostrarProveedores(farmacia);
 
-    // Solicitar el ID del proveedor durante la creación del producto
     nuevoProducto->idProveedor = (char *)malloc(20 * sizeof(char));
     printf("\nIngrese ID del proveedor: ");
-    scanf("%s", nuevoProducto->idProveedor);
+    scanf("%19s", nuevoProducto->idProveedor);
 
-    cls();
-    // Asignar "N/A" a lote y fechaCaducidad, no preguntar al usuario
+    nuevoProducto->fechaDeCompra = strdup("N/A");
     nuevoProducto->lote = strdup("N/A");
     nuevoProducto->fechaCaducidad = strdup("N/A");
-
-    // No preguntar por cantidad, asignar -1 para indicar que es un producto del proveedor
     nuevoProducto->cantidad = -1;
 
-    cls();
     printf("¿Requiere receta? (1-Sí, 0-No): ");
     scanf("%d", &nuevoProducto->requiereReceta);
 
-    // Convertir idProveedor de char* a int
     int idProveedorInt = atoi(nuevoProducto->idProveedor);
 
-    // Buscar el proveedor por ID
-    proveedorActual = farmacia->proveedores;
+    struct NodoProveedor *proveedorActual = farmacia->proveedores;
     while (proveedorActual != NULL && proveedorActual->datosProveedor->id != idProveedorInt) {
         proveedorActual = proveedorActual->sig;
     }
 
     if (proveedorActual == NULL) {
         printf("Proveedor no encontrado.\n");
-        // Liberar memoria asignada al nuevo producto si el proveedor no se encuentra
         free(nuevoProducto->nombreProducto);
         free(nuevoProducto->descripcion);
         free(nuevoProducto->categoria);
         free(nuevoProducto->idProveedor);
+        free(nuevoProducto->fechaDeCompra);  // Liberar memoria de fecha de compra
         free(nuevoProducto->lote);
         free(nuevoProducto->fechaCaducidad);
         free(nuevoProducto);
@@ -244,12 +243,10 @@ void agregarProductoProveedor(struct FarmaSalud *farmacia) {
         return;
     }
 
-    // Crear un nuevo nodo para el producto
     struct NodoArbolProducto *nuevoNodoProducto = (struct NodoArbolProducto *)malloc(sizeof(struct NodoArbolProducto));
     nuevoNodoProducto->datosProducto = nuevoProducto;
     nuevoNodoProducto->izq = nuevoNodoProducto->der = NULL;
 
-    // Insertar el nuevo nodo en el árbol de productos del proveedor
     if (proveedorActual->datosProveedor->productos == NULL) {
         proveedorActual->datosProveedor->productos = nuevoNodoProducto;
     } else {
@@ -277,7 +274,9 @@ void agregarProductoProveedor(struct FarmaSalud *farmacia) {
     pause();
 }
 
-struct Producto* crearProductoFalso(char* codigo, char* nombre, char* descripcion, char* categoria, int precio, char* idProveedor, char* lote, char* fechaCaducidad, int cantidad, int requiereReceta) {
+
+
+struct Producto* crearProductoFalso(char* codigo, char* nombre, char* descripcion, char* categoria, int precio, char* idProveedor, char* lote, char* fechaCaducidad, int cantidad, int requiereReceta, char *fechaDeCompra) {
     struct Producto* nuevoProducto = (struct Producto*)malloc(sizeof(struct Producto));
 
     strcpy(nuevoProducto->codigo, codigo);
@@ -290,6 +289,7 @@ struct Producto* crearProductoFalso(char* codigo, char* nombre, char* descripcio
     nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);
     nuevoProducto->cantidad = cantidad;
     nuevoProducto->requiereReceta = requiereReceta;
+    nuevoProducto->fechaDeCompra = strdup(fechaDeCompra); 
 
     return nuevoProducto;
 }
@@ -331,12 +331,3 @@ struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idPr
     return proveedorActual;
 }
 
-void mostrarProveedores(struct FarmaSalud *farmacia) {
-    struct NodoProveedor *proveedorActual = farmacia->proveedores;
-    printf("Proveedores disponibles:\n");
-    while (proveedorActual != NULL) {
-        printf("ID: %d, Nombre: %s\n", proveedorActual->datosProveedor->id, proveedorActual->datosProveedor->nombre);
-        proveedorActual = proveedorActual->sig;
-    }
-    printf("\n");
-}

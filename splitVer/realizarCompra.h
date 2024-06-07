@@ -40,6 +40,7 @@ struct Producto* crearProductoVendido(struct Producto *producto) {
     nuevoProducto->fechaCaducidad = strdup("N/A");
     nuevoProducto->cantidad = 1;
     nuevoProducto->requiereReceta = producto->requiereReceta;
+    nuevoProducto->fechaDeCompra = strdup("N/A"); 
     return nuevoProducto;
 }
 
@@ -180,6 +181,17 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 
     // Incrementar el contador de ventas de la sucursal
     sucursal->datosSucursal->cantidadDeVentas++;
+
+    // Solicitar la fecha de compra
+    char fechaCompra[8];
+    printf("Ingrese la fecha de la compra (MM/AAAA): ");
+    scanf("%s", fechaCompra);
+
+    // Actualizar la fecha de compra en los productos
+    for (i = 0; i < cantidadCompras; i++) {
+        free(productosComprados[i]->fechaDeCompra); // Liberar memoria previa si está asignada
+        productosComprados[i]->fechaDeCompra = strdup(fechaCompra);
+    }
 
     printf("\n=======================================\n");
     printf("                 FarmaSalud\n");
