@@ -1,3 +1,101 @@
+void printClientesRegistrados() {
+    printf("Clientes registrados:\n");
+    printf("ID\tNombre\t\tRUT\n");
+    printf("-----------------------------------\n");
+}
+
+void printClienteInfo(int id, char* rutCliente) {
+    printf("%d\t%s\t\n", id, rutCliente);
+}
+
+void printNoHayClientesRegistrados() {
+    printf("No hay clientes registrados.\n");
+}
+
+void printEntradaInvalida() {
+    printf("Entrada inválida.\n");
+}
+
+void printClienteRegistrado() {
+    printf("El cliente está registrado (1-Sí, 0-No): ");
+}
+
+void printIngreseIDCliente() {
+    printf("Ingrese el ID del cliente: ");
+}
+
+void printClienteNoEncontrado() {
+    printf("Cliente no encontrado.\n");
+}
+
+void printIngreseCantidadProductos() {
+    printf("Ingrese la cantidad de productos a comprar: ");
+}
+
+void printCantidadProductosInvalida() {
+    printf("Cantidad de productos inválida.\n");
+}
+
+void printIngreseCodigoProducto(int index) {
+    printf("Ingrese el código del producto %d: ", index + 1);
+}
+
+void printIngreseCantidadProducto(int index) {
+    printf("Ingrese la cantidad del producto %d: ", index + 1);
+}
+
+void printProductoNoEncontrado() {
+    printf("Producto no encontrado en la sucursal.\n");
+}
+
+void printStockInsuficiente(char* nombreProducto) {
+    printf("No hay suficiente stock del producto %s.\n", nombreProducto);
+}
+
+void printProductoRequiereReceta(char* nombreProducto) {
+    printf("El producto %s requiere receta. El cliente tiene la receta (1-Sí, 0-No): ", nombreProducto);
+}
+
+void printCompraSinReceta(char* nombreProducto) {
+    printf("No se puede completar la compra del producto %s sin receta.\n", nombreProducto);
+}
+
+void printBoletaFisicaHeader() {
+    printf("\n=======================================\n");
+    printf("                 FarmaSalud\n");
+    printf("           La farmacia del pueblo\n");
+    printf("               Boleta Física\n");
+    printf("=======================================\n");
+}
+
+void printSucursalNombre(char* nombre) {
+    printf("Sucursal: %s\n", nombre);
+}
+
+void printClienteNombre(char* rutCliente) {
+    printf("Cliente: %s\n", rutCliente);
+}
+
+void printCompraAnonima() {
+    printf("Cliente: Compra anónima\n");
+}
+
+void printProductosHeader() {
+    printf("---------------------------------------\n");
+    printf("PRODUCTOS                CANTIDAD   PRECIO\n");
+    printf("---------------------------------------\n");
+}
+
+void printProductoInfo(char* nombreProducto, int cantidad, int precio) {
+    printf("%-20s %5d    $%d\n", nombreProducto, cantidad, precio);
+}
+
+void printTotal(int total) {
+    printf("---------------------------------------\n");
+    printf("Total:                           $%d\n", total);
+    printf("=======================================\n");
+}
+
 struct NodoClientes* buscarClientePorID(struct FarmaSalud *farmacia, int idCliente) {
     struct NodoClientes *clienteActual = farmacia->clientes;
     while (clienteActual != NULL && clienteActual->datosClientes->id != idCliente) {
@@ -58,16 +156,14 @@ void mostrarClientes(struct FarmaSalud *farmacia) {
     struct NodoClientes *actual = farmacia->clientes;
     
     if (actual == NULL) {
-        printf("No hay clientes registrados.\n");
+        printNoHayClientesRegistrados();
         return;
     }
 
-    printf("Clientes registrados:\n");
-    printf("ID\tNombre\t\tRUT\n");
-    printf("-----------------------------------\n");
+    printClientesRegistrados();
     
     while (actual != NULL) {
-        printf("%d\t%s\t\n", actual->datosClientes->id, actual->datosClientes->rutCliente);
+        printClienteInfo(actual->datosClientes->id, actual->datosClientes->rutCliente);
         actual = actual->sig;
     }
 }
@@ -83,23 +179,23 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     cls();
     mostrarSucursales(farmacia);
 
-    printf("Ingrese ID de la sucursal: ");
+    printIngreseIDSucursal();
     if (scanf("%d", &idSucursal) != 1) {
-        printf("Entrada inválida.\n");
+        printEntradaInvalida();
         pause();
         return;
     }
     cls();
     sucursal = buscarSucursalPorID(farmacia, idSucursal);
     if (sucursal == NULL) {
-        printf("Sucursal no encontrada.\n");
+        printSucursalNoEncontrada();
         pause();
         return;
     }
 
-    printf("El cliente está registrado (1-Sí, 0-No): ");
+    printClienteRegistrado();
     if (scanf("%d", &esClienteRegistrado) != 1) {
-        printf("Entrada inválida.\n");
+        printEntradaInvalida();
         pause();
         return;
     }
@@ -107,25 +203,25 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     if (esClienteRegistrado) {
         cls();
         mostrarClientes(farmacia);
-        printf("Ingrese el ID del cliente: ");
+        printIngreseIDCliente();
         if (scanf("%d", &idCliente) != 1) {
-            printf("Entrada inválida.\n");
+            printEntradaInvalida();
             pause();
             return;
         }
         cls();
         cliente = buscarClientePorID(farmacia, idCliente);
         if (cliente == NULL) {
-            printf("Cliente no encontrado.\n");
+            printClienteNoEncontrado();
             pause();
             return;
         }
     }
 
     cls();
-    printf("Ingrese la cantidad de productos a comprar: ");
+    printIngreseCantidadProductos();
     if (scanf("%d", &cantidadCompras) != 1 || cantidadCompras <= 0) {
-        printf("Cantidad de productos inválida.\n");
+        printCantidadProductosInvalida();
         pause();
         return;
     }
@@ -136,16 +232,16 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     int productosRequierenReceta[cantidadCompras];
 
     for (i = 0; i < cantidadCompras; i++) {
-        printf("Ingrese el código del producto %d: ", i + 1);
+        printIngreseCodigoProducto(i);
         if (scanf("%s", codigoProducto) != 1) {
-            printf("Entrada inválida.\n");
+            printEntradaInvalida();
             pause();
             return;
         }
 
-        printf("Ingrese la cantidad del producto %d: ", i + 1);
+        printIngreseCantidadProducto(i);
         if (scanf("%d", &cantidadProducto) != 1 || cantidadProducto <= 0) {
-            printf("Cantidad de producto inválida.\n");
+            printCantidadProductosInvalida();
             pause();
             return;
         }
@@ -153,27 +249,27 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 
         struct Producto *producto = buscarProductoEnSucursal(sucursal->datosSucursal, codigoProducto);
         if (producto == NULL) {
-            printf("Producto no encontrado en la sucursal.\n");
+            printProductoNoEncontrado();
             pause();
             return;
         }
 
         if (producto->cantidad < cantidadProducto) {
-            printf("No hay suficiente stock del producto %s.\n", producto->nombreProducto);
+            printStockInsuficiente(producto->nombreProducto);
             pause();
             return;
         }
 
         if (producto->requiereReceta) {
-            printf("El producto %s requiere receta. El cliente tiene la receta (1-Sí, 0-No): ", producto->nombreProducto);
+            printProductoRequiereReceta(producto->nombreProducto);
             if (scanf("%d", &tieneReceta) != 1 || (tieneReceta != 0 && tieneReceta != 1)) {
-                printf("Entrada inválida.\n");
+                printEntradaInvalida();
                 pause();
                 return;
             }
 
             if (!tieneReceta) {
-                printf("No se puede completar la compra del producto %s sin receta.\n", producto->nombreProducto);
+                printCompraSinReceta(producto->nombreProducto);
                 productosRequierenReceta[i] = 0;
             } else {
                 productosRequierenReceta[i] = 1;
@@ -209,34 +305,26 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 
     sucursal->datosSucursal->cantidadDeVentas++;
 
-    printf("\n=======================================\n");
-    printf("                 FarmaSalud\n");
-    printf("           La farmacia del pueblo\n");
-    printf("               Boleta Física\n");
-    printf("=======================================\n");
-    printf("Sucursal: %s\n", sucursal->datosSucursal->nombre);
+    printBoletaFisicaHeader();
+    printSucursalNombre(sucursal->datosSucursal->nombre);
     if (esClienteRegistrado) {
-        printf("Cliente: %s\n", cliente->datosClientes->rutCliente);
+        printClienteNombre(cliente->datosClientes->rutCliente);
     } else {
-        printf("Cliente: Compra anónima\n");
+        printCompraAnonima();
     }
-    printf("---------------------------------------\n");
-    printf("PRODUCTOS                CANTIDAD   PRECIO\n");
-    printf("---------------------------------------\n");
+    printProductosHeader();
     for (i = 0; i < cantidadCompras; i++) {
         if (productosRequierenReceta[i]) {
-            printf("%-20s %5d    $%d\n", productosComprados[i]->nombreProducto, cantidades[i], productosComprados[i]->precio * cantidades[i]);
+            printProductoInfo(productosComprados[i]->nombreProducto, cantidades[i], productosComprados[i]->precio * cantidades[i]);
         }
     }
-    printf("---------------------------------------\n");
     int total = 0;
     for (i = 0; i < cantidadCompras; i++) {
         if (productosRequierenReceta[i]) {
             total += productosComprados[i]->precio * cantidades[i];
         }
     }
-    printf("Total:                           $%d\n", total);
-    printf("=======================================\n");
+    printTotal(total);
 
     pause();
 }
