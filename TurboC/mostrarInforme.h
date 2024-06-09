@@ -1,6 +1,8 @@
 int contarVentasProducto(struct NodoProducto *productosVendidos, char *codigoProducto) {
     int totalVentas = 0;
-    struct NodoProducto *productoActual = productosVendidos->sig;
+    struct NodoProducto *productoActual;
+
+    productoActual = productosVendidos->sig;
 
     while (productoActual != productosVendidos) {
         if (strcmp(productoActual->datosProducto->codigo, codigoProducto) == 0) {
@@ -12,17 +14,23 @@ int contarVentasProducto(struct NodoProducto *productosVendidos, char *codigoPro
 }
 
 struct Producto *productoMasVendido(struct FarmaSalud *farma) {
-    if (!farma || !farma->sucursales) return NULL;
     struct Producto *productoMasVendido = NULL;
+    struct NodoSucursales *sucursalActual;
+    struct NodoProducto *productoActual;
+    struct Producto *producto;
     int maxVentas = 0;
-    struct NodoSucursales *sucursalActual = farma->sucursales->sig;
+    int ventasProducto;
+
+    if (!farma || !farma->sucursales) return NULL;
+
+    sucursalActual = farma->sucursales->sig;
     while (sucursalActual != farma->sucursales) {
         if (sucursalActual && sucursalActual->datosSucursal && sucursalActual->datosSucursal->productosVendidos) {
-            struct NodoProducto *productoActual = sucursalActual->datosSucursal->productosVendidos->sig;
+            productoActual = sucursalActual->datosSucursal->productosVendidos->sig;
             while (productoActual != sucursalActual->datosSucursal->productosVendidos) {
                 if (productoActual && productoActual->datosProducto) {
-                    struct Producto *producto = productoActual->datosProducto;
-                    int ventasProducto = contarVentasProducto(sucursalActual->datosSucursal->productosVendidos,producto->codigo);
+                    producto = productoActual->datosProducto;
+                    ventasProducto = contarVentasProducto(sucursalActual->datosSucursal->productosVendidos,producto->codigo);
                     if (ventasProducto > maxVentas) {
                         maxVentas = ventasProducto;
                         productoMasVendido = producto;
@@ -37,10 +45,14 @@ struct Producto *productoMasVendido(struct FarmaSalud *farma) {
 }
 
 struct Sucursal* sucursalConMasVentas(struct FarmaSalud *farmaSalud) {
-    if (!farmaSalud || !farmaSalud->sucursales) return NULL;
-    struct NodoSucursales *nodoActual = farmaSalud->sucursales->sig; 
+    struct NodoSucursales *nodoActual;
     struct Sucursal *sucursalConMasVentas = NULL;
     int maxVentas = -1;
+
+    if (!farmaSalud || !farmaSalud->sucursales) return NULL;
+
+    nodoActual = farmaSalud->sucursales->sig; 
+
     while (nodoActual != farmaSalud->sucursales) { 
         if (nodoActual->datosSucursal->cantidadDeVentas > maxVentas) {
             maxVentas = nodoActual->datosSucursal->cantidadDeVentas;
@@ -53,10 +65,14 @@ struct Sucursal* sucursalConMasVentas(struct FarmaSalud *farmaSalud) {
 }
 
 struct Clientes* clienteConMasCompras(struct FarmaSalud *farmaSalud) {
-    if (!farmaSalud || !farmaSalud->clientes) return NULL;
-    struct NodoClientes *nodoActual = farmaSalud->clientes->sig;
+    struct NodoClientes *nodoActual;
     struct Clientes *clienteConMasCompras = NULL;
     int maxCompras = -1;
+
+    if (!farmaSalud || !farmaSalud->clientes) return NULL;
+
+    nodoActual = farmaSalud->clientes->sig;
+
     while (nodoActual && nodoActual != farmaSalud->clientes) {
         if (nodoActual->datosClientes && nodoActual->datosClientes->numCompras > maxCompras) {
             maxCompras = nodoActual->datosClientes->numCompras;
@@ -70,13 +86,16 @@ struct Clientes* clienteConMasCompras(struct FarmaSalud *farmaSalud) {
 
 
 int contarProductos(struct NodoArbolProducto *raiz) {
-    if (!raiz) return 0;
     int contador = 0;
     struct NodoArbolProducto *pila[1000]; 
     int top = 0; 
+    struct NodoArbolProducto *nodoActual;
+
+    if (!raiz) return 0;
+
     pila[top++] = raiz;
     while (top > 0) {
-        struct NodoArbolProducto *nodoActual = pila[--top];
+        nodoActual = pila[--top];
         contador++;
         if (nodoActual->izq) pila[top++] = nodoActual->izq;
         if (nodoActual->der) pila[top++] = nodoActual->der;
@@ -85,14 +104,17 @@ int contarProductos(struct NodoArbolProducto *raiz) {
 }
 
 struct Proveedor* proveedorConMasProductos(struct FarmaSalud *farmaSalud) {
+    struct NodoProveedor *nodoActual;
+    struct Proveedor *proveedorConMasProductos = NULL;
+    int maxProductos = -2;
+    int numProductos;
+
     if (!farmaSalud || !farmaSalud->proveedores) return NULL;
 
-    struct NodoProveedor *nodoActual = farmaSalud->proveedores->sig;
-    struct Proveedor *proveedorConMasProductos = NULL;
-    int maxProductos = -1;
+    nodoActual = farmaSalud->proveedores->sig;
     while (nodoActual && nodoActual != farmaSalud->proveedores) {
         if (nodoActual->datosProveedor && nodoActual->datosProveedor->productos) {
-            int numProductos = contarProductos(nodoActual->datosProveedor->productos);
+            numProductos = contarProductos(nodoActual->datosProveedor->productos);
             if (numProductos > maxProductos) {
                 maxProductos = numProductos;
                 proveedorConMasProductos = nodoActual->datosProveedor;
@@ -104,6 +126,11 @@ struct Proveedor* proveedorConMasProductos(struct FarmaSalud *farmaSalud) {
 }
 
 void mostrarInforme(struct FarmaSalud *farmacia) {
+    struct Sucursal *sucursalMasVentas;
+    struct Producto *productoMasVendidoResult;
+    struct Proveedor *proveedorMasProductos;
+    struct Clientes *clienteMasCompras;
+
     if (!farmacia) {
         printf("La farmacia no está inicializada.\n");
         pause();
@@ -111,10 +138,10 @@ void mostrarInforme(struct FarmaSalud *farmacia) {
     }
     cls();
 
-    struct Sucursal *sucursalMasVentas = sucursalConMasVentas(farmacia);
-    struct Producto *productoMasVendidoResult = productoMasVendido(farmacia);
-    struct Proveedor *proveedorMasProductos = proveedorConMasProductos(farmacia);
-    struct Clientes *clienteMasCompras = clienteConMasCompras(farmacia);
+    sucursalMasVentas = sucursalConMasVentas(farmacia);
+    productoMasVendidoResult = productoMasVendido(farmacia);
+    proveedorMasProductos = proveedorConMasProductos(farmacia);
+    clienteMasCompras = clienteConMasCompras(farmacia);
 
     printf("     Informe De FarmaSalud\n");
     printf("===============================\n");

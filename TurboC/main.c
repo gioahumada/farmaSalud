@@ -1,3 +1,29 @@
+/*
+ * Pontificia Universidad Católica de Valparaiso
+ *
+ * https://github.com/gioahumada/farmaSalud
+ *
+ * Este archivo es parte del proyecto de la asignatura INF2223-1 - Estructuras de Datos
+ * y a sido diseñado por estudiantes de la PUCV para el desarrollo de un sistema de
+ * gestión de inventario y ventas para una farmacia.
+ * 
+ * Autores:
+ * - Giovanni Ahumada
+ * - Bastian Mejias
+ * - Simon Vera
+ * - Benjamín Pizarro
+ * - Patricio Hernandez
+ * 
+ * Fecha de creación: 7 de junio de 2021
+ * 
+ * EL PROGRAMA A SIDO ADAPTADO PARA FUNCIONAR EN TURBO C
+ * COMPILADOR UTILIZADO: Turbo C 2.01 EJECUTADO EN WINDOWS XP
+ * PROYECTO INICIALMENTE DESARROLLADO EN MACOS SONOMA UTILIZANDO EL COMPILADOR GCC
+ * Y CLANG, ADEMAS DE VISUAL STUDIO CODE.
+ * 
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,24 +52,24 @@
 #include "eliminarCliente.h"
 #include "agregarProductoACliente.h"
 // Simon v v v v v v
-#include "leerSucursales.h"
-#include "crearSucursal.h"
-#include "eliminarSucursal.h"
+#include "leerSucursales.h"// MVC Y TURBO C COMPATIBLE
+#include "crearSucursal.h" // MVC Y TURBO C COMPATIBLE
+#include "eliminarSucursal.h" // MVC Y TURBO C COMPATIBLE
 #include "crearProveedor.h"
 // Bastian v v v v v v
-#include "leerProveedores.h"
-#include "eliminarProveedor.h"
-#include "agregarProductoProveedor.h"
+#include "leerProveedores.h" // YA COMPATIBLE 
+#include "eliminarProveedor.h" // YA COMPATIBLE MVC TURBO
+#include "agregarProductoProveedor.h"// YA COMPATIBLE MVC TURBO (REVISION)
 #include "transferirProductosProveedorASucursal.h"
-// Patricio v v v v v v
 #include "transferirProductoProveedorASucursal.h"
+// Patricio v v v v v v
 #include "menuEliminarProductosVencidos.h"
 #include "realizarCompra.h"
 // Giovanni v v v v v v
-#include "actualizarInventariosSucursales.h"
-#include "mostrarInforme.h"
+#include "actualizarInventariosSucursales.h" // MVC Y TURBO C COMPATIBLE
+#include "mostrarInforme.h" // YA COMPATIBLE
 
-#include "menuPrincipal.h"
+#include "menuPrincipal.h" // YA COMPATIBLE
 
 
 int main() {
@@ -137,8 +163,8 @@ int main() {
     // Agregar productos a proveedores
     agregarProductoAProveedor(proveedor1->datosProveedor, producto1);
     agregarProductoAProveedor(proveedor1->datosProveedor, producto2);
-    //agregarProductoAProveedor(proveedor1->datosProveedor, producto5);
-    //agregarProductoAProveedor(proveedor1->datosProveedor, producto10);
+    agregarProductoAProveedor(proveedor1->datosProveedor, producto5);
+    agregarProductoAProveedor(proveedor1->datosProveedor, producto10);
 
     agregarProductoAProveedor(proveedor2->datosProveedor, producto3);
     agregarProductoAProveedor(proveedor2->datosProveedor, producto4);
@@ -172,3 +198,4 @@ int main() {
     }
     return 0;
 }
+

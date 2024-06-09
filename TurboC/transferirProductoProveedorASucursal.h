@@ -7,7 +7,8 @@ void obtenerDetallesProducto(char* fechaCaducidad, char* lote, int* cantidad, ch
     scanf("%d", cantidad);
 }
 
-void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
+void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) 
+{
     int idProveedor, idSucursal;
     char fechaCaducidad[11];
     char lote[50];
