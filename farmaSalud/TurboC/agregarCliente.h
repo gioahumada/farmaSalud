@@ -1,11 +1,10 @@
-void agregarCliente(struct FarmaSalud *farmacia) 
+void agregarCliente(struct FarmaSalud *farmacia)
 {
     struct NodoClientes *nuevoNodo = (struct NodoClientes *)malloc(sizeof(struct NodoClientes));
     nuevoNodo->datosClientes = (struct Clientes *)malloc(sizeof(struct Clientes));
-    
-    cls();
-    
-    // Obtener y asignar automáticamente el ID basado en el último ID disponible
+
+    clrscr();
+
     int maxId = 0;
     struct NodoClientes *temp = farmacia->clientes;
     while (temp != NULL) {
@@ -15,7 +14,7 @@ void agregarCliente(struct FarmaSalud *farmacia)
         temp = temp->sig;
     }
     nuevoNodo->datosClientes->id = maxId + 1;
-    
+
     printf("Ingrese RUT del cliente: ");
     nuevoNodo->datosClientes->rutCliente = (char *)malloc(20 * sizeof(char));
     scanf("%s", nuevoNodo->datosClientes->rutCliente);
@@ -23,14 +22,12 @@ void agregarCliente(struct FarmaSalud *farmacia)
     scanf("%d", &nuevoNodo->datosClientes->edadCliente);
     printf("¿Es afiliado? (1-Si, 0-No): ");
     scanf("%d", &nuevoNodo->datosClientes->afiliado);
-    
-    // Inicializar comprasCliente como una lista vacía
+
     for (int i = 0; i < MAX_PRODUCTOS_POR_CLIENTE; i++) {
         nuevoNodo->datosClientes->comprasCliente[i] = NULL;
     }
     nuevoNodo->datosClientes->numCompras = 0;
 
-    // Agregar cliente al final de la lista
     nuevoNodo->ant = NULL;
     nuevoNodo->sig = NULL;
     if (farmacia->clientes == NULL) {
@@ -43,8 +40,8 @@ void agregarCliente(struct FarmaSalud *farmacia)
         temp->sig = nuevoNodo;
         nuevoNodo->ant = temp;
     }
-    
-    cls();
+
+    clrscr();
     printf("Cliente agregado con éxito.\n");
-    pause();
+    getch();
 }
