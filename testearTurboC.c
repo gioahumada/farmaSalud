@@ -191,7 +191,7 @@ char* my_strdup(const char* str) {
 }
 
 struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccion, int capacidadAlmacenamiento) {
-    i;
+    int i;
     struct NodoSucursales* nuevoNodo = (struct NodoSucursales*)malloc(sizeof(struct NodoSucursales));
     struct Sucursal* nuevaSucursal = (struct Sucursal*)malloc(sizeof(struct Sucursal));
     
@@ -2292,6 +2292,17 @@ void mostrarInforme(struct FarmaSalud *farmacia) {
 
     pause();
 }
+
+/*
+
+███╗   ███╗███████╗███╗   ██╗██╗   ██╗
+████╗ ████║██╔════╝████╗  ██║██║   ██║
+██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║
+██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║
+██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝
+╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝
+
+*/
 
 void menuPrincipal(struct FarmaSalud *farmacia) {
     int opcion;
