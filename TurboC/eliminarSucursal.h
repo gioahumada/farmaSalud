@@ -1,57 +1,84 @@
-void eliminarSucursal(struct FarmaSalud *farmacia) {
-    cls();
-    int idEliminar;
+int eliminarSucursal(struct FarmaSalud *farmacia, int idEliminar) {
     struct NodoSucursales *temp, *prev;
-
-    // Pedir al usuario que ingrese el ID de la sucursal a eliminar
-    printf("Ingrese el ID de la sucursal que desea eliminar: ");
-    scanf("%d", &idEliminar);
 
     temp = farmacia->sucursales;
     if (temp == NULL) {
-        printf("No hay sucursales registradas.\n");
-        pause();
-        return;
+        return 0; // No hay sucursales
     }
 
-    // Buscar la sucursal con el ID proporcionado
+    struct NodoSucursales *inicio = temp;
+
     do {
         if (temp->datosSucursal->id == idEliminar) {
-            break;
+            // Manejar los casos especiales para el primer y último nodo
+            if (temp->ant == temp && temp->sig == temp) {
+                farmacia->sucursales = NULL;
+            } else {
+                prev = temp->ant;
+                prev->sig = temp->sig;
+                temp->sig->ant = prev;
+                if (temp == farmacia->sucursales) {
+                    farmacia->sucursales = temp->sig;
+                }
+            }
+
+            // Liberar la memoria asociada a la sucursal
+            free(temp->datosSucursal->nombre);
+            free(temp->datosSucursal->direccion);
+            for (int i = 0; i < temp->datosSucursal->numRegistros; i++) {
+                free(temp->datosSucursal->registrosEnvios[i]);
+            }
+            free(temp->datosSucursal);
+            free(temp);
+
+            return 1; // Eliminación exitosa
         }
         temp = temp->sig;
-    } while (temp != farmacia->sucursales);
+    } while (temp != inicio);
 
-    // Si no se encontró la sucursal con el ID proporcionado
-    if (temp->datosSucursal->id != idEliminar) {
-        cls();
-        printf("Sucursal no encontrada.\n");
-        pause();
-        return;
-    }
+    return 0; // No se encontró la sucursal
+}
 
-    // Manejar los casos especiales para el primer y último nodo
-    if (temp->ant == temp && temp->sig == temp) {
-        farmacia->sucursales = NULL;
-    } else {
-        prev = temp->ant;
-        prev->sig = temp->sig;
-        temp->sig->ant = prev;
-        if (temp == farmacia->sucursales) {
-            farmacia->sucursales = temp->sig;
-        }
-    }
+void leerIdSucursal(int *idEliminar) {
+    cls();
+    printf("Ingrese el ID de la sucursal que desea eliminar: ");
+    scanf("%d", idEliminar);
+    getchar(); // Limpiar el buffer de entrada después de leer un entero
+}
 
-    // Liberar la memoria asociada a la sucursal
-    free(temp->datosSucursal->nombre);
-    free(temp->datosSucursal->direccion);
-    for (int i = 0; i < temp->datosSucursal->numRegistros; i++) {
-        free(temp->datosSucursal->registrosEnvios[i]);
-    }
-    free(temp->datosSucursal);
-    free(temp);
+void mostrarMensajeNoSucursales() {
+    printf("No hay sucursales registradas.\n");
+    pause();
+}
 
+void mostrarMensajeSucursalNoEncontrada() {
+    cls();
+    printf("Sucursal no encontrada.\n");
+    pause();
+}
+
+void mostrarMensajeSucursalEliminada() {
     cls();
     printf("Sucursal eliminada con éxito.\n");
     pause();
+}
+
+void eliminarSucursalView(struct FarmaSalud *farmacia) {
+    int idEliminar;
+
+    leerIdSucursal(&idEliminar);
+
+    struct NodoSucursales *temp = farmacia->sucursales;
+    if (temp == NULL) {
+        mostrarMensajeNoSucursales();
+        return;
+    }
+
+    int resultado = eliminarSucursal(farmacia, idEliminar);
+
+    if (resultado == 0) {
+        mostrarMensajeSucursalNoEncontrada();
+    } else {
+        mostrarMensajeSucursalEliminada();
+    }
 }
