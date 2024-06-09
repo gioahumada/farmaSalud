@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 
 #define MAX_PRODUCTOS_POR_CLIENTE 10000
 #define MAX_ENVIOS 30000
@@ -48,9 +49,9 @@
 
 // Benja v v v v v v
 #include "leerClientes.h" // MVC Y TURBO C COMPATIBLE
-#include "agregarCliente.h" 
-#include "eliminarCliente.h"
-#include "agregarProductoACliente.h"
+#include "agregarCliente.h"  // MVC Y TURBO C COMPATIBLE
+#include "eliminarCliente.h" // X
+#include "agregarProductoACliente.h" //X
 // Simon v v v v v v
 #include "leerSucursales.h"// MVC Y TURBO C COMPATIBLE
 #include "crearSucursal.h" // MVC Y TURBO C COMPATIBLE
