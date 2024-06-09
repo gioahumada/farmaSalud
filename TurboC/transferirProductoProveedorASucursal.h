@@ -8,42 +8,66 @@ void obtenerDetallesProducto(char* fechaCaducidad, char* lote, int* cantidad, ch
 }
 
 void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
-    int idProveedor, idSucursal;
+    cls();
+    int idProveedor = solicitarIdProveedor(farmacia);
+    if (idProveedor == -1) return;
+
+    cls();
+    int idSucursal = solicitarIdSucursal(farmacia);
+    if (idSucursal == -1) return;
+
+    cls();
+    char codigoProducto[10];
+    if (!solicitarCodigoProducto(farmacia, idProveedor, codigoProducto)) return;
+
     char fechaCaducidad[11];
     char lote[50];
     int cantidad;
-    char codigoProducto[10];
+    struct Producto *productoSeleccionado = buscarProductoPorCodigo(farmacia, idProveedor, codigoProducto);
+    if (productoSeleccionado == NULL) {
+        printf("Producto con codigo %s no encontrado.\n", codigoProducto);
+        pause();
+        return;
+    }
 
-    cls();
+    obtenerDetallesProducto(fechaCaducidad, lote, &cantidad, productoSeleccionado->nombreProducto);
+    transferirProducto(farmacia, idProveedor, idSucursal, productoSeleccionado, fechaCaducidad, lote, cantidad, codigoProducto);
+}
 
-    mostrarProveedores(farmacia);
+int solicitarIdProveedor(struct FarmaSalud *farmacia) {
+    mostrarProveedores(farmacia->proveedores);
     printf("Ingrese el ID del proveedor: ");
+    int idProveedor;
     scanf("%d", &idProveedor);
 
-    // Buscar el proveedor por ID
     struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
     if (proveedorActual == NULL) {
         printf("Proveedor con ID %d no encontrado.\n", idProveedor);
         pause();
-        return;
+        return -1;
     }
+    return idProveedor;
+}
 
-    cls();
-    mostrarSucursales(farmacia);
+int solicitarIdSucursal(struct FarmaSalud *farmacia) {
+    mostrarSucursales(farmacia->sucursales);
     printf("Ingrese el ID de la sucursal: ");
+    int idSucursal;
     scanf("%d", &idSucursal);
 
-    // Buscar la sucursal por ID
     struct NodoSucursales *sucursalActual = buscarSucursalPorID(farmacia, idSucursal);
     if (sucursalActual == NULL) {
-        cls();
         printf("Sucursal con ID %d no encontrada.\n", idSucursal);
         pause();
-        return;
+        return -1;
     }
+    return idSucursal;
+}
 
-    // Mostrar productos del proveedor y pedir el código del producto a transferir
-    cls();
+int solicitarCodigoProducto(struct FarmaSalud *farmacia, int idProveedor, char *codigoProducto) {
+    struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
+    if (proveedorActual == NULL) return 0;
+
     printf("Productos del proveedor:\n");
     struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
@@ -52,10 +76,14 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
     }
     printf("Ingrese el codigo del producto a transferir: ");
     scanf("%s", codigoProducto);
+    return 1;
+}
 
-    // Buscar el producto por código
-    nodoProducto = proveedorActual->datosProveedor->productos;
+struct Producto* buscarProductoPorCodigo(struct FarmaSalud *farmacia, int idProveedor, char *codigoProducto) {
+    struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
+    struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
     struct Producto *productoSeleccionado = NULL;
+
     while (nodoProducto != NULL) {
         if (strcmp(nodoProducto->datosProducto->codigo, codigoProducto) == 0) {
             productoSeleccionado = nodoProducto->datosProducto;
@@ -63,16 +91,10 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
         }
         nodoProducto = nodoProducto->der;
     }
+    return productoSeleccionado;
+}
 
-    if (productoSeleccionado == NULL) {
-        printf("Producto con codigo %s no encontrado.\n", codigoProducto);
-        pause();
-        return;
-    }
-
-    obtenerDetallesProducto(fechaCaducidad, lote, &cantidad, productoSeleccionado->nombreProducto);
-
-    // Crear una copia completa del producto
+void transferirProducto(struct FarmaSalud *farmacia, int idProveedor, int idSucursal, struct Producto *productoSeleccionado, char *fechaCaducidad, char *lote, int cantidad, char *codigoProducto) {
     struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
     if (nuevoProducto == NULL) {
         printf("Error al asignar memoria para el nuevo producto.\n");
@@ -86,12 +108,11 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
     nuevoProducto->categoria = strdup(productoSeleccionado->categoria);
     nuevoProducto->precio = productoSeleccionado->precio;
     nuevoProducto->idProveedor = strdup(productoSeleccionado->idProveedor);
-    nuevoProducto->lote = strdup(lote);  // Usar el valor ingresado por el usuario
-    nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);  // Usar el valor ingresado por el usuario
-    nuevoProducto->cantidad = cantidad;  // Usar el valor ingresado por el usuario
+    nuevoProducto->lote = strdup(lote);
+    nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);
+    nuevoProducto->cantidad = cantidad;
     nuevoProducto->requiereReceta = productoSeleccionado->requiereReceta;
 
-    // Crear un nuevo nodo producto
     struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
     if (nuevoNodoProducto == NULL) {
         printf("Error al asignar memoria para el nuevo nodo de producto.\n");
@@ -102,7 +123,7 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) {
     nuevoNodoProducto->datosProducto = nuevoProducto;
     nuevoNodoProducto->ant = nuevoNodoProducto->sig = NULL;
 
-    // Insertar el nuevo nodo producto en la lista de productos de la sucursal
+    struct NodoSucursales *sucursalActual = buscarSucursalPorID(farmacia, idSucursal);
     if (sucursalActual->datosSucursal->productos == NULL) {
         sucursalActual->datosSucursal->productos = nuevoNodoProducto;
     } else {
