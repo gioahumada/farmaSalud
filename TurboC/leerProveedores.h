@@ -1,6 +1,4 @@
 void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
-    char *requiereReceta;
-
     if (nodoProducto == NULL) {
         return;
     }
@@ -8,10 +6,12 @@ void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
     mostrarProductosProveedor(nodoProducto->izq);
 
     struct Producto *producto = nodoProducto->datosProducto;
+    char requiereReceta[4];
+
     if (producto->requiereReceta) {
-        requiereReceta = "Sí";
+        strcpy(requiereReceta, "Sí");
     } else {
-        requiereReceta = "No";
+        strcpy(requiereReceta, "No");
     }
 
     printf("%-10s", producto->codigo);
@@ -20,6 +20,23 @@ void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
     printf("%-18s\n", requiereReceta);
 
     mostrarProductosProveedor(nodoProducto->der);
+}
+
+void mostrarProveedor(struct Proveedor *proveedor) {
+    printf("ID: %d\n", proveedor->id);
+    printf("Nombre: %s\n", proveedor->nombre);
+    printf("Dirección: %s\n", proveedor->direccion);
+    printf("Teléfono: %s\n", proveedor->telefono);
+
+    // Mostrar productos del proveedor
+    if (proveedor->productos == NULL) {
+        printf("No hay productos asociados a este proveedor.\n\n");
+    } else {
+        printf("Productos:\n\n");
+        printf("ID          Nombre                                    Precio                Requiere receta\n\n");
+        mostrarProductosProveedor(proveedor->productos);
+        printf("\n");
+    }
 }
 
 void leerProveedores(struct FarmaSalud *farmacia) {
@@ -31,23 +48,8 @@ void leerProveedores(struct FarmaSalud *farmacia) {
         return;
     }
 
-
     while (nodoActual != NULL) {
-        printf("ID: %d\n", nodoActual->datosProveedor->id);
-        printf("Nombre: %s\n", nodoActual->datosProveedor->nombre);
-        printf("Dirección: %s\n", nodoActual->datosProveedor->direccion);
-        printf("Teléfono: %s\n", nodoActual->datosProveedor->telefono);
-
-        // Mostrar productos del proveedor
-        if (nodoActual->datosProveedor->productos == NULL) {
-            printf("No hay productos asociados a este proveedor.\n\n");
-        } else {
-            printf("Productos:\n\n");
-            printf("ID          Nombre                                    Precio                Requiere receta\n\n");
-            mostrarProductosProveedor(nodoActual->datosProveedor->productos);
-            printf("\n");
-        }
-
+        mostrarProveedor(nodoActual->datosProveedor);
         nodoActual = nodoActual->sig;
     }
     pause();
