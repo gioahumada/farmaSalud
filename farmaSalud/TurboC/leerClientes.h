@@ -1,4 +1,5 @@
 // Controlador
+
 struct NodoClientes* obtenerClienteActual(struct FarmaSalud *farmacia) {
     return farmacia->clientes;
 }
@@ -23,8 +24,7 @@ void imprimirCliente(struct NodoClientes *nodoActual) {
     {
         printf("Afiliado: No\n");
     }
-    
-    // Verificar si hay compras del cliente
+
     if (nodoActual->datosClientes->numCompras > 0) {
         printf("Compras:\n");
         for (i = 0; i < nodoActual->datosClientes->numCompras; i++) {
@@ -38,16 +38,18 @@ void imprimirCliente(struct NodoClientes *nodoActual) {
         printf("Cliente sin compras\n\n");
     }
 }
+void clrscr() {
+    system("cls");  // Para sistemas Windows
+}
 
-// Función principal
 void leerClientes(struct FarmaSalud *farmacia) {
     struct NodoClientes *nodoActual;
 
-    cls();
+    clrscr();
     nodoActual = obtenerClienteActual(farmacia);
-    while(nodoActual != NULL) {
+    while (nodoActual != NULL) {
         imprimirCliente(nodoActual);
         nodoActual = obtenerClienteSiguiente(nodoActual);
     }
-    pause();
+    getch();
 }
