@@ -1,15 +1,101 @@
+void printIngresarMes() {
+    printf("Ingrese el mes (MM): ");
+}
+
+void printIngresarDia() {
+    printf("Ingrese el dia (DD): ");
+}
+
+void printSucursalNoEncontrada() {
+    printf("Sucursal no encontrada.\n");
+}
+
+void printErrorCapacidadMaxima() {
+    printf("Error: No se puede agregar más registros de envíos, capacidad máxima alcanzada.\n");
+}
+
+void printRegistroEnvio(const char *registro) {
+    printf("%s\n", registro);
+}
+
+void printNoSucursalesRegistradas() {
+    printf("No hay sucursales registradas.\n");
+}
+
+void printSucursalInfo(struct Sucursal *sucursal) {
+    printf("ID: %d\n", sucursal->id);
+    printf("Nombre: %s\n", sucursal->nombre);
+    printf("Dirección: %s\n", sucursal->direccion);
+    printf("Cantidad de Ventas: %d\n", sucursal->cantidadDeVentas);
+    printf("Capacidad de Almacenamiento: %d / 10000\n", sucursal->capacidadAlmacenamiento);
+    printf("Número de Registros de Envíos: %d\n", sucursal->numRegistros);
+    for (int i = 0; i < sucursal->numRegistros; i++) {
+        printf("\tRegistro de Envío %d: %s\n", i + 1, sucursal->registrosEnvios[i]);
+    }
+    printf("--------------------------------------------------\n");
+}
+
+void printIngreseIDProveedor() {
+    printf("Ingrese el ID del proveedor: ");
+}
+
+void printProveedorNoEncontrado(int idProveedor) {
+    printf("Proveedor con ID %d no encontrado.\n", idProveedor);
+}
+
+void printIngreseIDSucursal() {
+    printf("Ingrese el ID de la sucursal: ");
+}
+
+void printIngreseFechaCaducidad(const char *nombreProducto) {
+    printf("Ingrese la fecha de vencimiento para el producto (formato MM/AAAA) [%s]: ", nombreProducto);
+}
+
+void printIngreseLote(const char *nombreProducto) {
+    printf("Ingrese el lote para el producto [%s]: ", nombreProducto);
+}
+
+void printIngreseCantidad(const char *nombreProducto) {
+    printf("Ingrese la cantidad para el producto [%s]: ", nombreProducto);
+}
+
+void printErrorAsignarMemoriaProducto() {
+    printf("Error al asignar memoria para el nuevo producto.\n");
+}
+
+void printErrorAsignarMemoriaNodoProducto() {
+    printf("Error al asignar memoria para el nuevo nodo de producto.\n");
+}
+
+void printProductosTransferidos(int idProveedor, int idSucursal) {
+    printf("Productos transferidos del proveedor con ID %d a la sucursal con ID %d.\n", idProveedor, idSucursal);
+}
+
+// Funciones principales
 void obtenerFecha(char *fecha) {
     int dia, mes;
-    printf("Ingrese el mes (MM): ");
+    printIngresarMes();
     scanf("%d", &mes);
-    printf("Ingrese el dia (DD): ");
+    printIngresarDia();
     scanf("%d", &dia);
     sprintf(fecha, "%02d/%02d", mes, dia);
 }
 
+void my_strcat(char *dest, const char *src) {
+    while (*dest) {
+        dest++;
+    }
+    while (*src) {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = '\0';
+}
+
 void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre) {
     if (sucursal->numRegistros >= MAX_ENVIOS) {
-        printf("Error: No se puede agregar más registros de envíos, capacidad máxima alcanzada.\n");
+        printErrorCapacidadMaxima();
         return;
     }
 
@@ -18,14 +104,17 @@ void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre
 
     char registro[200];
     strcpy(registro, "Productos enviados de Proveedor ");
-    strcat(registro, proveedorNombre);
-    strcat(registro, " a Sucursal ");
-    strcat(registro, sucursal->nombre);
-    strcat(registro, " el día ");
-    strcat(registro, fecha);
+    my_strcat(registro, proveedorNombre);
+    my_strcat(registro, " a Sucursal ");
+    my_strcat(registro, sucursal->nombre);
+    my_strcat(registro, " el día ");
+    my_strcat(registro, fecha);
 
-    sucursal->registrosEnvios[sucursal->numRegistros] = strdup(registro);
-    sucursal->numRegistros++;
+    sucursal->registrosEnvios[sucursal->numRegistros] = (char *)malloc(strlen(registro) + 1);
+    if (sucursal->registrosEnvios[sucursal->numRegistros] != NULL) {
+        strcpy(sucursal->registrosEnvios[sucursal->numRegistros], registro);
+        sucursal->numRegistros++;
+    }
 }
 
 struct NodoSucursales* buscarSucursalPorID(struct FarmaSalud *farmacia, int idSucursal) {
@@ -56,21 +145,12 @@ struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idPr
 void mostrarSucursales(struct FarmaSalud *farmacia) {
     struct NodoSucursales *sucursalActual = farmacia->sucursales;
     if (sucursalActual == NULL) {
-        printf("No hay sucursales registradas.\n");
+        printNoSucursalesRegistradas();
         return;
     }
 
     do {
-        printf("ID: %d\n", sucursalActual->datosSucursal->id);
-        printf("Nombre: %s\n", sucursalActual->datosSucursal->nombre);
-        printf("Dirección: %s\n", sucursalActual->datosSucursal->direccion);
-        printf("Cantidad de Ventas: %d\n", sucursalActual->datosSucursal->cantidadDeVentas);
-        printf("Capacidad de Almacenamiento: %d / 10000\n", sucursalActual->datosSucursal->capacidadAlmacenamiento);
-        printf("Número de Registros de Envíos: %d\n", sucursalActual->datosSucursal->numRegistros);
-        for (int i = 0; i < sucursalActual->datosSucursal->numRegistros; i++) {
-            printf("\tRegistro de Envío %d: %s\n", i + 1, sucursalActual->datosSucursal->registrosEnvios[i]);
-        }
-        printf("--------------------------------------------------\n");
+        printSucursalInfo(sucursalActual->datosSucursal);
         sucursalActual = sucursalActual->sig;
     } while (sucursalActual != farmacia->sucursales);
 }
@@ -84,67 +164,76 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     cls();
 
     mostrarProveedores(farmacia);
-    printf("Ingrese el ID del proveedor: ");
+    printIngreseIDProveedor();
     scanf("%d", &idProveedor);
 
-    // Buscar el proveedor por ID
     struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
     if (proveedorActual == NULL) {
-        printf("Proveedor con ID %d no encontrado.\n", idProveedor);
+        printProveedorNoEncontrado(idProveedor);
         pause();
         return;
     }
 
     cls();
     mostrarSucursales(farmacia);
-    printf("Ingrese el ID de la sucursal: ");
+    printIngreseIDSucursal();
     scanf("%d", &idSucursal);
 
-    // Buscar la sucursal por ID
     struct NodoSucursales *sucursalActual = buscarSucursalPorID(farmacia, idSucursal);
     if (sucursalActual == NULL) {
         cls();
-        printf("Sucursal con ID %d no encontrada.\n", idSucursal);
+        printSucursalNoEncontrada();
         pause();
         return;
     }
 
-    // Transferir productos del proveedor a la sucursal
     struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
         cls();
-        printf("Ingrese la fecha de vencimiento para el producto (formato MM/AAAA) [%s]: ", nodoProducto->datosProducto->nombreProducto);
+        printIngreseFechaCaducidad(nodoProducto->datosProducto->nombreProducto);
         scanf("%s", fechaCaducidad);
         cls();
-        printf("Ingrese el lote para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
+        printIngreseLote(nodoProducto->datosProducto->nombreProducto);
         scanf("%s", lote);
         cls();
-        printf("Ingrese la cantidad para el producto [%s]: ", nodoProducto->datosProducto->nombreProducto);
+        printIngreseCantidad(nodoProducto->datosProducto->nombreProducto);
         scanf("%d", &cantidad);
 
-        // Crear una copia completa del producto
         struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
         if (nuevoProducto == NULL) {
-            printf("Error al asignar memoria para el nuevo producto.\n");
+            printErrorAsignarMemoriaProducto();
             pause();
             return;
         }
-        // Copiar datos del producto original al nuevo producto
+
         strcpy(nuevoProducto->codigo, nodoProducto->datosProducto->codigo);
-        nuevoProducto->nombreProducto = strdup(nodoProducto->datosProducto->nombreProducto);
-        nuevoProducto->descripcion = strdup(nodoProducto->datosProducto->descripcion);
-        nuevoProducto->categoria = strdup(nodoProducto->datosProducto->categoria);
+
+        // Asignar memoria para las cadenas y copiar
+        nuevoProducto->nombreProducto = (char *)malloc(strlen(nodoProducto->datosProducto->nombreProducto) + 1);
+        strcpy(nuevoProducto->nombreProducto, nodoProducto->datosProducto->nombreProducto);
+
+        nuevoProducto->descripcion = (char *)malloc(strlen(nodoProducto->datosProducto->descripcion) + 1);
+        strcpy(nuevoProducto->descripcion, nodoProducto->datosProducto->descripcion);
+
+        nuevoProducto->categoria = (char *)malloc(strlen(nodoProducto->datosProducto->categoria) + 1);
+        strcpy(nuevoProducto->categoria, nodoProducto->datosProducto->categoria);
+
+        nuevoProducto->idProveedor = (char *)malloc(strlen(nodoProducto->datosProducto->idProveedor) + 1);
+        strcpy(nuevoProducto->idProveedor, nodoProducto->datosProducto->idProveedor);
+
+        nuevoProducto->lote = (char *)malloc(strlen(lote) + 1);
+        strcpy(nuevoProducto->lote, lote);
+
+        nuevoProducto->fechaCaducidad = (char *)malloc(strlen(fechaCaducidad) + 1);
+        strcpy(nuevoProducto->fechaCaducidad, fechaCaducidad);
+
         nuevoProducto->precio = nodoProducto->datosProducto->precio;
-        nuevoProducto->idProveedor = strdup(nodoProducto->datosProducto->idProveedor);
-        nuevoProducto->lote = strdup(lote);  // Usar el valor ingresado por el usuario
-        nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);  // Usar el valor ingresado por el usuario
-        nuevoProducto->cantidad = cantidad;  // Usar el valor ingresado por el usuario
+        nuevoProducto->cantidad = cantidad;
         nuevoProducto->requiereReceta = nodoProducto->datosProducto->requiereReceta;
 
-        // Crear un nuevo nodo producto
         struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
         if (nuevoNodoProducto == NULL) {
-            printf("Error al asignar memoria para el nuevo nodo de producto.\n");
+            printErrorAsignarMemoriaNodoProducto();
             free(nuevoProducto);
             pause();
             return;
@@ -152,7 +241,6 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
         nuevoNodoProducto->datosProducto = nuevoProducto;
         nuevoNodoProducto->ant = nuevoNodoProducto->sig = NULL;
 
-        // Insertar el nuevo nodo producto en la lista de productos de la sucursal
         if (sucursalActual->datosSucursal->productos == NULL) {
             sucursalActual->datosSucursal->productos = nuevoNodoProducto;
         } else {
@@ -164,14 +252,13 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
             nuevoNodoProducto->ant = temp;
         }
 
-        // Mover al siguiente producto del proveedor
         nodoProducto = nodoProducto->der;
     }
 
-     agregarRegistroEnvio(sucursalActual->datosSucursal, proveedorActual->datosProveedor->nombre);
+    agregarRegistroEnvio(sucursalActual->datosSucursal, proveedorActual->datosProveedor->nombre);
 
     cls();
-    printf("Productos transferidos del proveedor con ID %d a la sucursal con ID %d.\n", idProveedor, idSucursal);
+    printProductosTransferidos(idProveedor, idSucursal);
     pause();
     cls();
 }
