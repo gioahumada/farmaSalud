@@ -158,5 +158,6 @@ void menuEliminarProductosVencidos(struct FarmaSalud *farmacia) {
         eliminarProductosVencidos(sucursalNodo->datosSucursal, fechaLimite);
         cls();
         imprimirProductosVencidosEliminadosCorrectamente();
+        pause();
     }
 }
