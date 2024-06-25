@@ -1,20 +1,20 @@
 /*
- * Pontificia Universidad Católica de Valparaiso
+ * Pontificia Universidad Catolica de Valparaiso
  *
  * https://github.com/gioahumada/farmaSalud
  *
  * Este archivo es parte del proyecto de la asignatura INF2223-1 - Estructuras de Datos
  * y a sido diseñado por estudiantes de la PUCV para el desarrollo de un sistema de
- * gestión de inventario y ventas para una farmacia.
+ * gestion de inventario y ventas para una farmacia.
  *
  * Autores:
  * - Giovanni Ahumada
  * - Bastian Mejias
  * - Simon Vera
- * - Benjamín Pizarro
+ * - Benjamin Pizarro
  * - Patricio Hernandez
  *
- * Fecha de creación: 1 de junio de 2024
+ * Fecha de creacion: 1 de junio de 2024
  *
  * EL PROGRAMA A SIDO ADAPTADO PARA FUNCIONAR EN TURBO C
  * COMPILADOR UTILIZADO: Turbo C 2.01 EJECUTADO EN WINDOWS XP
@@ -59,7 +59,7 @@ struct Clientes
     int edadCliente;
     int afiliado;
     struct Producto *comprasCliente[MAX_PRODUCTOS_POR_CLIENTE]; // Array de punteros a Productos
-    int numCompras; // Número de compras
+    int numCompras; // Numero de compras
 };
 
 /* ----------
@@ -82,8 +82,8 @@ struct Sucursal
     int capacidadAlmacenamiento;
     struct NodoProducto *productos;
     struct NodoProducto *productosVendidos;
-    char *registrosEnvios[MAX_ENVIOS]; // Array de strings para los registros de envíos
-    int numRegistros; // Número de registros
+    char *registrosEnvios[MAX_ENVIOS]; // Array de strings para los registros de envios
+    int numRegistros; // Numero de registros
 };
 
 
@@ -104,6 +104,8 @@ struct Producto
     char *idProveedor;
     char *lote;
     char *fechaCaducidad; // 02
+    int mesVenta;
+    int anioVenta;
     int cantidad;
     int requiereReceta;
 };
@@ -146,7 +148,7 @@ struct NodoClientes* crearClienteConsole(int id, char* rutCliente, int edadClien
 
     nuevoCliente->id = id;
 
-    // Implementación manual de strdup
+    // Implementacion manual de strdup
     rutClienteCopy = (char*)malloc(strlen(rutCliente) + 1);
     strcpy(rutClienteCopy, rutCliente);
     nuevoCliente->rutCliente = rutClienteCopy;
@@ -358,7 +360,7 @@ void cls() {
 void pause() {
     char dummy;
     printf("\nPresione Enter para continuar...\n");
-    fflush(stdin); // Limpiar el búfer de entrada
+    fflush(stdin); // Limpiar el bufer de entrada
     scanf("%c", &dummy); // Esperar a que se presione Enter
 }
 
@@ -417,9 +419,11 @@ void leerClientes(struct FarmaSalud *farmacia) {
     }
     pause();
 }
-void agregarCliente(struct FarmaSalud *farmacia)
-{
-    int i, maxId;
+
+void agregarCliente(struct FarmaSalud *farmacia) {
+    int i, maxId, afiliadoValido;
+    char rutCliente[20];
+    char edadClienteStr[4];
     struct NodoClientes *temp;
     struct NodoClientes *nuevoNodo = (struct NodoClientes *)malloc(sizeof(struct NodoClientes));
     nuevoNodo->datosClientes = (struct Clientes *)malloc(sizeof(struct Clientes));
@@ -436,13 +440,45 @@ void agregarCliente(struct FarmaSalud *farmacia)
     }
     nuevoNodo->datosClientes->id = maxId + 1;
 
-    printf("Ingrese RUT del cliente: ");
-    nuevoNodo->datosClientes->rutCliente = (char *)malloc(20 * sizeof(char));
-    scanf("%s", nuevoNodo->datosClientes->rutCliente);
-    printf("Ingrese edad del cliente: ");
-    scanf("%d", &nuevoNodo->datosClientes->edadCliente);
-    printf("¿Es afiliado? (1-Si, 0-No): ");
-    scanf("%d", &nuevoNodo->datosClientes->afiliado);
+    while (1) {
+        printf("Ingrese RUT del cliente (Sin puntos ni gion, pero debe incluir digito verificador): ");
+        scanf("%s", rutCliente);
+        if (strlen(rutCliente) == 9 && strspn(rutCliente, "0123456789") == 9) {
+            nuevoNodo->datosClientes->rutCliente = (char *)malloc((strlen(rutCliente) + 1) * sizeof(char));
+            strcpy(nuevoNodo->datosClientes->rutCliente, rutCliente);
+            break;
+        } else {
+            printf("RUT no valido. Intente nuevamente.\n");
+            pause();
+            cls();
+        }
+    }
+
+    while (1) {
+        printf("Ingrese edad del cliente (solo numeros, maximo 3 digitos): ");
+        scanf("%s", edadClienteStr);
+        if (strlen(edadClienteStr) <= 3 && strspn(edadClienteStr, "0123456789") == strlen(edadClienteStr)) {
+            nuevoNodo->datosClientes->edadCliente = atoi(edadClienteStr);
+            break;
+        } else {
+            printf("Edad no valida. Intente nuevamente.\n");
+            pause();
+            cls();
+        }
+    }
+
+    afiliadoValido = 0;
+    while (!afiliadoValido) {
+        printf("¿Es afiliado? (1-Si, 0-No): ");
+        scanf("%d", &nuevoNodo->datosClientes->afiliado);
+        if (nuevoNodo->datosClientes->afiliado == 1 || nuevoNodo->datosClientes->afiliado == 0) {
+            afiliadoValido = 1;
+        } else {
+            printf("Opcion no valida. Intente nuevamente.\n");
+            pause();
+            cls();
+        }
+    }
 
     for (i = 0; i < MAX_PRODUCTOS_POR_CLIENTE; i++) {
         nuevoNodo->datosClientes->comprasCliente[i] = NULL;
@@ -462,17 +498,41 @@ void agregarCliente(struct FarmaSalud *farmacia)
         nuevoNodo->ant = temp;
     }
     cls();
-    printf("Cliente agregado con éxito.\n");
+    printf("Cliente agregado con exito.\n");
     pause();
 }
 
+// Funcion para eliminar un cliente del sistema
 void eliminarCliente(struct FarmaSalud *farmacia) {
+    int i;
+    char idClienteStr[10];
     int idCliente;
     struct NodoClientes *clienteActual, *clienteAnterior;
-    cls();
-    printf("Ingrese el ID del cliente que desea eliminar: ");
-    scanf("%d", &idCliente);
+    int idValido;
 
+    cls();
+
+    // Solicitar y validar el ID del cliente
+    printf("Ingrese el ID del cliente que desea eliminar: ");
+    scanf("%s", idClienteStr);
+
+    // Validar que el ID sea un numero
+    idValido = 1;
+    for (i = 0; idClienteStr[i] != '\0'; i++) {
+        if (idClienteStr[i] < '0' || idClienteStr[i] > '9') {
+            idValido = 0;
+            break;
+        }
+    }
+
+    if (!idValido) {
+        printf("ID no valido. Intente nuevamente.\n");
+        pause();
+        cls();
+        return; // Retornar al menu principal
+    }
+
+    idCliente = atoi(idClienteStr);
     clienteActual = farmacia->clientes;
     clienteAnterior = NULL;
 
@@ -499,17 +559,10 @@ void eliminarCliente(struct FarmaSalud *farmacia) {
         }
     }
 
-    // Liberar memoria asignada al cliente eliminado
-    // En TurboC, no es necesario liberar memoria manualmente
-    // Puedes simplemente sobrescribir la estructura con valores nulos o vacíos
-    // No estamos utilizando malloc para crear las estructuras de datos, así que no necesitamos free.
-
-    // Establecer valores nulos o vacíos en la estructura del cliente eliminado
-    clienteActual->datosClientes->id = 0; // o cualquier otro valor que indique que el cliente ha sido eliminado
-    // Puedes repetir este proceso para otros campos que necesiten ser limpiados
+    clienteActual->datosClientes->id = 0;
 
     cls();
-    printf("Cliente eliminado con éxito.\n");
+    printf("Cliente eliminado con exito.\n");
     pause();
 }
 
@@ -541,25 +594,26 @@ void mostrarSucursal(struct NodoSucursales *nodoActual) {
     int i;
     printf("ID: %d\n", nodoActual->datosSucursal->id);
     printf("Nombre: %s\n", nodoActual->datosSucursal->nombre);
-    printf("Dirección: %s\n", nodoActual->datosSucursal->direccion);
+    printf("Direccion: %s\n", nodoActual->datosSucursal->direccion);
     printf("Cantidad de Ventas: %d\n", nodoActual->datosSucursal->cantidadDeVentas);
-    printf("Número de Registros de Envíos: %d\n", nodoActual->datosSucursal->numRegistros);
+    printf("Numero de Registros de Envios: %d\n", nodoActual->datosSucursal->numRegistros);
     for (i = 0; i < nodoActual->datosSucursal->numRegistros; i++) {
-        printf("\tRegistro de Envío %d: %s\n", i + 1, nodoActual->datosSucursal->registrosEnvios[i]);
+        printf("\tRegistro de Envio %d: %s\n", i + 1, nodoActual->datosSucursal->registrosEnvios[i]);
     }
 
     if (nodoActual->datosSucursal->productos != NULL) {
         printf("Productos:\n");
         productoNodo = nodoActual->datosSucursal->productos;
         while (productoNodo != NULL) {
-            printf("\t%s - %s", productoNodo->datosProducto->codigo, productoNodo->datosProducto->nombreProducto);
-            printf("\tCantidad en stock: %d", productoNodo->datosProducto->cantidad);
-            printf("\tFecha de caducidad: %s", productoNodo->datosProducto->fechaCaducidad);
+            printf("\tCodigo: %s\n", productoNodo->datosProducto->codigo);
+            printf("\tNombre: %s\n", productoNodo->datosProducto->nombreProducto);
+            printf("\tCantidad en stock: %d\n", productoNodo->datosProducto->cantidad);
+            printf("\tFecha de caducidad: %s\n", productoNodo->datosProducto->fechaCaducidad);
             printf("\tLote: %s\n", productoNodo->datosProducto->lote);
 
             // Comprobar si el producto tiene bajo stock
             if (productoNodo->datosProducto->cantidad < 10) {
-                printf("\t*** ALERTA: Bajo stock! ***\n");
+                printf("\t*** ALERTA: Bajo stock! ***\n\n");
             }
 
             productoNodo = productoNodo->sig;
@@ -569,6 +623,7 @@ void mostrarSucursal(struct NodoSucursales *nodoActual) {
         printf("Sucursal sin productos\n");
     }
 }
+
 
 void mostrarEspacioRestante(int espacio) {
     printf("Espacio restante en la sucursal: %d\n\n", espacio);
@@ -638,11 +693,11 @@ void leerDatosSucursal(struct Sucursal *nuevaSucursal) {
     scanf(" %[^\n]", nuevaSucursal->nombre);
 
     nuevaSucursal->direccion = (char *)malloc(100 * sizeof(char));
-    printf("Ingrese dirección de la sucursal: ");
+    printf("Ingrese direccion de la sucursal: ");
     scanf(" %[^\n]", nuevaSucursal->direccion);
 
     nuevaSucursal->cantidadDeVentas = 0; // Inicializar a 0
-    nuevaSucursal->capacidadAlmacenamiento = 0; // Cambiar si se necesita un valor específico
+    nuevaSucursal->capacidadAlmacenamiento = 0; // Cambiar si se necesita un valor especifico
     nuevaSucursal->productos = NULL;
     nuevaSucursal->productosVendidos = NULL; // Inicializar a NULL
     nuevaSucursal->numRegistros = 0; // Inicializar a 0
@@ -662,7 +717,7 @@ void crearSucursal(struct FarmaSalud *farmacia) {
     agregarSucursal(farmacia, nuevoNodo);
 
     cls();
-    printf("Sucursal agregada con éxito.\n");
+    printf("Sucursal agregada con exito.\n");
     pause();
 }
 
@@ -678,7 +733,7 @@ int eliminarSucursal(struct FarmaSalud *farmacia, int idEliminar) {
 
     do {
         if (temp->datosSucursal->id == idEliminar) {
-            // Manejar los casos especiales para el primer y último nodo
+            // Manejar los casos especiales para el primer y ultimo nodo
             if (temp->ant == temp && temp->sig == temp) {
                 farmacia->sucursales = NULL;
             } else {
@@ -690,12 +745,12 @@ int eliminarSucursal(struct FarmaSalud *farmacia, int idEliminar) {
                 }
             }
 
-            return 1; // Eliminación exitosa
+            return 1; // Eliminacion exitosa
         }
         temp = temp->sig;
     } while (temp != inicio);
 
-    return 0; // No se encontró la sucursal
+    return 0; // No se encontro la sucursal
 }
 
 void leerIdSucursal(int *idEliminar) {
@@ -717,15 +772,40 @@ void mostrarMensajeSucursalNoEncontrada() {
 
 void mostrarMensajeSucursalEliminada() {
     cls();
-    printf("Sucursal eliminada con éxito.\n");
+    printf("Sucursal eliminada con exito.\n");
     pause();
 }
 
+// Funcion para eliminar una sucursal desde la vista
 void eliminarSucursalView(struct FarmaSalud *farmacia) {
     struct NodoSucursales *temp;
+    int i;
+    char idEliminarStr[10];
     int idEliminar, resultado;
+    int idValido;
 
-    leerIdSucursal(&idEliminar);
+    cls();
+    printf("Ingrese el ID de la sucursal que desea eliminar: ");
+    scanf("%s", idEliminarStr);
+
+    // Validar que el ID sea un numero
+    idValido = 1;
+    for (i = 0; idEliminarStr[i] != '\0'; i++) {
+        if (idEliminarStr[i] < '0' || idEliminarStr[i] > '9') {
+            idValido = 0;
+            break;
+        }
+    }
+
+    if (!idValido) {
+        cls();
+        printf("ID no valido, devolviendo al menu.\n");
+        pause();
+        cls();
+        return; // Retornar al menu principal
+    }
+
+    idEliminar = atoi(idEliminarStr);
 
     temp = farmacia->sucursales;
     if (temp == NULL) {
@@ -740,6 +820,10 @@ void eliminarSucursalView(struct FarmaSalud *farmacia) {
     } else {
         mostrarMensajeSucursalEliminada();
     }
+}
+
+void imprimirFechaCaducidadInvalidaMenu() {
+    printf("Fecha de caducidad invalida. Por favor, ingrese una fecha valida.\n");
 }
 
 void agregarProveedor(struct FarmaSalud *farmacia, struct NodoProveedor *nuevoProveedor) {
@@ -769,11 +853,33 @@ int existeProveedor(struct FarmaSalud *farmacia, int id) {
     return 0;  // Proveedor no encontrado
 }
 
+// Funcion para validar si una cadena contiene solo numeros
+int validarSoloNumeros(char *str) {
+    int i;
+    for (i = 0; str[i] != '\0'; i++) {
+        if (str[i] < '0' || str[i] > '9') {
+            return 0;  // No es un numero
+        }
+    }
+    return 1;  // Es un numero
+}
 
 void leerDatosProveedor(int *id, char **nombre, char **direccion, char **telefono) {
+    char idStr[20];  // Asumiendo que el id no excedera los 19 digitos
     cls();
     printf("Ingrese ID del proveedor: ");
-    scanf("%d", id);
+    scanf("%s", idStr);
+
+    // Validar que el ID solo contenga numeros
+    if (!validarSoloNumeros(idStr)) {
+        cls();
+        printf("El ID debe contener solo numeros.\n");
+        *id = -1;  // Asignar un valor invalido a id para indicar error
+        pause();
+        return;
+    }
+
+    *id = atoi(idStr);  // Convertir la cadena a numero una vez validado
 
     *nombre = (char *)malloc(50 * sizeof(char));
     if (*nombre == NULL) {
@@ -785,30 +891,40 @@ void leerDatosProveedor(int *id, char **nombre, char **direccion, char **telefon
 
     *direccion = (char *)malloc(100 * sizeof(char));
     if (*direccion == NULL) {
-        printf("Error al asignar memoria para la dirección del proveedor.\n");
+        printf("Error al asignar memoria para la direccion del proveedor.\n");
         return;
     }
-    printf("Ingrese dirección del proveedor: ");
+    printf("Ingrese direccion del proveedor: ");
     scanf(" %[^\n]", *direccion);
 
     *telefono = (char *)malloc(15 * sizeof(char));
     if (*telefono == NULL) {
-        printf("Error al asignar memoria para el teléfono del proveedor.\n");
+        printf("Error al asignar memoria para el telefono del proveedor.\n");
         return;
     }
-    printf("Ingrese teléfono del proveedor: ");
-    scanf(" %[^\n]", *telefono);
-}
+    printf("Ingrese telefono del proveedor: +569");
+    scanf("%s", *telefono);
 
-void mostrarMensajeProveedorAgregado() {
-    cls();
-    printf("Proveedor agregado con éxito.\n");
-    pause();
+    // Validar que el telefono solo contenga numeros y tenga exactamente 8 digitos
+    if (!validarSoloNumeros(*telefono) || strlen(*telefono) != 8) {
+        cls();
+        printf("El telefono debe contener solo numeros y ser de 8 digitos.\n");
+        free(*telefono);
+        *telefono = NULL;  // Asignar un valor invalido a telefono para indicar error
+        pause();
+        return;
+    }
 }
 
 void mostrarMensajeProveedorExiste() {
     cls();
     printf("Error: Ya existe un proveedor con el mismo ID.\n");
+    pause();
+}
+
+void mostrarMensajeProveedorAgregado() {
+    cls();
+    printf("Proveedor agregado con exito.\n");
     pause();
 }
 
@@ -820,7 +936,7 @@ void crearProveedorView(struct FarmaSalud *farmacia) {
 
     leerDatosProveedor(&id, &nombre, &direccion, &telefono);
 
-    if (nombre == NULL || direccion == NULL || telefono == NULL) {
+    if (id == -1 || nombre == NULL || direccion == NULL || telefono == NULL) {
         return;
     }
 
@@ -854,6 +970,7 @@ void crearProveedorView(struct FarmaSalud *farmacia) {
 
     mostrarMensajeProveedorAgregado();
 }
+
 void mostrarProveedores(struct FarmaSalud *farmacia) {
     struct NodoProveedor *proveedorActual;
     proveedorActual = farmacia->proveedores;
@@ -878,7 +995,7 @@ void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
     producto = nodoProducto->datosProducto;
 
     if (producto->requiereReceta) {
-        strcpy(requiereReceta, "Sí");
+        strcpy(requiereReceta, "Si");
     } else {
         strcpy(requiereReceta, "No");
     }
@@ -894,8 +1011,8 @@ void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
 void mostrarProveedor(struct Proveedor *proveedor) {
     printf("ID: %d\n", proveedor->id);
     printf("Nombre: %s\n", proveedor->nombre);
-    printf("Dirección: %s\n", proveedor->direccion);
-    printf("Teléfono: %s\n", proveedor->telefono);
+    printf("Direccion: %s\n", proveedor->direccion);
+    printf("Telefono: +569%s\n", proveedor->telefono);
 
     // Mostrar productos del proveedor
     if (proveedor->productos == NULL) {
@@ -926,8 +1043,21 @@ void leerProveedores(struct FarmaSalud *farmacia) {
 }
 
 void solicitarIdProveedorEliminar(int *idEliminar) {
+    char idStr[20];  // Asumiendo que el id no excedera los 19 digitos
+    cls();
     printf("Ingrese el ID del proveedor que desea eliminar: ");
-    scanf("%d", idEliminar);
+    scanf("%s", idStr);
+
+    // Validar que el ID solo contenga numeros
+    if (!validarSoloNumeros(idStr)) {
+        cls();
+        printf("El ID debe contener solo numeros.\n");
+        pause();
+        solicitarIdProveedorEliminar(idEliminar);  // Llamar nuevamente a la funcion para solicitar el ID
+        return;
+    }
+
+    *idEliminar = atoi(idStr);  // Convertir la cadena a numero una vez validado
 }
 
 void mostrarProveedorNoEncontrado() {
@@ -938,7 +1068,7 @@ void mostrarProveedorNoEncontrado() {
 
 void mostrarProveedorEliminado() {
     cls();
-    printf("Proveedor eliminado con éxito.\n");
+    printf("Proveedor eliminado con exito.\n");
     pause();
 }
 
@@ -954,12 +1084,12 @@ int buscarYEliminarProveedor(struct FarmaSalud *farmacia, int idEliminar) {
         temp = temp->sig;
     }
 
-    // Si no se encontró el proveedor con el ID proporcionado
+    // Si no se encontro el proveedor con el ID proporcionado
     if (temp == NULL) {
         return 0; // No encontrado
     }
 
-    // Manejar los casos especiales para el primer y último nodo
+    // Manejar los casos especiales para el primer y ultimo nodo
     if (prev == NULL) {
         farmacia->proveedores = temp->sig;
     } else {
@@ -971,7 +1101,7 @@ int buscarYEliminarProveedor(struct FarmaSalud *farmacia, int idEliminar) {
 
     // Liberar la memoria asociada al proveedor
 
-    return 1; // Eliminado con éxito
+    return 1; // Eliminado con exito
 }
 
 void eliminarProveedor(struct FarmaSalud *farmacia) {
@@ -1018,48 +1148,94 @@ int existeProducto(struct FarmaSalud *farmacia, const char *codigo) {
 
 void solicitarDatosProducto(struct FarmaSalud *farmacia, struct Producto *producto) {
     int idProveedorInt;
+    char precioStr[20];  // Para almacenar la cadena de precio temporalmente
+    char requiereRecetaStr[2];  // Para almacenar la cadena de requiereReceta temporalmente
+
     cls();
 
     while (1) {
         printf("Ingrese ID del proveedor: ");
         scanf(" %49[^\n]", producto->idProveedor);
+
+        // Validar que el ID solo contenga numeros
+        if (!validarSoloNumeros(producto->idProveedor)) {
+            cls();
+            printf("El ID debe contener solo numeros.\n");
+            continue;
+        }
+
         idProveedorInt = atoi(producto->idProveedor);
 
         if (existeProveedor(farmacia, idProveedorInt)) {
             break;
         } else {
             cls();
-            printf("ID del proveedor no encontrado. Ingrese un ID válido.\n");
+            printf("ID del proveedor no encontrado. Ingrese un ID valido.\n");
         }
     }
 
     while (1) {
-        printf("Ingrese código del producto: ");
+        printf("Ingrese codigo del producto: ");
         scanf(" %49[^\n]", producto->codigo);
+
+        // Validar que el codigo solo contenga numeros
+        if (!validarSoloNumeros(producto->codigo)) {
+            cls();
+            printf("El codigo debe contener solo numeros.\n");
+            continue;
+        }
 
         if (!existeProducto(farmacia, producto->codigo)) {
             break;
         } else {
             cls();
-            printf("Código del producto ya existe. Ingrese un código válido.\n");
+            printf("Codigo del producto ya existe. Ingrese un codigo valido.\n");
         }
     }
 
     cls();
     printf("Ingrese nombre del producto: ");
     scanf(" %99[^\n]", producto->nombreProducto);
+    
     cls();
-    printf("Ingrese descripción del producto: ");
+    printf("Ingrese descripcion del producto: ");
     scanf(" %199[^\n]", producto->descripcion);
+    
     cls();
-    printf("Ingrese categoría del producto: ");
+    printf("Ingrese categoria del producto: ");
     scanf(" %49[^\n]", producto->categoria);
-    cls();
-    printf("Ingrese precio del producto: ");
-    scanf("%d", &producto->precio);
-    cls();
-    printf("¿Requiere receta? (1-Sí, 0-No): ");
-    scanf("%d", &producto->requiereReceta);
+    
+    while (1) {
+        cls();
+        printf("Ingrese precio del producto: ");
+        scanf(" %19[^\n]", precioStr);
+
+        // Validar que el precio solo contenga numeros
+        if (!validarSoloNumeros(precioStr)) {
+            cls();
+            printf("El precio debe contener solo numeros.\n");
+            continue;
+        }
+
+        producto->precio = atoi(precioStr);
+        break;
+    }
+
+    while (1) {
+        cls();
+        printf("¿Requiere receta? (1-Si, 0-No): ");
+        scanf(" %1[^\n]", requiereRecetaStr);
+
+        // Validar que solo sea '1' o '0'
+        if (strcmp(requiereRecetaStr, "1") != 0 && strcmp(requiereRecetaStr, "0") != 0) {
+            cls();
+            printf("Debe ingresar 1 para Si o 0 para No.\n");
+            continue;
+        }
+
+        producto->requiereReceta = atoi(requiereRecetaStr);
+        break;
+    }
 }
 
 struct Producto* crearProducto() {
@@ -1123,11 +1299,11 @@ void agregarProductoProveedor(struct FarmaSalud *farmacia) {
     struct Producto *nuevoProducto;
     int resultado;
     nuevoProducto = crearProducto();
-    solicitarDatosProducto(farmacia, nuevoProducto);  // Pasamos farmacia para la validación de ID y producto
+    solicitarDatosProducto(farmacia, nuevoProducto);  // Pasamos farmacia para la validacion de ID y producto
     resultado = agregarProductoProveedorModelo(farmacia, nuevoProducto);
     if (resultado) {
         cls();
-        printf("Producto agregado con éxito al proveedor.\n");
+        printf("Producto agregado con exito al proveedor.\n");
     } else {
         cls();
         printf("Proveedor no encontrado.\n");
@@ -1149,7 +1325,7 @@ void printSucursalNoEncontrada() {
 
 void printErrorCapacidadMaxima() {
     cls();
-    printf("Error: No se puede agregar más registros de envíos, capacidad máxima alcanzada.\n");
+    printf("Error: No se puede agregar mas registros de envios, capacidad maxima alcanzada.\n");
     pause();
 }
 
@@ -1158,9 +1334,7 @@ void printRegistroEnvio(const char *registro) {
 }
 
 void printNoSucursalesRegistradas() {
-    cls();
     printf("No hay sucursales registradas.\n");
-    pause();
 }
 
 void printSucursalInfo(struct Sucursal *sucursal) {
@@ -1169,12 +1343,12 @@ void printSucursalInfo(struct Sucursal *sucursal) {
     espacio = 10000 - espacioRestante(sucursal);
     printf("ID: %d\n", sucursal->id);
     printf("Nombre: %s\n", sucursal->nombre);
-    printf("Dirección: %s\n", sucursal->direccion);
+    printf("Direccion: %s\n", sucursal->direccion);
     printf("Cantidad de Ventas: %d\n", sucursal->cantidadDeVentas);
     printf("Capacidad de Almacenamiento: %d / 10000\n", espacio);
-    printf("Número de Registros de Envíos: %d\n", sucursal->numRegistros);
+    printf("Numero de Registros de Envios: %d\n", sucursal->numRegistros);
     for (i = 0; i < sucursal->numRegistros; i++) {
-        printf("\tRegistro de Envío %d: %s\n", i + 1, sucursal->registrosEnvios[i]);
+        printf("\tRegistro de Envio %d: %s\n", i + 1, sucursal->registrosEnvios[i]);
     }
     printf("--------------------------------------------------\n");
 }
@@ -1219,7 +1393,7 @@ void printProductosTransferidos(int idProveedor, int idSucursal) {
     printf("Productos transferidos del proveedor con ID %d a la sucursal con ID %d.\n", idProveedor, idSucursal);
 }
 
-// Funciones principales
+// Funcion para obtener la fecha
 void obtenerFecha(char *fecha) {
     int dia, mes;
     printIngresarMes();
@@ -1229,6 +1403,7 @@ void obtenerFecha(char *fecha) {
     sprintf(fecha, "%02d/%02d", mes, dia);
 }
 
+// Funcion para concatenar dos cadenas
 void my_strcat(char *dest, const char *src) {
     while (*dest) {
         dest++;
@@ -1241,6 +1416,7 @@ void my_strcat(char *dest, const char *src) {
     *dest = '\0';
 }
 
+// Funcion para agregar un registro de envio a una sucursal
 void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre) {
     char fecha[6];
     char registro[200];
@@ -1256,7 +1432,7 @@ void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre
     my_strcat(registro, proveedorNombre);
     my_strcat(registro, " a Sucursal ");
     my_strcat(registro, sucursal->nombre);
-    my_strcat(registro, " el día ");
+    my_strcat(registro, " el dia ");
     my_strcat(registro, fecha);
 
     sucursal->registrosEnvios[sucursal->numRegistros] = (char *)malloc(strlen(registro) + 1);
@@ -1266,6 +1442,7 @@ void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre
     }
 }
 
+// Funcion para buscar una sucursal por ID
 struct NodoSucursales* buscarSucursalPorID(struct FarmaSalud *farmacia, int idSucursal) {
     struct NodoSucursales *sucursalActual;
     struct NodoSucursales *inicio;
@@ -1286,6 +1463,7 @@ struct NodoSucursales* buscarSucursalPorID(struct FarmaSalud *farmacia, int idSu
     return NULL;
 }
 
+// Funcion para buscar un proveedor por ID
 struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idProveedor) {
     struct NodoProveedor *proveedorActual;
     proveedorActual = farmacia->proveedores;
@@ -1299,7 +1477,9 @@ void mostrarSucursales(struct FarmaSalud *farmacia) {
     struct NodoSucursales *sucursalActual;
     sucursalActual = farmacia->sucursales;
     if (sucursalActual == NULL) {
+        cls();
         printNoSucursalesRegistradas();
+        pause();
         return;
     }
 
@@ -1309,6 +1489,7 @@ void mostrarSucursales(struct FarmaSalud *farmacia) {
     } while (sucursalActual != farmacia->sucursales);
 }
 
+// Funcion para transferir productos de un proveedor a una sucursal
 void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     struct NodoProveedor *proveedorActual;
     struct NodoSucursales *sucursalActual;
@@ -1420,7 +1601,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     pause();
     cls();
 }
-//FUNCION HECHA POR MI/
+
 void printPromptFechaVencimiento(char* nombreProducto) {
     printf("Ingrese la fecha de vencimiento para el producto (formato MM/AAAA) [%s]: ", nombreProducto);
 }
@@ -1520,6 +1701,7 @@ void mostrarYSeleccionarProducto(struct NodoProveedor *proveedorActual, char *co
     }
 }
 
+// funcion tranferir producto de proveedor a sucursal
 void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia)
 {
     struct NodoProveedor *proveedorActual;
@@ -1602,19 +1784,19 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia)
     //printCamion();
     pause();
 }
-// FUNCION HECHA POR BASTIAN
 
-// Patricio v v v v v v
+// Funcion para extraer el mes y anio de una fecha en formato MM/AAAA
 void extraerFecha(const char *fecha, int *mes, int *anio) {
     sscanf(fecha, "%d/%d", mes, anio);
 }
 
+// Funcion para comparar dos fechas en formato MM/AAAA
 void imprimirSucursalOProductosInvalidos() {
-    printf("Sucursal o productos no válidos.\n");
+    printf("Sucursal o productos no validos.\n");
 }
 
 void imprimirFechaCaducidadInvalida() {
-    printf("Fecha de caducidad inválida.\n");
+    printf("Fecha de caducidad invalida.\n");
 }
 
 void imprimirNoHaySucursalesRegistradas() {
@@ -1642,11 +1824,6 @@ void imprimirIngreseIDSucursal() {
 void imprimirIngreseFechaVencimiento() {
     printf("Ingrese la fecha de vencimiento (MM/AAAA): ");
 }
-
-void imprimirFechaCaducidadInvalidaMenu() {
-    printf("Fecha de caducidad invalida. Por favor, ingrese una fecha válida.\n");
-}
-
 
 int compararFechasVencidas(const char *fecha1, const char *fecha2) {
     int mes1, anio1, mes2, anio2;
@@ -1731,7 +1908,6 @@ void eliminarProductosVencidosDeTodasLasSucursales(struct FarmaSalud *farmacia, 
     pause();
 }
 
-
 void menuEliminarProductosVencidos(struct FarmaSalud *farmacia) {
     int idSucursal;
     char fechaLimite[8];
@@ -1781,11 +1957,11 @@ void printNoHayClientesRegistrados() {
 }
 
 void printEntradaInvalida() {
-    printf("Entrada inválida.\n");
+    printf("Entrada invalida.\n");
 }
 
 void printClienteRegistrado() {
-    printf("El cliente está registrado (1-Sí, 0-No): ");
+    printf("El cliente esta registrado (1-Si, 0-No): ");
 }
 
 void printIngreseIDCliente() {
@@ -1801,11 +1977,11 @@ void printIngreseCantidadProductos() {
 }
 
 void printCantidadProductosInvalida() {
-    printf("Cantidad de productos inválida.\n");
+    printf("Cantidad de productos invalida.\n");
 }
 
 void printIngreseCodigoProducto(int index) {
-    printf("Ingrese el código del producto %d: ", index + 1);
+    printf("Ingrese el codigo del producto %d: ", index + 1);
 }
 
 void printIngreseCantidadProducto(int index) {
@@ -1821,7 +1997,7 @@ void printStockInsuficiente(char* nombreProducto) {
 }
 
 void printProductoRequiereReceta(char* nombreProducto) {
-    printf("El producto %s requiere receta. El cliente tiene la receta (1-Sí, 0-No): ", nombreProducto);
+    printf("El producto %s requiere receta. El cliente tiene la receta (1-Si, 0-No): ", nombreProducto);
 }
 
 void printCompraSinReceta(char* nombreProducto) {
@@ -1832,7 +2008,7 @@ void printBoletaFisicaHeader() {
     printf("\n=======================================\n");
     printf("                 FarmaSalud\n");
     printf("           La farmacia del pueblo\n");
-    printf("               Boleta Física\n");
+    printf("               Boleta Fisica\n");
     printf("=======================================\n");
 }
 
@@ -1845,7 +2021,7 @@ void printClienteNombre(char* rutCliente) {
 }
 
 void printCompraAnonima() {
-    printf("Cliente: Compra anónima\n");
+    printf("Cliente: Compra anonima\n");
 }
 
 void printProductosHeader() {
@@ -1940,11 +2116,19 @@ void mostrarClientes(struct FarmaSalud *farmacia) {
     }
 }
 
+void printAnnoInvalido() {
+    printf("Año invalido.\n");
+}
+
+void printMesInvalido() {
+    printf("Mes invalido.\n");
+}
+
 void realizarCompra(struct FarmaSalud *farmacia) {
     int idSucursal, idCliente, cantidadCompras, cantidadProducto, i, j;
-    struct Producto **productosComprados;  // Array de punteros a struct Producto
-    int *cantidades;  // Array de cantidades
-    int *productosRequierenReceta;  // Array de flags para requerir receta
+    struct Producto **productosComprados;
+    int *cantidades;
+    int *productosRequierenReceta;
     struct NodoClientes *cliente;
     struct NodoSucursales *sucursal;
     struct Producto *producto;
@@ -1954,11 +2138,9 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     int esClienteRegistrado;
     int tieneReceta;
     int total;
-    sucursal = NULL;
-    cliente = NULL;
-    esClienteRegistrado = 0;
-    tieneReceta = 0;
-
+    int mesVenta;
+    char annoVentaStr[5];  // String para el año
+    int annoVenta;
 
     cls();
     mostrarSucursales(farmacia);
@@ -2004,7 +2186,7 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 
     cls();
     printIngreseCantidadProductos();
-    espacio = 10000 - espacioRestante(sucursal -> datosSucursal);
+    espacio = 10000 - espacioRestante(sucursal->datosSucursal);
     if (scanf("%d", &cantidadCompras) != 1 || cantidadCompras <= 0 || cantidadCompras > espacio) {
         printCantidadProductosInvalida();
         pause();
@@ -2016,6 +2198,8 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     cantidades = (int *)malloc(cantidadCompras * sizeof(int));
     productosRequierenReceta = (int *)malloc(cantidadCompras * sizeof(int));
 
+    // Mostrar los productos disponibles en la sucursal seleccionada
+    mostrarSucursal(sucursal);
     for (i = 0; i < cantidadCompras; i++) {
         printIngreseCodigoProducto(i);
         if (scanf("%s", codigoProducto) != 1) {
@@ -2067,6 +2251,27 @@ void realizarCompra(struct FarmaSalud *farmacia) {
         cantidades[i] = cantidadProducto;
     }
 
+    // Captura del mes y año de la venta
+    cls();
+    printf("Ingrese el mes de la venta (1-12): ");
+    if (scanf("%d", &mesVenta) != 1 || mesVenta < 1 || mesVenta > 12) {
+        printMesInvalido();
+        pause();
+        return;
+    }
+
+    // Validacion para el año de venta
+    while (1) {
+        printf("Ingrese el año de la venta (cuatro digitos): ");
+        if (scanf("%4s", annoVentaStr) != 1 || strlen(annoVentaStr) != 4 || sscanf(annoVentaStr, "%d", &annoVenta) != 1 || annoVenta < 1000 || annoVenta > 9999) {
+            printAnnoInvalido();
+            pause();
+        } else {
+            break;
+        }
+    }
+
+    // Asignar mes y año de venta a cada producto vendido que requiere receta
     for (i = 0; i < cantidadCompras; i++) {
         if (productosRequierenReceta[i]) {
             productosComprados[i]->cantidad -= cantidades[i];
@@ -2085,11 +2290,16 @@ void realizarCompra(struct FarmaSalud *farmacia) {
                     cliente->datosClientes->numCompras++;
                 }
             }
+
+            // Asignar mes y año de venta al producto vendido
+            productoVendido->mesVenta = mesVenta;
+            productoVendido->anioVenta = annoVenta;
         }
     }
 
     sucursal->datosSucursal->cantidadDeVentas++;
 
+    // Impresion de la boleta
     printBoletaFisicaHeader();
     printSucursalNombre(sucursal->datosSucursal->nombre);
     if (esClienteRegistrado) {
@@ -2114,7 +2324,6 @@ void realizarCompra(struct FarmaSalud *farmacia) {
     pause();
 }
 
-// Giovanni v v v v v v
 // Controlador
 void eliminarProducto(struct NodoProducto **productoActual, struct NodoSucursales *sucursalActual) {
     struct NodoProducto *siguienteProducto;
@@ -2138,7 +2347,7 @@ void imprimirActualizacionInventario() {
     printf("Inventarios actualizados. Productos con stock 0 eliminados.\n");
 }
 
-// Función principal
+// Funcion principal
 void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
     struct NodoProducto *productoActual;
     struct NodoSucursales *sucursalActual;
@@ -2207,21 +2416,22 @@ void mostrarSucursalConMasVentas(struct FarmaSalud *farmaSalud) {
     if (!farmaSalud || !farmaSalud->sucursales) {
         cls();
         printf("\nNo existen sucursales en el sistema.\n");
+        pause();
         return;
     }
 
     sucursalMasVentas = getSucursalConMasVentas(farmaSalud->sucursales);
     if (!sucursalMasVentas) {
         cls();
-        printf("\nHay más de una sucursal con la misma cantidad de ventas.\n");
+        printf("\nHay mas de una sucursal con la misma cantidad de ventas.\n");
         return;
     }
 
     cls();
-    printf("\nLa sucursal con más ventas es:\n");
+    printf("\nLa sucursal con mas ventas es:\n");
     printf("ID: %d\n", sucursalMasVentas->id);
     printf("Nombre: %s\n", sucursalMasVentas->nombre);
-    printf("Dirección: %s\n", sucursalMasVentas->direccion);
+    printf("Direccion: %s\n", sucursalMasVentas->direccion);
     printf("Cantidad de Ventas: %d\n", sucursalMasVentas->cantidadDeVentas);
 }
 
@@ -2353,6 +2563,321 @@ void mostrarPorcentajeClientesAfiliados(struct FarmaSalud *farmaSalud) {
     printf("El porcentaje de clientes afiliados es: %.2f%%\n", porcentajeAfiliados);
 }
 
+// Funcion auxiliar para verificar si un mes esta en un arreglo de meses
+int mesEnLista(int mes, int lista[]) {
+    int i;
+    for (i = 0; i < 3; i++) {
+        if (mes == lista[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// Funcion para calcular el total de transacciones de una categoria
+int totalTransaccionesDeCategoria(struct NodoProducto *ventas, char *categoria) {
+    int total = 0;
+    struct NodoProducto *rec = ventas;
+
+    while (rec != NULL) {
+        if (strcmp(rec->datosProducto->categoria, categoria) == 0) {
+            total += rec->datosProducto->cantidad;
+        }
+        rec = rec->sig;
+    }
+    return total;
+}
+
+// Funcion para obtener la categoria mas vendida en una estacion del año
+char* getCategoriaMasVendidaEstacion(struct NodoProducto *ventas, char estacion) {
+    struct NodoProducto *rec;
+    char *categoriaMasVendida = NULL;
+    int maxVentas = 0, condicion, numeroMes;
+
+    if (ventas == NULL) {
+        return NULL;
+    }
+
+    rec = ventas;
+    while (rec != NULL) {
+        numeroMes = rec->datosProducto->mesVenta;
+        switch (estacion) {
+            case 'P': // Primavera
+                condicion = numeroMes >= 9 && numeroMes <= 11;
+                break;
+            case 'V': // Verano
+                condicion = numeroMes == 12 || numeroMes <= 2;
+                break;
+            case 'O': // Otoño
+                condicion = numeroMes >= 3 && numeroMes <= 5;
+                break;
+            case 'I': // Invierno
+                condicion = numeroMes >= 6 && numeroMes <= 8;
+                break;
+            default:
+                condicion = 0;
+                break;
+        }
+
+        if (condicion) {
+            int ventasCategoria = totalTransaccionesDeCategoria(ventas, rec->datosProducto->categoria);
+            if (categoriaMasVendida == NULL || ventasCategoria > maxVentas) {
+                maxVentas = ventasCategoria;
+                categoriaMasVendida = rec->datosProducto->categoria;
+            }
+        }
+        rec = rec->sig;
+    }
+    return categoriaMasVendida;
+}
+
+// Funcion principal para calcular y mostrar la categoria y producto mas vendido por estacion del año
+void calcularMasVendidoPorEstacion(struct FarmaSalud *farmacia) {
+    char *categoriaMasVendidaPrimavera, *categoriaMasVendidaVerano, *categoriaMasVendidaOtonio, *categoriaMasVendidaInvierno;
+    struct NodoSucursales *nodoSucursal;
+    struct NodoSucursales *primerNodoSucursal;
+    struct NodoProducto *ventas;
+    char *categoriaPrimavera, *categoriaVerano, *categoriaOtonio, *categoriaInvierno;
+
+    // Inicializacion de variables
+    categoriaMasVendidaPrimavera = categoriaMasVendidaVerano = categoriaMasVendidaOtonio = categoriaMasVendidaInvierno = NULL;
+
+    if (farmacia == NULL || farmacia->sucursales == NULL) {
+        printf("No hay datos disponibles.\n");
+        return;
+    }
+
+    nodoSucursal = farmacia->sucursales;
+    primerNodoSucursal = nodoSucursal;
+
+    do {
+        if (nodoSucursal == NULL || nodoSucursal->datosSucursal == NULL) break;
+
+        ventas = nodoSucursal->datosSucursal->productosVendidos;
+
+        categoriaPrimavera = getCategoriaMasVendidaEstacion(ventas, 'P');
+        categoriaVerano = getCategoriaMasVendidaEstacion(ventas, 'V');
+        categoriaOtonio = getCategoriaMasVendidaEstacion(ventas, 'O');
+        categoriaInvierno = getCategoriaMasVendidaEstacion(ventas, 'I');
+
+        // Actualizacion de categorias mas vendidas
+        if (categoriaPrimavera != NULL && (categoriaMasVendidaPrimavera == NULL ||
+            totalTransaccionesDeCategoria(ventas, categoriaPrimavera) >
+            totalTransaccionesDeCategoria(ventas, categoriaMasVendidaPrimavera))) {
+            categoriaMasVendidaPrimavera = categoriaPrimavera;
+        }
+        if (categoriaVerano != NULL && (categoriaMasVendidaVerano == NULL ||
+            totalTransaccionesDeCategoria(ventas, categoriaVerano) >
+            totalTransaccionesDeCategoria(ventas, categoriaMasVendidaVerano))) {
+            categoriaMasVendidaVerano = categoriaVerano;
+        }
+        if (categoriaOtonio != NULL && (categoriaMasVendidaOtonio == NULL ||
+            totalTransaccionesDeCategoria(ventas, categoriaOtonio) >
+            totalTransaccionesDeCategoria(ventas, categoriaMasVendidaOtonio))) {
+            categoriaMasVendidaOtonio = categoriaOtonio;
+        }
+        if (categoriaInvierno != NULL && (categoriaMasVendidaInvierno == NULL ||
+            totalTransaccionesDeCategoria(ventas, categoriaInvierno) >
+            totalTransaccionesDeCategoria(ventas, categoriaMasVendidaInvierno))) {
+            categoriaMasVendidaInvierno = categoriaInvierno;
+        }
+
+        nodoSucursal = nodoSucursal->sig;
+    } while (nodoSucursal != primerNodoSucursal);
+
+    // Impresion de resultados
+    cls();
+    printf("Verano:\n");
+    if (categoriaMasVendidaVerano != NULL) {
+        printf("  Categoria mas vendida: %s\n", categoriaMasVendidaVerano);
+    }
+    else {
+        printf("  No hay ventas registradas.\n");
+    }
+
+    printf("\nOtonio:\n");
+    if (categoriaMasVendidaOtonio != NULL) {
+        printf("  Categoria mas vendida: %s\n", categoriaMasVendidaOtonio);
+    }
+    else {
+        printf("  No hay ventas registradas.\n");
+    }
+
+    printf("\nInvierno:\n");
+    if (categoriaMasVendidaInvierno != NULL) {
+        printf("  Categoria mas vendida: %s\n", categoriaMasVendidaInvierno);
+    }
+    else {
+        printf("  No hay ventas registradas.\n");
+    }
+
+    printf("\nPrimavera:\n");
+    if (categoriaMasVendidaPrimavera != NULL) {
+        printf("  Categoria mas vendida: %s\n", categoriaMasVendidaPrimavera);
+    } 
+    else {
+        printf("  No hay ventas registradas.\n");
+    }
+    printf("\n");
+    pause();
+}
+
+int productoPerteneceAEstacion(int mesVenta, char estacion) {
+    switch (estacion) {
+        case 'P':
+            return (mesVenta == 9 || mesVenta == 10 || mesVenta == 11);
+        case 'V':
+            return (mesVenta == 12 || mesVenta == 1 || mesVenta == 2);
+        case 'O':
+            return (mesVenta == 3 || mesVenta == 4 || mesVenta == 5);
+        case 'I':
+            return (mesVenta == 6 || mesVenta == 7 || mesVenta == 8);
+        default:
+            return 0;
+    }
+}
+
+// Funcion para ordenar productos por ventas
+void ordenarProductosPorVentas(struct NodoProducto *ventas, char estacion, char *topProductos[], int topVentas[]) {
+    struct Producto *producto;
+    int j, k;
+
+    while (ventas != NULL) {
+        producto = ventas->datosProducto;
+        if (producto != NULL && productoPerteneceAEstacion(producto->mesVenta, estacion)) {
+            for (j = 0; j < 5; j++) {
+                if (producto->cantidad > topVentas[j]) {
+                    for (k = 4; k > j; k--) {
+                        topProductos[k] = topProductos[k - 1];
+                        topVentas[k] = topVentas[k - 1];
+                    }
+                    topProductos[j] = producto->nombreProducto;
+                    topVentas[j] = producto->cantidad;
+                    break;
+                }
+            }
+        }
+        ventas = ventas->sig;
+    }
+}
+
+// Funcion para mostrar el total de sucursales y ventas totales
+void mostrarTotalSucursalesVentas(struct FarmaSalud *farmaSalud) {
+    struct NodoSucursales *rec;
+    int totalSucursales = 0;
+    int totalVentas = 0;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    rec = farmaSalud->sucursales;
+
+    // Calcular estadisticas
+    do {
+        totalVentas += rec->datosSucursal->cantidadDeVentas;
+        totalSucursales++;
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    // Imprimir estadisticas
+    cls();
+    printf("\nTotal de Sucursales: %d\n", totalSucursales);
+    printf("Total de Ventas: %d\n", totalVentas);
+    pause();
+}
+
+// Funcion para mostrar el promedio de ventas por sucursal
+void mostrarPromedioVentas(struct FarmaSalud *farmaSalud) {
+    struct NodoSucursales *rec;
+    int totalSucursales = 0;
+    int totalVentas = 0;
+    float promedioVentas = 0.0;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    rec = farmaSalud->sucursales;
+
+    // Calcular estadisticas
+    do {
+        totalVentas += rec->datosSucursal->cantidadDeVentas;
+        totalSucursales++;
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    promedioVentas = (float)totalVentas / totalSucursales;
+
+    // Imprimir estadistica
+    cls();
+    printf("\nPromedio de Ventas por Sucursal: %.2f\n", promedioVentas);
+    pause();
+}
+
+// Funcion para encontrar la sucursal con mas ventas
+void mostrarSucursalMasVentas(struct FarmaSalud *farmaSalud) {
+    struct NodoSucursales *rec = NULL;
+    int maxVentas = -1;
+    int idSucursalMaxVentas = 0;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    rec = farmaSalud->sucursales;
+    idSucursalMaxVentas = rec->datosSucursal->id;
+
+    // Encontrar la sucursal con mas ventas
+    do {
+        int ventas = rec->datosSucursal->cantidadDeVentas;
+        if (ventas > maxVentas) {
+            maxVentas = ventas;
+            idSucursalMaxVentas = rec->datosSucursal->id;
+        }
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    // Imprimir estadistica
+    cls();
+    printf("\nSucursal con mas ventas (ID): %d\n", idSucursalMaxVentas);
+    pause();
+}
+
+// Funcion para encontrar la sucursal con menos ventas
+void mostrarSucursalMenosVentas(struct FarmaSalud *farmaSalud) {
+    struct NodoSucursales *rec = NULL;
+    int minVentas = 0;
+    int idSucursalMinVentas = 0;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    rec = farmaSalud->sucursales;
+    minVentas = rec->datosSucursal->cantidadDeVentas;
+    idSucursalMinVentas = rec->datosSucursal->id;
+
+    // Encontrar la sucursal con menos ventas
+    do {
+        int ventas = rec->datosSucursal->cantidadDeVentas;
+        if (ventas < minVentas) {
+            minVentas = ventas;
+            idSucursalMinVentas = rec->datosSucursal->id;
+        }
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    // Imprimir estadistica
+    cls();
+    printf("\nSucursal con menos ventas (ID): %d\n", idSucursalMinVentas);
+    pause();
+}
+
 void mostrarEstadisticas(struct FarmaSalud *farmaSalud) {
     struct NodoSucursales *rec = farmaSalud->sucursales;
     int totalVentas = 0;
@@ -2366,7 +2891,7 @@ void mostrarEstadisticas(struct FarmaSalud *farmaSalud) {
         return;
     }
 
-    // Calcular el total de ventas y encontrar la sucursal con más y menos ventas
+    // Calcular el total de ventas y encontrar la sucursal con mas y menos ventas
     do {
         int ventas = rec->datosSucursal->cantidadDeVentas;
         totalVentas += ventas;
@@ -2381,14 +2906,14 @@ void mostrarEstadisticas(struct FarmaSalud *farmaSalud) {
         rec = rec->sig;
     } while (rec != farmaSalud->sucursales);
 
-    // Imprimir estadísticas
-    printf("\n\nEstadísticas de Ventas de Sucursales:\n");
+    // Imprimir estadisticas
+    printf("\n\nEstadisticas de Ventas de Sucursales:\n");
     printf("Total de Sucursales: %d\n", contadorSucursales);
     printf("Total de Ventas: %d\n", totalVentas);
     printf("Promedio de Ventas por Sucursal: %.2f\n", (float)totalVentas / contadorSucursales);
     printf("Sucursal con menos ventas (ID): %d\n", idSucursalMenosVentas);
     if (idSucursalMenosVentas == -1) {
-        printf("La sucursal con menos ventas no tiene un ID válido asignado.\n");
+        printf("La sucursal con menos ventas no tiene un ID valido asignado.\n");
     }
 }
 
@@ -2401,10 +2926,10 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     struct Producto *producto1, *producto2, *producto3, *producto4, *producto5;
     struct Producto *producto6;
 
-    prod1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Cápsulas", "Antidepresivo", 6327, "Lab. de Chile", "DRU30", "02/2024", 1, 1);
-    prod2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actúa sobre el sistema nervioso central, con propiedades ansiolíticas.", "Ansiolítico", 5007, "Lab. de Chile", "K3935", "05/2024", 1, 1);
-    prod3 = crearProductoFalso("3", "Tapsin Día-Noche Plus 18 Comp", "Comprimidos Recubiertos rápido alivio de los síntomas de la gripe", "Antigripal", 2575, "Lab. Maver", "39DMS", "06/2024", 1, 0);
-    prod4 = crearProductoFalso("4", "Tapsín Día Limón 6 Un.", "Para el alivio sintomático de las molestias del resfrío y la gripe.", "Antigripal", 2500, "Lab. Maver", "KEMBWAL4", "02/2025", 2, 0);
+    prod1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Capsulas", "Antidepresivo", 6327, "Lab. de Chile", "DRU30", "02/2024", 1, 1);
+    prod2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actua sobre el sistema nervioso central, con propiedades ansioliticas.", "Ansiolitico", 5007, "Lab. de Chile", "K3935", "05/2024", 1, 1);
+    prod3 = crearProductoFalso("3", "Tapsin Dia-Noche Plus 18 Comp", "Comprimidos Recubiertos rapido alivio de los sintomas de la gripe", "Antigripal", 2575, "Lab. Maver", "39DMS", "06/2024", 1, 0);
+    prod4 = crearProductoFalso("4", "Tapsin Dia Limon 6 Un.", "Para el alivio sintomatico de las molestias del resfrio y la gripe.", "Antigripal", 2500, "Lab. Maver", "KEMBWAL4", "02/2025", 2, 0);
     prod5 = crearProductoFalso("5", "100 Whey Protein Cookies Cream", "Frasco de Proteina 857.5G", "Proteina", 58990, "PharmaCorp", "GIO4HUM4D", "02/2004", 1, 0);
     prod6 = crearProductoFalso("6", "Sustenan Testosterona 250 mg", "Para aliviar la alergia", "Salud Hombre", 32500, "PharmaCorp", "RGFP74", "10/2022", 1, 1);
 
@@ -2413,7 +2938,7 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     compras3[0] = prod5; compras3[1] = prod6;
     compras4[0] = prod1; compras4[1] = prod3;
 
-    // Creación de clientes
+    // Creacion de clientes
     cliente1 = crearClienteConsole(1, "8032837-5", 25, 1, compras1, 2);
     agregarClienteConsole(farmacia, cliente1);
     cliente2 = crearClienteConsole(2, "22222222-2", 25, 0, compras2, 2);
@@ -2423,7 +2948,7 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     cliente4 = crearClienteConsole(4, "44444444-4", 35, 0, compras4, 2);
     agregarClienteConsole(farmacia, cliente4);
 
-    // Creación de sucursales
+    // Creacion de sucursales
     sucursal1 = crearSucursalConsole(1, "Kennedy", "Apoquindo 234, Santiago", 100);
     agregarSucursalConsole(farmacia, sucursal1);
     sucursal2 = crearSucursalConsole(2, "Los Heroes", "Metro Pedro de Valdivia, Santiago", 200);
@@ -2431,7 +2956,7 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     sucursal3 = crearSucursalConsole(3, "La Florida", "Vicuña Mackenna 4500, Santiago", 150);
     agregarSucursalConsole(farmacia, sucursal3);
 
-    // Creación de proveedores
+    // Creacion de proveedores
     proveedor1 = crearProveedorConsole(1, "Lab. de Chile", "Av. Marathon 1315", "90322000-7");
     agregarProveedorConsole(farmacia, proveedor1);
     proveedor2 = crearProveedorConsole(2, "Lab. Maver", "Las Encinas 1777", "98765432-1");
@@ -2439,11 +2964,11 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     proveedor3 = crearProveedorConsole(3, "PharmaCorp", "Av. Providencia 123", "90321000-8");
     agregarProveedorConsole(farmacia, proveedor3);
 
-    // Creación de productos de prueba
-    producto1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Cápsulas", "Antidepresivo", 6327, "Lab. de Chile", "N/A", "N/A", -1, 1);
-    producto2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actúa sobre el sistema nervioso central, con propiedades ansiolíticas.", "Ansiolítico", 5007, "Lab. de Chile", "N/A", "N/A", -1, 1);
-    producto3 = crearProductoFalso("3", "Tapsin Día-Noche Plus 18 Comp", "Comprimidos Recubiertos rápido alivio de los síntomas de la gripe", "Antigripal", 2575, "Lab. Maver", "N/A", "N/A", -1, 0);
-    producto4 = crearProductoFalso("4", "Tapsín Día Limón 6 Un.", "Para el alivio sintomático de las molestias del resfrío y la gripe.", "Antigripal", 2500, "Lab. Maver", "N/A", "N/A", -1, 0);
+    // Creacion de productos de prueba
+    producto1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Capsulas", "Antidepresivo", 6327, "Lab. de Chile", "N/A", "N/A", -1, 1);
+    producto2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actua sobre el sistema nervioso central, con propiedades ansioliticas.", "Ansiolitico", 5007, "Lab. de Chile", "N/A", "N/A", -1, 1);
+    producto3 = crearProductoFalso("3", "Tapsin Dia-Noche Plus 18 Comp", "Comprimidos Recubiertos rapido alivio de los sintomas de la gripe", "Antigripal", 2575, "Lab. Maver", "N/A", "N/A", -1, 0);
+    producto4 = crearProductoFalso("4", "Tapsin Dia Limon 6 Un.", "Para el alivio sintomatico de las molestias del resfrio y la gripe.", "Antigripal", 2500, "Lab. Maver", "N/A", "N/A", -1, 0);
     producto5 = crearProductoFalso("5", "100 Whey Protein Cookies Cream", "Frasco de Proteina 857.5G", "Proteina", 58990, "PharmaCorp", "N/A", "N/A", -1, 0);
     producto6 = crearProductoFalso("6", "Sustenan Testosterona 250 mg", "Para aliviar la alergia", "Salud Hombre", 32500, "PharmaCorp", "N/A", "N/A", -1, 1);
 
@@ -2473,54 +2998,67 @@ void generarDatosDePrueba(struct FarmaSalud *farmacia) {
     agregarProductoASucursal(sucursal3->datosSucursal, prod4);
     agregarProductoASucursal(sucursal3->datosSucursal, prod5);
     agregarProductoASucursal(sucursal3->datosSucursal, prod6);
+
+    cls();
+    printf("\nDatos de prueba generados exitosamente.\n");
+    pause();
     return;
 }
 
-int menuPrincipal(struct FarmaSalud *farmacia) {
+void menuSucursal(struct FarmaSalud *farmacia) {
     int opcion;
-    printf("Hola");
-    while (1) { // Bucle infinito que se controla con un break
+    while (1) {
         cls();
-        printf("\n ------ FarmaSalud -----\n");
-        printf("---------------------------\n");
-        printf("|- - C l i e n t e s - -| \n");
-        printf("---------------------------\n");
-        printf("1. leerClientes\n");
-        printf("2. crearCliente\n");
-        printf("3. eliminarCliente\n");
-        printf("---------------------------");
-        printf("\n|- - S u c u r s a l - -| \n");
-        printf("---------------------------\n");
-        printf("4. actualizarSucursales\n");
-        printf("5. leerSucursales\n");
-        printf("6. crearSucursal\n");
-        printf("7. eliminarSucursal\n");
-        printf("---------------------------");
-        printf("\n|- - P r o v e e d o r - -| \n");
-        printf("---------------------------\n");
-        printf("8. crearProveedor\n");
-        printf("9. leerProveedor\n");
-        printf("10. eliminarProveedor\n");
-        printf("11. agregarProductoProveedor\n");
-        printf("---------------------------");
-        printf("\n|- -     S t o c k     - -| \n");
-        printf("---------------------------\n");
-        printf("12. transferirProductosProveedorASucursal\n");
-        printf("13. agregarProductoASucursal\n");
-        printf("14. eliminarProductosVencidos\n");
-        printf("15. realizarCompra\n");
-        printf("---------------------------");
-        printf("\n|- -  I n f o r m e s  - -| \n");
-        printf("---------------------------\n");
-        printf("16. Ver Informes\n");
-        printf("---------------------------");
-        printf("\n|- -  S a l i d a  - -| \n");
-        printf("---------------------------\n");
-        printf("17. agregarCasosDePrueba\n");
-        printf("18. Salir\n");
-        printf("---------------------------\n");
+        printf("\n------ Sucursal -----\n");
+        printf("1. Leer Sucursales\n");
+        printf("2. Crear Sucursal\n");
+        printf("3. Eliminar Sucursal\n");
+        printf("4. Actualizar Sucursales\n");
+        printf("5. Agregar Producto a Sucursal\n");
+        printf("6. Volver al Menu Principal\n");
+        printf("---------------------\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
+                leerSucursales(farmacia);
+                break;
+            case 2:
+                crearSucursal(farmacia);
+                break;
+            case 3:
+                eliminarSucursalView(farmacia);
+                break;
+            case 4:
+                actualizarInventariosSucursales(farmacia);
+                break;
+            case 5:
+                transferirProductoProveedorASucursal(farmacia);
+                break;
+            case 6:
+                return; // Volver al menu principal
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
+                break;
+        }
+    }
+}
+
+void menuCliente(struct FarmaSalud *farmacia) {
+    int opcion;
+    while (1) {
+        cls();
+        printf("\n------ Cliente -----\n");
+        printf("1. Leer Cliente\n");
+        printf("2. Crear Cliente\n");
+        printf("3. Eliminar Cliente\n");
+        printf("4. Volver al Menu Principal\n");
+        printf("---------------------\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+
         switch (opcion) {
             case 1:
                 leerClientes(farmacia);
@@ -2532,62 +3070,176 @@ int menuPrincipal(struct FarmaSalud *farmacia) {
                 eliminarCliente(farmacia);
                 break;
             case 4:
-                actualizarInventariosSucursales(farmacia);
+                return; // Volver al menu principal
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
                 break;
-            case 5:
-                leerSucursales(farmacia);
-                break;
-            case 6:
-                crearSucursal(farmacia);
-                break;
-            case 7:
-                eliminarSucursalView(farmacia);
-                break;
-            case 8:
-                crearProveedorView(farmacia);
-                break;
-            case 9:
+        }
+    }
+}
+
+void menuProveedor(struct FarmaSalud *farmacia) {
+    int opcion;
+    while (1) {
+        cls();
+        printf("\n------ Proveedor -----\n");
+        printf("1. Leer Proveedor\n");
+        printf("2. Crear Proveedor\n");
+        printf("3. Eliminar Proveedor\n");
+        printf("4. Agregar Producto a Proveedor\n");
+        printf("5. Transferir Productos de Proveedor a Sucursal\n");
+        printf("6. Volver al Menu Principal\n");
+        printf("----------------------\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
                 leerProveedores(farmacia);
                 break;
-            case 10:
+            case 2:
+                crearProveedorView(farmacia);
+                break;
+            case 3:
                 eliminarProveedor(farmacia);
                 break;
-            case 11:
+            case 4:
                 agregarProductoProveedor(farmacia);
                 break;
-            case 12:
+            case 5:
                 transferirProductosProveedorASucursal(farmacia);
                 break;
-            case 13:
-                transferirProductoProveedorASucursal(farmacia);
+            case 6:
+                return; // Volver al menu principal
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
                 break;
-            case 14:
-                menuEliminarProductosVencidos(farmacia);
-                break;
-            case 15:
-                realizarCompra(farmacia);
-                actualizarInventariosSucursales(farmacia);
-                break;
-            case 16:
+        }
+    }
+}
 
+void menuInformes(struct FarmaSalud *farmacia) {
+    int opcion;
+    while (1) {
+        cls();
+        printf("\n------ Informes -----\n");
+        printf("1. Ver Informes\n");
+        printf("2. Calcular categoria mas vendida por Estacion del Año\n");
+        printf("3. Mostrar Total de Sucursales y Ventas\n");
+        printf("4. Mostrar Promedio de Ventas por Sucursal\n");
+        printf("5. Mostrar Sucursal con Mas Ventas\n");
+        printf("6. Mostrar Sucursal con Menos Ventas\n");
+        printf("7. Volver al Menu Principal\n");
+        printf("---------------------\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
                 mostrarSucursalConMasVentas(farmacia);
                 mostrarEstadisticas(farmacia);
                 mostrarPorcentajeClientesAfiliados(farmacia);
                 mostrarPorcentajeSucursalesConVentasBajoPromedio(farmacia);
                 break;
-            case 17:
-                generarDatosDePrueba(farmacia);
-                cls();
-                printf("Datos de prueba generados.\n");
-                pause();
+            case 2:
+                calcularMasVendidoPorEstacion(farmacia);
                 break;
-
-            case 18: // Actualizar opción de salida
-                printf("Saliendo...\n");
-                return 0; // Indica que se desea salir
-
+            case 3:
+                mostrarTotalSucursalesVentas(farmacia);
+                break;
+            case 4:
+                mostrarPromedioVentas(farmacia);
+                break;
+            case 5:
+                mostrarSucursalConMasVentas(farmacia);
+                break;
+            case 6:
+                mostrarSucursalMenosVentas(farmacia);
+                break;
+            case 7:
+                return; // Volver al menu principal
             default:
                 printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
+                break;
+        }
+    }
+}
+
+void menuAdministrador(struct FarmaSalud *farmacia) {
+    int opcion;
+    while (1) {
+        cls();
+        printf("\n------ Administrador -----\n");
+        printf("1. Realizar Compra\n");
+        printf("2. Eliminar Productos Vencidos\n");
+        printf("3. Generar Datos de Prueba\n");
+        printf("4. Acceder Menu Informes\n");
+        printf("5. Volver al Menu Principal\n");
+        printf("--------------------------\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
+                realizarCompra(farmacia);
+                actualizarInventariosSucursales(farmacia);
+                break;
+            case 2:
+                menuEliminarProductosVencidos(farmacia);
+                break;
+            case 3:
+                generarDatosDePrueba(farmacia);
+                break;
+            case 4:
+                menuInformes(farmacia);
+                break;
+            case 5:
+                return; // Volver al menu principal
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
+                break;
+        }
+    }
+}
+
+int menuPrincipal(struct FarmaSalud *farmacia) {
+    int opcion;
+    while (1) {
+        cls();
+        printf("\n  ----- FarmaSalud -----\n");
+        printf("--------------------------\n");
+        printf("1. Sucursal\n");
+        printf("2. Cliente\n");
+        printf("3. Proveedor\n");
+        printf("4. Administrador\n");
+        printf("5. Salida\n");
+        printf("--------------------------\n");
+        printf("\nSeleccione una opcion: ");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
+                menuSucursal(farmacia);
+                break;
+            case 2:
+                menuCliente(farmacia);
+                break;
+            case 3:
+                menuProveedor(farmacia);
+                break;
+            case 4:
+                menuAdministrador(farmacia);
+                break;
+            case 5:
+                printf("Saliendo...\n");
+                return 0; // Salir del programa
+            default:
+                printf("Opcion no valida. Intente nuevamente.\n");
+                pause();
                 break;
         }
     }
@@ -2597,14 +3249,11 @@ int main() {
     struct FarmaSalud *farmacia;
     farmacia = (struct FarmaSalud *)malloc(sizeof(struct FarmaSalud));
 
-
     farmacia->clientes = NULL;
     farmacia->sucursales = NULL;
     farmacia->proveedores = NULL;
 
-    //generarDatosDePrueba(farmacia);
-
-    // Ejecutar el menú principal una vez
+    // Ejecutar el menu principal una vez
     menuPrincipal(farmacia);
 
     return 0;
