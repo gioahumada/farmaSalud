@@ -6,21 +6,21 @@
  * Este archivo es parte del proyecto de la asignatura INF2223-1 - Estructuras de Datos
  * y a sido diseñado por estudiantes de la PUCV para el desarrollo de un sistema de
  * gestión de inventario y ventas para una farmacia.
- * 
+ *
  * Autores:
  * - Giovanni Ahumada
  * - Bastian Mejias
  * - Simon Vera
  * - Benjamín Pizarro
  * - Patricio Hernandez
- * 
- * Fecha de creación: 7 de junio de 2024
- * 
+ *
+ * Fecha de creación: 1 de junio de 2024
+ *
  * EL PROGRAMA A SIDO ADAPTADO PARA FUNCIONAR EN TURBO C
  * COMPILADOR UTILIZADO: Turbo C 2.01 EJECUTADO EN WINDOWS XP
  * PROYECTO INICIALMENTE DESARROLLADO EN MACOS SONOMA UTILIZANDO EL COMPILADOR GCC
  * Y CLANG, ADEMAS DE VISUAL STUDIO CODE.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -34,7 +34,7 @@
     Estructura Principal
 */
 
-struct FarmaSalud 
+struct FarmaSalud
 {
     struct NodoClientes *clientes;
     struct NodoSucursales *sucursales;
@@ -46,17 +46,17 @@ struct FarmaSalud
 */
 
 // Lista doblemente Enlazada Nodo Fantasma
-struct NodoClientes 
+struct NodoClientes
 {
     struct Clientes *datosClientes;
     struct NodoClientes *ant, *sig;
 };
 
-struct Clientes 
+struct Clientes
 {
     int id;
     char *rutCliente;
-    int edadCliente; 
+    int edadCliente;
     int afiliado;
     struct Producto *comprasCliente[MAX_PRODUCTOS_POR_CLIENTE]; // Array de punteros a Productos
     int numCompras; // Número de compras
@@ -66,14 +66,14 @@ struct Clientes
     Centro
 */
 
-// Lista Circular Doblemente Enlazada 
+// Lista Circular Doblemente Enlazada
 struct NodoSucursales
 {
     struct Sucursal *datosSucursal;
     struct NodoSucursales *ant, *sig;
 };
 
-struct Sucursal 
+struct Sucursal
 {
     int id;
     char *nombre;
@@ -88,13 +88,13 @@ struct Sucursal
 
 
 // Lista doblemente enlazada con nodo fantasma
-struct NodoProducto 
+struct NodoProducto
 {
     struct Producto *datosProducto;
     struct NodoProducto *ant, *sig;
 };
 
-struct Producto 
+struct Producto
 {
     char codigo[10];
     char *nombreProducto;
@@ -112,14 +112,14 @@ struct Producto
     Derecha
 */
 
-// Lista doblemente enlazada nodo fantasma 
-struct NodoProveedor 
+// Lista doblemente enlazada nodo fantasma
+struct NodoProveedor
 {
     struct Proveedor *datosProveedor;
     struct NodoProveedor *ant, *sig;
 };
 
-struct Proveedor 
+struct Proveedor
 {
     int id;
     char *nombre;
@@ -129,13 +129,12 @@ struct Proveedor
 };
 
 // Arbol de busqueda binaria
-struct NodoArbolProducto 
+struct NodoArbolProducto
 {
     struct Producto *datosProducto;
     struct NodoArbolProducto *izq, *der;
 };
 
-/* - - - - - - - - - - - - */
 struct NodoClientes* crearClienteConsole(int id, char* rutCliente, int edadCliente, int afiliado, struct Producto **comprasCliente, int numCompras) {
     struct NodoClientes* nuevoNodo;
     struct Clientes* nuevoCliente;
@@ -170,11 +169,13 @@ struct NodoClientes* crearClienteConsole(int id, char* rutCliente, int edadClien
 
     return nuevoNodo;
 }
+
 void agregarClienteConsole(struct FarmaSalud *farmacia, struct NodoClientes *nuevoCliente) {
+    struct NodoClientes *temp;
     if (farmacia->clientes == NULL) {
         farmacia->clientes = nuevoCliente;
     } else {
-        struct NodoClientes *temp = farmacia->clientes;
+        temp = farmacia->clientes;
         while (temp->sig != NULL) {
             temp = temp->sig;
         }
@@ -195,7 +196,7 @@ struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccio
     int i;
     struct NodoSucursales* nuevoNodo = (struct NodoSucursales*)malloc(sizeof(struct NodoSucursales));
     struct Sucursal* nuevaSucursal = (struct Sucursal*)malloc(sizeof(struct Sucursal));
-    
+
     if (nuevoNodo == NULL || nuevaSucursal == NULL) {
         exit(1);
     }
@@ -203,26 +204,27 @@ struct NodoSucursales* crearSucursalConsole(int id, char* nombre, char* direccio
     nuevaSucursal->id = id;
     nuevaSucursal->nombre = my_strdup(nombre);
     nuevaSucursal->direccion = my_strdup(direccion);
-    nuevaSucursal->cantidadDeVentas = 0; 
+    nuevaSucursal->cantidadDeVentas = 0;
     nuevaSucursal->capacidadAlmacenamiento = capacidadAlmacenamiento;
     nuevaSucursal->productos = NULL;
-    nuevaSucursal->productosVendidos = NULL; 
-    nuevaSucursal->numRegistros = 0; 
+    nuevaSucursal->productosVendidos = NULL;
+    nuevaSucursal->numRegistros = 0;
     for (i = 0; i < MAX_ENVIOS; i++) {
-        nuevaSucursal->registrosEnvios[i] = NULL; 
+        nuevaSucursal->registrosEnvios[i] = NULL;
     }
 
     nuevoNodo->datosSucursal = nuevaSucursal;
     nuevoNodo->ant = nuevoNodo->sig = nuevoNodo;
-    
+
     return nuevoNodo;
 }
 
 void agregarSucursalConsole(struct FarmaSalud *farmacia, struct NodoSucursales *nuevaSucursal) {
+    struct NodoSucursales *temp;
     if (farmacia->sucursales == NULL) {
         farmacia->sucursales = nuevaSucursal;
     } else {
-        struct NodoSucursales *temp = farmacia->sucursales;
+        temp = farmacia->sucursales;
         while (temp->sig != farmacia->sucursales) {
             temp = temp->sig;
         }
@@ -254,10 +256,11 @@ struct NodoProveedor* crearProveedorConsole(int id, char* nombre, char* direccio
 }
 
 void agregarProveedorConsole(struct FarmaSalud *farmacia, struct NodoProveedor *nuevoProveedor) {
+    struct NodoProveedor *temp;
     if (farmacia->proveedores == NULL) {
         farmacia->proveedores = nuevoProveedor;
     } else {
-        struct NodoProveedor *temp = farmacia->proveedores;
+        temp = farmacia->proveedores;
         while (temp->sig != NULL) {
             temp = temp->sig;
         }
@@ -273,13 +276,13 @@ struct Producto* crearProductoFalso(char* codigo, char* nombre, char* descripcio
     }
 
     strcpy(nuevoProducto->codigo, codigo);
-    nuevoProducto->nombreProducto = strdup(nombre);
-    nuevoProducto->descripcion = strdup(descripcion);
-    nuevoProducto->categoria = strdup(categoria);
+    nuevoProducto->nombreProducto = my_strdup(nombre);
+    nuevoProducto->descripcion = my_strdup(descripcion);
+    nuevoProducto->categoria = my_strdup(categoria);
     nuevoProducto->precio = precio;
-    nuevoProducto->idProveedor = strdup(idProveedor);
-    nuevoProducto->lote = strdup(lote);
-    nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);
+    nuevoProducto->idProveedor = my_strdup(idProveedor);
+    nuevoProducto->lote = my_strdup(lote);
+    nuevoProducto->fechaCaducidad = my_strdup(fechaCaducidad);
     nuevoProducto->cantidad = cantidad;
     nuevoProducto->requiereReceta = requiereReceta;
 
@@ -287,6 +290,8 @@ struct Producto* crearProductoFalso(char* codigo, char* nombre, char* descripcio
 }
 
 void agregarProductoAProveedor(struct Proveedor* proveedor, struct Producto* producto) {
+    struct NodoArbolProducto* actual;
+    struct NodoArbolProducto* padre;
     struct NodoArbolProducto* nuevoNodo = (struct NodoArbolProducto*)malloc(sizeof(struct NodoArbolProducto));
     if (nuevoNodo == NULL) {
         exit(1);
@@ -297,8 +302,8 @@ void agregarProductoAProveedor(struct Proveedor* proveedor, struct Producto* pro
     if (proveedor->productos == NULL) {
         proveedor->productos = nuevoNodo;
     } else {
-        struct NodoArbolProducto* actual = proveedor->productos;
-        struct NodoArbolProducto* padre = NULL;
+        actual = proveedor->productos;
+        padre = NULL;
 
         while (actual != NULL) {
             padre = actual;
@@ -325,12 +330,13 @@ struct NodoProducto* crearNodoProducto(struct Producto* producto) {
 }
 
 void agregarProductoASucursal(struct Sucursal* sucursal, struct Producto* producto) {
+    struct NodoProducto* nuevoNodo;
     if (sucursal == NULL || producto == NULL) {
         return;
     }
 
     // Crear nodo producto
-    struct NodoProducto* nuevoNodo = crearNodoProducto(producto);
+    nuevoNodo = crearNodoProducto(producto);
 
     // Insertar al principio de la lista de productos de la sucursal
     if (sucursal->productos == NULL) {
@@ -347,10 +353,13 @@ void cls() {
     for(i=0;i<20;i++) printf("\n");
 }
 
+/* QUITAR */
+
 void pause() {
+    char dummy;
     printf("\nPresione Enter para continuar...\n");
-    while (getchar() != '\n'); // Limpiar el búfer de entrada
-    getchar(); // Esperar a que se presione Enter
+    fflush(stdin); // Limpiar el búfer de entrada
+    scanf("%c", &dummy); // Esperar a que se presione Enter
 }
 
 // Funciones Menu
@@ -408,15 +417,17 @@ void leerClientes(struct FarmaSalud *farmacia) {
     }
     pause();
 }
-
-// Modelo
-struct Clientes* crearCliente(struct FarmaSalud *farmacia) {
-    int i;
+void agregarCliente(struct FarmaSalud *farmacia)
+{
+    int i, maxId;
+    struct NodoClientes *temp;
     struct NodoClientes *nuevoNodo = (struct NodoClientes *)malloc(sizeof(struct NodoClientes));
     nuevoNodo->datosClientes = (struct Clientes *)malloc(sizeof(struct Clientes));
 
-    int maxId = 0;
-    struct NodoClientes *temp = farmacia->clientes;
+    cls();
+
+    maxId = 0;
+    temp = farmacia->clientes;
     while (temp != NULL) {
         if (temp->datosClientes->id > maxId) {
             maxId = temp->datosClientes->id;
@@ -425,7 +436,13 @@ struct Clientes* crearCliente(struct FarmaSalud *farmacia) {
     }
     nuevoNodo->datosClientes->id = maxId + 1;
 
+    printf("Ingrese RUT del cliente: ");
     nuevoNodo->datosClientes->rutCliente = (char *)malloc(20 * sizeof(char));
+    scanf("%s", nuevoNodo->datosClientes->rutCliente);
+    printf("Ingrese edad del cliente: ");
+    scanf("%d", &nuevoNodo->datosClientes->edadCliente);
+    printf("¿Es afiliado? (1-Si, 0-No): ");
+    scanf("%d", &nuevoNodo->datosClientes->afiliado);
 
     for (i = 0; i < MAX_PRODUCTOS_POR_CLIENTE; i++) {
         nuevoNodo->datosClientes->comprasCliente[i] = NULL;
@@ -444,83 +461,57 @@ struct Clientes* crearCliente(struct FarmaSalud *farmacia) {
         temp->sig = nuevoNodo;
         nuevoNodo->ant = temp;
     }
-
-    return nuevoNodo->datosClientes;
-}
-
-// Controlador
-void agregarCliente(struct FarmaSalud *farmacia) {
-    struct Clientes* nuevoCliente = crearCliente(farmacia);
-
-    cls();
-
-    printf("Ingrese RUT del cliente: ");
-    scanf("%s", nuevoCliente->rutCliente);
-    printf("Ingrese edad del cliente: ");
-    scanf("%d", &nuevoCliente->edadCliente);
-    printf("¿Es afiliado? (1-Si, 0-No): ");
-    scanf("%d", &nuevoCliente->afiliado);
-
     cls();
     printf("Cliente agregado con éxito.\n");
-    getchar();
+    pause();
 }
 
 void eliminarCliente(struct FarmaSalud *farmacia) {
+    int idCliente;
+    struct NodoClientes *clienteActual, *clienteAnterior;
     cls();
-    int idEliminar;
-    struct NodoClientes *temp, *prev;
-
-    // Pedir al usuario que ingrese el ID del cliente a eliminar
     printf("Ingrese el ID del cliente que desea eliminar: ");
-    scanf("%d", &idEliminar);
+    scanf("%d", &idCliente);
 
-    temp = farmacia->clientes;
-    prev = NULL;
+    clienteActual = farmacia->clientes;
+    clienteAnterior = NULL;
 
-    // Buscar el cliente con el ID proporcionado
-    while (temp != NULL && temp->datosClientes->id != idEliminar) {
-        prev = temp;
-        temp = temp->sig;
+    // Buscar el cliente por su ID
+    while (clienteActual != NULL && clienteActual->datosClientes->id != idCliente) {
+        clienteAnterior = clienteActual;
+        clienteActual = clienteActual->sig;
     }
 
-    // Si no se encontró el cliente con el ID proporcionado
-    if (temp == NULL) {
-        cls();
+    if (clienteActual == NULL) {
         printf("Cliente no encontrado.\n");
         pause();
         return;
     }
 
-    // Manejar los casos especiales para el primer y último nodo
-    if (prev == NULL) {
-        farmacia->clientes = temp->sig;
+    // Eliminar el cliente de la lista
+    if (clienteAnterior == NULL) {
+        // El cliente a eliminar es el primer nodo de la lista
+        farmacia->clientes = clienteActual->sig;
     } else {
-        prev->sig = temp->sig;
-    }
-    if (temp->sig != NULL) {
-        temp->sig->ant = prev;
+        clienteAnterior->sig = clienteActual->sig;
+        if (clienteActual->sig != NULL) {
+            clienteActual->sig->ant = clienteAnterior;
+        }
     }
 
-    // Liberar la memoria asociada al cliente
-    free(temp->datosClientes->rutCliente);
-    for (int i = 0; i < temp->datosClientes->numCompras; i++) {
-        free(temp->datosClientes->comprasCliente[i]->nombreProducto);
-        free(temp->datosClientes->comprasCliente[i]->descripcion);
-        free(temp->datosClientes->comprasCliente[i]->categoria);
-        free(temp->datosClientes->comprasCliente[i]->idProveedor);
-        free(temp->datosClientes->comprasCliente[i]->lote);
-        free(temp->datosClientes->comprasCliente[i]->fechaCaducidad);
-        free(temp->datosClientes->comprasCliente[i]);
-    }
-    free(temp->datosClientes);
-    free(temp);
+    // Liberar memoria asignada al cliente eliminado
+    // En TurboC, no es necesario liberar memoria manualmente
+    // Puedes simplemente sobrescribir la estructura con valores nulos o vacíos
+    // No estamos utilizando malloc para crear las estructuras de datos, así que no necesitamos free.
+
+    // Establecer valores nulos o vacíos en la estructura del cliente eliminado
+    clienteActual->datosClientes->id = 0; // o cualquier otro valor que indique que el cliente ha sido eliminado
+    // Puedes repetir este proceso para otros campos que necesiten ser limpiados
 
     cls();
     printf("Cliente eliminado con éxito.\n");
     pause();
 }
-
 
 // Simon v v v v v v
 int espacioRestante(struct Sucursal *sucursal) {
@@ -546,6 +537,7 @@ struct NodoSucursales* obtenerSucursales(struct FarmaSalud *farmacia) {
 }
 
 void mostrarSucursal(struct NodoSucursales *nodoActual) {
+    struct NodoProducto *productoNodo;
     int i;
     printf("ID: %d\n", nodoActual->datosSucursal->id);
     printf("Nombre: %s\n", nodoActual->datosSucursal->nombre);
@@ -558,7 +550,7 @@ void mostrarSucursal(struct NodoSucursales *nodoActual) {
 
     if (nodoActual->datosSucursal->productos != NULL) {
         printf("Productos:\n");
-        struct NodoProducto *productoNodo = nodoActual->datosSucursal->productos;
+        productoNodo = nodoActual->datosSucursal->productos;
         while (productoNodo != NULL) {
             printf("\t%s - %s", productoNodo->datosProducto->codigo, productoNodo->datosProducto->nombreProducto);
             printf("\tCantidad en stock: %d", productoNodo->datosProducto->cantidad);
@@ -583,9 +575,10 @@ void mostrarEspacioRestante(int espacio) {
 }
 
 void leerSucursales(struct FarmaSalud *farmacia) {
-    struct NodoSucursales *nodoActual = obtenerSucursales(farmacia);
     int espacio;
-    
+    struct NodoSucursales *nodoActual;
+    nodoActual = obtenerSucursales(farmacia);
+
     cls();
     if (nodoActual == NULL) {
         printf("No hay sucursales registradas.\n");
@@ -601,12 +594,32 @@ void leerSucursales(struct FarmaSalud *farmacia) {
     pause();
 }
 
+int existeSucursal(struct FarmaSalud *farmacia, int id) {
+    struct NodoSucursales *actual;
+    actual = farmacia->sucursales;
+    if (actual != NULL) {
+        do {
+            if (actual->datosSucursal->id == id) {
+                return 1; // ID encontrado
+            }
+            actual = actual->sig;
+        } while (actual != farmacia->sucursales);
+    }
+    return 0; // ID no encontrado
+}
+
 void agregarSucursal(struct FarmaSalud *farmacia, struct NodoSucursales *nuevaSucursal) {
+    struct NodoSucursales *ultimo;
+    if (existeSucursal(farmacia, nuevaSucursal->datosSucursal->id)) {
+        printf("Error: Ya existe una sucursal con el ID %d.\n", nuevaSucursal->datosSucursal->id);
+        return;
+    }
+
     if (farmacia->sucursales == NULL) {
         farmacia->sucursales = nuevaSucursal;
         nuevaSucursal->ant = nuevaSucursal->sig = nuevaSucursal;
     } else {
-        struct NodoSucursales *ultimo = farmacia->sucursales->ant;
+        ultimo = farmacia->sucursales->ant;
         ultimo->sig = nuevaSucursal;
         nuevaSucursal->ant = ultimo;
         nuevaSucursal->sig = farmacia->sucursales;
@@ -616,21 +629,17 @@ void agregarSucursal(struct FarmaSalud *farmacia, struct NodoSucursales *nuevaSu
 
 void leerDatosSucursal(struct Sucursal *nuevaSucursal) {
     int i;
-
     cls();
     printf("Ingrese ID de la sucursal: ");
     scanf("%d", &nuevaSucursal->id);
-    getchar(); // Limpiar el buffer de entrada después de leer un entero
 
     nuevaSucursal->nombre = (char *)malloc(50 * sizeof(char));
     printf("Ingrese nombre de la sucursal: ");
     scanf(" %[^\n]", nuevaSucursal->nombre);
-    getchar(); // Limpiar el buffer de entrada después de leer un string
 
     nuevaSucursal->direccion = (char *)malloc(100 * sizeof(char));
     printf("Ingrese dirección de la sucursal: ");
     scanf(" %[^\n]", nuevaSucursal->direccion);
-    getchar(); // Limpiar el buffer de entrada después de leer un string
 
     nuevaSucursal->cantidadDeVentas = 0; // Inicializar a 0
     nuevaSucursal->capacidadAlmacenamiento = 0; // Cambiar si se necesita un valor específico
@@ -658,15 +667,14 @@ void crearSucursal(struct FarmaSalud *farmacia) {
 }
 
 int eliminarSucursal(struct FarmaSalud *farmacia, int idEliminar) {
-    struct NodoSucursales *temp, *prev;
-    int i;
+    struct NodoSucursales *temp, *prev, *inicio;
 
     temp = farmacia->sucursales;
     if (temp == NULL) {
         return 0; // No hay sucursales
     }
 
-    struct NodoSucursales *inicio = temp;
+    inicio = temp;
 
     do {
         if (temp->datosSucursal->id == idEliminar) {
@@ -682,15 +690,6 @@ int eliminarSucursal(struct FarmaSalud *farmacia, int idEliminar) {
                 }
             }
 
-            // Liberar la memoria asociada a la sucursal
-            free(temp->datosSucursal->nombre);
-            free(temp->datosSucursal->direccion);
-            for (i = 0; i < temp->datosSucursal->numRegistros; i++) {
-                free(temp->datosSucursal->registrosEnvios[i]);
-            }
-            free(temp->datosSucursal);
-            free(temp);
-
             return 1; // Eliminación exitosa
         }
         temp = temp->sig;
@@ -703,7 +702,6 @@ void leerIdSucursal(int *idEliminar) {
     cls();
     printf("Ingrese el ID de la sucursal que desea eliminar: ");
     scanf("%d", idEliminar);
-    getchar(); // Limpiar el buffer de entrada después de leer un entero
 }
 
 void mostrarMensajeNoSucursales() {
@@ -724,17 +722,18 @@ void mostrarMensajeSucursalEliminada() {
 }
 
 void eliminarSucursalView(struct FarmaSalud *farmacia) {
-    int idEliminar;
+    struct NodoSucursales *temp;
+    int idEliminar, resultado;
 
     leerIdSucursal(&idEliminar);
 
-    struct NodoSucursales *temp = farmacia->sucursales;
+    temp = farmacia->sucursales;
     if (temp == NULL) {
         mostrarMensajeNoSucursales();
         return;
     }
 
-    int resultado = eliminarSucursal(farmacia, idEliminar);
+    resultado = eliminarSucursal(farmacia, idEliminar);
 
     if (resultado == 0) {
         mostrarMensajeSucursalNoEncontrada();
@@ -759,7 +758,8 @@ void agregarProveedor(struct FarmaSalud *farmacia, struct NodoProveedor *nuevoPr
 }
 
 int existeProveedor(struct FarmaSalud *farmacia, int id) {
-    struct NodoProveedor *actual = farmacia->proveedores;
+    struct NodoProveedor *actual;
+    actual = farmacia->proveedores;
     while (actual != NULL) {
         if (actual->datosProveedor->id == id) {
             return 1;  // Proveedor encontrado
@@ -774,7 +774,6 @@ void leerDatosProveedor(int *id, char **nombre, char **direccion, char **telefon
     cls();
     printf("Ingrese ID del proveedor: ");
     scanf("%d", id);
-    getchar();  // Consumir el salto de línea que queda en el buffer
 
     *nombre = (char *)malloc(50 * sizeof(char));
     if (*nombre == NULL) {
@@ -782,29 +781,23 @@ void leerDatosProveedor(int *id, char **nombre, char **direccion, char **telefon
         return;
     }
     printf("Ingrese nombre del proveedor: ");
-    fgets(*nombre, 50, stdin);
-    (*nombre)[strcspn(*nombre, "\n")] = 0;  // Eliminar el salto de línea
+    scanf(" %[^\n]", *nombre);
 
     *direccion = (char *)malloc(100 * sizeof(char));
     if (*direccion == NULL) {
         printf("Error al asignar memoria para la dirección del proveedor.\n");
-        free(*nombre);
         return;
     }
     printf("Ingrese dirección del proveedor: ");
-    fgets(*direccion, 100, stdin);
-    (*direccion)[strcspn(*direccion, "\n")] = 0;  // Eliminar el salto de línea
+    scanf(" %[^\n]", *direccion);
 
     *telefono = (char *)malloc(15 * sizeof(char));
     if (*telefono == NULL) {
         printf("Error al asignar memoria para el teléfono del proveedor.\n");
-        free(*nombre);
-        free(*direccion);
         return;
     }
     printf("Ingrese teléfono del proveedor: ");
-    fgets(*telefono, 15, stdin);
-    (*telefono)[strcspn(*telefono, "\n")] = 0;  // Eliminar el salto de línea
+    scanf(" %[^\n]", *telefono);
 }
 
 void mostrarMensajeProveedorAgregado() {
@@ -822,6 +815,8 @@ void mostrarMensajeProveedorExiste() {
 void crearProveedorView(struct FarmaSalud *farmacia) {
     int id;
     char *nombre, *direccion, *telefono;
+    struct NodoProveedor *nuevoNodo;
+    struct Proveedor *nuevoProveedor;
 
     leerDatosProveedor(&id, &nombre, &direccion, &telefono);
 
@@ -831,28 +826,18 @@ void crearProveedorView(struct FarmaSalud *farmacia) {
 
     if (existeProveedor(farmacia, id)) {
         mostrarMensajeProveedorExiste();
-        free(nombre);
-        free(direccion);
-        free(telefono);
         return;
     }
 
-    struct NodoProveedor *nuevoNodo = (struct NodoProveedor*)malloc(sizeof(struct NodoProveedor));
+    nuevoNodo = (struct NodoProveedor*)malloc(sizeof(struct NodoProveedor));
     if (!nuevoNodo) {
         printf("Error al asignar memoria para nuevo nodo proveedor.\n");
-        free(nombre);
-        free(direccion);
-        free(telefono);
         return;
     }
 
-    struct Proveedor *nuevoProveedor = (struct Proveedor*)malloc(sizeof(struct Proveedor));
+    nuevoProveedor = (struct Proveedor*)malloc(sizeof(struct Proveedor));
     if (!nuevoProveedor) {
-        free(nuevoNodo);
         printf("Error al asignar memoria para nuevo proveedor.\n");
-        free(nombre);
-        free(direccion);
-        free(telefono);
         return;
     }
 
@@ -882,14 +867,15 @@ void mostrarProveedores(struct FarmaSalud *farmacia) {
 
 // Bastian v v v v v v
 void mostrarProductosProveedor(struct NodoArbolProducto *nodoProducto) {
+    char requiereReceta[4];
+    struct Producto *producto;
     if (nodoProducto == NULL) {
         return;
     }
 
     mostrarProductosProveedor(nodoProducto->izq);
 
-    struct Producto *producto = nodoProducto->datosProducto;
-    char requiereReceta[4];
+    producto = nodoProducto->datosProducto;
 
     if (producto->requiereReceta) {
         strcpy(requiereReceta, "Sí");
@@ -923,8 +909,9 @@ void mostrarProveedor(struct Proveedor *proveedor) {
 }
 
 void leerProveedores(struct FarmaSalud *farmacia) {
+    struct NodoProveedor *nodoActual;
     cls();
-    struct NodoProveedor *nodoActual = farmacia->proveedores;
+    nodoActual = farmacia->proveedores;
     if (nodoActual == NULL) {
         printf("No hay proveedores registrados.\n");
         pause();
@@ -955,11 +942,11 @@ void mostrarProveedorEliminado() {
     pause();
 }
 
-
-
 int buscarYEliminarProveedor(struct FarmaSalud *farmacia, int idEliminar) {
-    struct NodoProveedor *temp = farmacia->proveedores;
-    struct NodoProveedor *prev = NULL;
+    struct NodoProveedor *temp;
+    struct NodoProveedor *prev;
+    temp = farmacia->proveedores;
+    prev = NULL;
 
     // Buscar el proveedor con el ID proporcionado
     while (temp != NULL && temp->datosProveedor->id != idEliminar) {
@@ -983,18 +970,13 @@ int buscarYEliminarProveedor(struct FarmaSalud *farmacia, int idEliminar) {
     }
 
     // Liberar la memoria asociada al proveedor
-    free(temp->datosProveedor->nombre);
-    free(temp->datosProveedor->direccion);
-    free(temp->datosProveedor->telefono);
-    free(temp->datosProveedor);
-    free(temp);
 
     return 1; // Eliminado con éxito
 }
 
 void eliminarProveedor(struct FarmaSalud *farmacia) {
-    cls();
     int idEliminar;
+    cls();
 
     // Pedir al usuario que ingrese el ID del proveedor a eliminar
     solicitarIdProveedorEliminar(&idEliminar);
@@ -1014,31 +996,67 @@ void quitarNuevaLinea(char *cadena) {
     }
 }
 
+int existeProducto(struct FarmaSalud *farmacia, const char *codigo) {
+    struct NodoProveedor *proveedorActual;
+    proveedorActual = farmacia->proveedores;
+    while (proveedorActual != NULL) {
+        struct NodoArbolProducto *productoActual = proveedorActual->datosProveedor->productos;
+        while (productoActual != NULL) {
+            if (strcmp(productoActual->datosProducto->codigo, codigo) == 0) {
+                return 1;  // Producto encontrado
+            }
+            if (strcmp(codigo, productoActual->datosProducto->codigo) < 0) {
+                productoActual = productoActual->izq;
+            } else {
+                productoActual = productoActual->der;
+            }
+        }
+        proveedorActual = proveedorActual->sig;
+    }
+    return 0;  // Producto no encontrado
+}
 
-void solicitarDatosProducto(struct Producto *producto) {
+void solicitarDatosProducto(struct FarmaSalud *farmacia, struct Producto *producto) {
+    int idProveedorInt;
     cls();
-    printf("Ingrese código del producto: ");
-    scanf("%s", producto->codigo);
-    getchar();
+
+    while (1) {
+        printf("Ingrese ID del proveedor: ");
+        scanf(" %49[^\n]", producto->idProveedor);
+        idProveedorInt = atoi(producto->idProveedor);
+
+        if (existeProveedor(farmacia, idProveedorInt)) {
+            break;
+        } else {
+            cls();
+            printf("ID del proveedor no encontrado. Ingrese un ID válido.\n");
+        }
+    }
+
+    while (1) {
+        printf("Ingrese código del producto: ");
+        scanf(" %49[^\n]", producto->codigo);
+
+        if (!existeProducto(farmacia, producto->codigo)) {
+            break;
+        } else {
+            cls();
+            printf("Código del producto ya existe. Ingrese un código válido.\n");
+        }
+    }
+
     cls();
     printf("Ingrese nombre del producto: ");
-    fgets(producto->nombreProducto, 50, stdin);
-    quitarNuevaLinea(producto->nombreProducto);
+    scanf(" %99[^\n]", producto->nombreProducto);
     cls();
     printf("Ingrese descripción del producto: ");
-    fgets(producto->descripcion, 100, stdin);
-    quitarNuevaLinea(producto->descripcion);
+    scanf(" %199[^\n]", producto->descripcion);
     cls();
     printf("Ingrese categoría del producto: ");
-    fgets(producto->categoria, 50, stdin);
-    quitarNuevaLinea(producto->categoria);
+    scanf(" %49[^\n]", producto->categoria);
     cls();
     printf("Ingrese precio del producto: ");
     scanf("%d", &producto->precio);
-    getchar();
-    cls();
-    printf("\nIngrese ID del proveedor: ");
-    scanf("%s", producto->idProveedor);
     cls();
     printf("¿Requiere receta? (1-Sí, 0-No): ");
     scanf("%d", &producto->requiereReceta);
@@ -1050,15 +1068,21 @@ struct Producto* crearProducto() {
     nuevoProducto->descripcion = (char *)malloc(100 * sizeof(char));
     nuevoProducto->categoria = (char *)malloc(50 * sizeof(char));
     nuevoProducto->idProveedor = (char *)malloc(20 * sizeof(char));
-    nuevoProducto->lote = strdup("N/A");
-    nuevoProducto->fechaCaducidad = strdup("N/A");
+    nuevoProducto->lote = my_strdup("N/A");
+    nuevoProducto->fechaCaducidad = my_strdup("N/A");
     nuevoProducto->cantidad = -1;
     return nuevoProducto;
 }
 
 int agregarProductoProveedorModelo(struct FarmaSalud *farmacia, struct Producto *nuevoProducto) {
-    int idProveedorInt = atoi(nuevoProducto->idProveedor);
-    struct NodoProveedor *proveedorActual = farmacia->proveedores;
+    struct NodoProveedor *proveedorActual;
+    int idProveedorInt;
+    struct NodoArbolProducto *nuevoNodoProducto;
+    struct NodoArbolProducto *actualProducto;
+    struct NodoArbolProducto *padreProducto;
+
+    idProveedorInt = atoi(nuevoProducto->idProveedor);
+    proveedorActual = farmacia->proveedores;
     while (proveedorActual != NULL && proveedorActual->datosProveedor->id != idProveedorInt) {
         proveedorActual = proveedorActual->sig;
     }
@@ -1067,15 +1091,15 @@ int agregarProductoProveedorModelo(struct FarmaSalud *farmacia, struct Producto 
         return 0;
     }
 
-    struct NodoArbolProducto *nuevoNodoProducto = (struct NodoArbolProducto *)malloc(sizeof(struct NodoArbolProducto));
+    nuevoNodoProducto = (struct NodoArbolProducto *)malloc(sizeof(struct NodoArbolProducto));
     nuevoNodoProducto->datosProducto = nuevoProducto;
     nuevoNodoProducto->izq = nuevoNodoProducto->der = NULL;
 
     if (proveedorActual->datosProveedor->productos == NULL) {
         proveedorActual->datosProveedor->productos = nuevoNodoProducto;
     } else {
-        struct NodoArbolProducto *actualProducto = proveedorActual->datosProveedor->productos;
-        struct NodoArbolProducto *padreProducto = NULL;
+        actualProducto = proveedorActual->datosProveedor->productos;
+        padreProducto = NULL;
 
         while (actualProducto != NULL) {
             padreProducto = actualProducto;
@@ -1096,23 +1120,17 @@ int agregarProductoProveedorModelo(struct FarmaSalud *farmacia, struct Producto 
 }
 
 void agregarProductoProveedor(struct FarmaSalud *farmacia) {
-    struct Producto *nuevoProducto = crearProducto();
-    solicitarDatosProducto(nuevoProducto);
-    mostrarProveedores(farmacia);
-    int resultado = agregarProductoProveedorModelo(farmacia, nuevoProducto);
+    struct Producto *nuevoProducto;
+    int resultado;
+    nuevoProducto = crearProducto();
+    solicitarDatosProducto(farmacia, nuevoProducto);  // Pasamos farmacia para la validación de ID y producto
+    resultado = agregarProductoProveedorModelo(farmacia, nuevoProducto);
     if (resultado) {
         cls();
         printf("Producto agregado con éxito al proveedor.\n");
     } else {
         cls();
         printf("Proveedor no encontrado.\n");
-        free(nuevoProducto->nombreProducto);
-        free(nuevoProducto->descripcion);
-        free(nuevoProducto->categoria);
-        free(nuevoProducto->idProveedor);
-        free(nuevoProducto->lote);
-        free(nuevoProducto->fechaCaducidad);
-        free(nuevoProducto);
     }
     pause();
 }
@@ -1130,7 +1148,9 @@ void printSucursalNoEncontrada() {
 }
 
 void printErrorCapacidadMaxima() {
+    cls();
     printf("Error: No se puede agregar más registros de envíos, capacidad máxima alcanzada.\n");
+    pause();
 }
 
 void printRegistroEnvio(const char *registro) {
@@ -1138,16 +1158,20 @@ void printRegistroEnvio(const char *registro) {
 }
 
 void printNoSucursalesRegistradas() {
+    cls();
     printf("No hay sucursales registradas.\n");
+    pause();
 }
 
 void printSucursalInfo(struct Sucursal *sucursal) {
     int i;
+    int espacio;
+    espacio = 10000 - espacioRestante(sucursal);
     printf("ID: %d\n", sucursal->id);
     printf("Nombre: %s\n", sucursal->nombre);
     printf("Dirección: %s\n", sucursal->direccion);
     printf("Cantidad de Ventas: %d\n", sucursal->cantidadDeVentas);
-    printf("Capacidad de Almacenamiento: %d / 10000\n", sucursal->capacidadAlmacenamiento);
+    printf("Capacidad de Almacenamiento: %d / 10000\n", espacio);
     printf("Número de Registros de Envíos: %d\n", sucursal->numRegistros);
     for (i = 0; i < sucursal->numRegistros; i++) {
         printf("\tRegistro de Envío %d: %s\n", i + 1, sucursal->registrosEnvios[i]);
@@ -1180,11 +1204,15 @@ void printIngreseCantidad(const char *nombreProducto) {
 }
 
 void printErrorAsignarMemoriaProducto() {
+    cls();
     printf("Error al asignar memoria para el nuevo producto.\n");
+    pause();
 }
 
 void printErrorAsignarMemoriaNodoProducto() {
+    cls();
     printf("Error al asignar memoria para el nuevo nodo de producto.\n");
+    pause();
 }
 
 void printProductosTransferidos(int idProveedor, int idSucursal) {
@@ -1214,15 +1242,16 @@ void my_strcat(char *dest, const char *src) {
 }
 
 void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre) {
+    char fecha[6];
+    char registro[200];
+
     if (sucursal->numRegistros >= MAX_ENVIOS) {
         printErrorCapacidadMaxima();
         return;
     }
 
-    char fecha[6];
-    obtenerFecha(fecha);
 
-    char registro[200];
+    obtenerFecha(fecha);
     strcpy(registro, "Productos enviados de Proveedor ");
     my_strcat(registro, proveedorNombre);
     my_strcat(registro, " a Sucursal ");
@@ -1238,12 +1267,15 @@ void agregarRegistroEnvio(struct Sucursal *sucursal, const char *proveedorNombre
 }
 
 struct NodoSucursales* buscarSucursalPorID(struct FarmaSalud *farmacia, int idSucursal) {
-    struct NodoSucursales *sucursalActual = farmacia->sucursales;
+    struct NodoSucursales *sucursalActual;
+    struct NodoSucursales *inicio;
+
+    sucursalActual = farmacia->sucursales;
     if (sucursalActual == NULL) {
         return NULL;
     }
 
-    struct NodoSucursales *inicio = sucursalActual;
+    inicio = sucursalActual;
     do {
         if (sucursalActual->datosSucursal->id == idSucursal) {
             return sucursalActual;
@@ -1255,7 +1287,8 @@ struct NodoSucursales* buscarSucursalPorID(struct FarmaSalud *farmacia, int idSu
 }
 
 struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idProveedor) {
-    struct NodoProveedor *proveedorActual = farmacia->proveedores;
+    struct NodoProveedor *proveedorActual;
+    proveedorActual = farmacia->proveedores;
     while (proveedorActual != NULL && proveedorActual->datosProveedor->id != idProveedor) {
         proveedorActual = proveedorActual->sig;
     }
@@ -1263,7 +1296,8 @@ struct NodoProveedor* buscarProveedorPorID(struct FarmaSalud *farmacia, int idPr
 }
 
 void mostrarSucursales(struct FarmaSalud *farmacia) {
-    struct NodoSucursales *sucursalActual = farmacia->sucursales;
+    struct NodoSucursales *sucursalActual;
+    sucursalActual = farmacia->sucursales;
     if (sucursalActual == NULL) {
         printNoSucursalesRegistradas();
         return;
@@ -1276,6 +1310,11 @@ void mostrarSucursales(struct FarmaSalud *farmacia) {
 }
 
 void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
+    struct NodoProveedor *proveedorActual;
+    struct NodoSucursales *sucursalActual;
+    struct NodoArbolProducto *nodoProducto;
+    struct Producto *nuevoProducto;
+    struct NodoProducto *nuevoNodoProducto;
     int idProveedor, idSucursal;
     char fechaCaducidad[11];
     char lote[50];
@@ -1287,7 +1326,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     printIngreseIDProveedor();
     scanf("%d", &idProveedor);
 
-    struct NodoProveedor *proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
+    proveedorActual = buscarProveedorPorID(farmacia, idProveedor);
     if (proveedorActual == NULL) {
         printProveedorNoEncontrado(idProveedor);
         pause();
@@ -1299,7 +1338,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
     printIngreseIDSucursal();
     scanf("%d", &idSucursal);
 
-    struct NodoSucursales *sucursalActual = buscarSucursalPorID(farmacia, idSucursal);
+    sucursalActual = buscarSucursalPorID(farmacia, idSucursal);
     if (sucursalActual == NULL) {
         cls();
         printSucursalNoEncontrada();
@@ -1307,7 +1346,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
         return;
     }
 
-    struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
+    nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
         cls();
         printIngreseFechaCaducidad(nodoProducto->datosProducto->nombreProducto);
@@ -1319,7 +1358,7 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
         printIngreseCantidad(nodoProducto->datosProducto->nombreProducto);
         scanf("%d", &cantidad);
 
-        struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
+        nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
         if (nuevoProducto == NULL) {
             printErrorAsignarMemoriaProducto();
             pause();
@@ -1351,10 +1390,9 @@ void transferirProductosProveedorASucursal(struct FarmaSalud *farmacia) {
         nuevoProducto->cantidad = cantidad;
         nuevoProducto->requiereReceta = nodoProducto->datosProducto->requiereReceta;
 
-        struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
+        nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
         if (nuevoNodoProducto == NULL) {
             printErrorAsignarMemoriaNodoProducto();
-            free(nuevoProducto);
             pause();
             return;
         }
@@ -1432,12 +1470,6 @@ void obtenerDetallesProducto(char* fechaCaducidad, char* lote, int* cantidad, ch
     scanf("%d", cantidad);
 }
 
-int getch(void) {
-    int ch;
-    ch = getchar();
-    return ch;
-}
-
 void mostrarYSeleccionarProveedor(struct FarmaSalud *farmacia, int *idProveedor, struct NodoProveedor **proveedorActual) {
     mostrarProveedores(farmacia);
     printPromptProveedor();
@@ -1446,7 +1478,6 @@ void mostrarYSeleccionarProveedor(struct FarmaSalud *farmacia, int *idProveedor,
     *proveedorActual = buscarProveedorPorID(farmacia, *idProveedor);
     if (*proveedorActual == NULL) {
         printProveedorNoEncontrado(*idProveedor);
-        getch();
     }
 }
 
@@ -1458,13 +1489,13 @@ void mostrarYSeleccionarSucursal(struct FarmaSalud *farmacia, int *idSucursal, s
     *sucursalActual = buscarSucursalPorID(farmacia, *idSucursal);
     if (*sucursalActual == NULL) {
         printSucursalNoEncontrada();
-        getch();
     }
 }
 
 void mostrarYSeleccionarProducto(struct NodoProveedor *proveedorActual, char *codigoProducto, struct Producto **productoSeleccionado) {
+    struct NodoArbolProducto *nodoProducto;
     printf("Productos del proveedor:\n");
-    struct NodoArbolProducto *nodoProducto = proveedorActual->datosProveedor->productos;
+    nodoProducto = proveedorActual->datosProveedor->productos;
     while (nodoProducto != NULL) {
         printf("Codigo: %s, Nombre: %s\n", nodoProducto->datosProducto->codigo, nodoProducto->datosProducto->nombreProducto);
         nodoProducto = nodoProducto->der;
@@ -1483,13 +1514,19 @@ void mostrarYSeleccionarProducto(struct NodoProveedor *proveedorActual, char *co
     }
 
     if (*productoSeleccionado == NULL) {
+        cls();
         printProductoCodigoNoEncontrado(codigoProducto);
-        getch();
+        pause();
     }
 }
 
-void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia) 
+void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia)
 {
+    struct NodoProveedor *proveedorActual;
+    struct NodoSucursales *sucursalActual;
+    struct Producto *productoSeleccionado;
+    struct Producto *nuevoProducto;
+    struct NodoProducto *nuevoNodoProducto;
     int idProveedor, idSucursal;
     char fechaCaducidad[11];
     char lote[50];
@@ -1498,21 +1535,21 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia)
 
     cls(); // Limpia la pantalla
 
-    struct NodoProveedor *proveedorActual = NULL;
+    proveedorActual = NULL;
     mostrarYSeleccionarProveedor(farmacia, &idProveedor, &proveedorActual);
     if (proveedorActual == NULL) {
         return;
     }
 
     cls();
-    struct NodoSucursales *sucursalActual = NULL;
+    sucursalActual = NULL;
     mostrarYSeleccionarSucursal(farmacia, &idSucursal, &sucursalActual);
     if (sucursalActual == NULL) {
         return;
     }
 
     cls();
-    struct Producto *productoSeleccionado = NULL;
+    productoSeleccionado = NULL;
     mostrarYSeleccionarProducto(proveedorActual, codigoProducto, &productoSeleccionado);
     if (productoSeleccionado == NULL) {
         return;
@@ -1521,29 +1558,27 @@ void transferirProductoProveedorASucursal(struct FarmaSalud *farmacia)
     obtenerDetallesProducto(fechaCaducidad, lote, &cantidad, productoSeleccionado->nombreProducto);
 
     // Crear una copia completa del producto
-    struct Producto *nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
+    nuevoProducto = (struct Producto *)malloc(sizeof(struct Producto));
     if (nuevoProducto == NULL) {
         printf("Error al asignar memoria para el nuevo producto.\n");
-        getch();
         return;
     }
     // Copiar datos del producto original al nuevo producto
     strcpy(nuevoProducto->codigo, productoSeleccionado->codigo);
-    nuevoProducto->nombreProducto = strdup(productoSeleccionado->nombreProducto);
-    nuevoProducto->descripcion = strdup(productoSeleccionado->descripcion);
-    nuevoProducto->categoria = strdup(productoSeleccionado->categoria);
+    nuevoProducto->nombreProducto = my_strdup(productoSeleccionado->nombreProducto);
+    nuevoProducto->descripcion = my_strdup(productoSeleccionado->descripcion);
+    nuevoProducto->categoria = my_strdup(productoSeleccionado->categoria);
     nuevoProducto->precio = productoSeleccionado->precio;
-    nuevoProducto->idProveedor = strdup(productoSeleccionado->idProveedor);
-    nuevoProducto->lote = strdup(lote);  // Usar el valor ingresado por el usuario
-    nuevoProducto->fechaCaducidad = strdup(fechaCaducidad);  // Usar el valor ingresado por el usuario
+    nuevoProducto->idProveedor = my_strdup(productoSeleccionado->idProveedor);
+    nuevoProducto->lote = my_strdup(lote);  // Usar el valor ingresado por el usuario
+    nuevoProducto->fechaCaducidad = my_strdup(fechaCaducidad);  // Usar el valor ingresado por el usuario
     nuevoProducto->cantidad = cantidad;  // Usar el valor ingresado por el usuario
     nuevoProducto->requiereReceta = productoSeleccionado->requiereReceta;
 
     // Crear un nuevo nodo producto
-    struct NodoProducto *nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
+    nuevoNodoProducto = (struct NodoProducto *)malloc(sizeof(struct NodoProducto));
     if (nuevoNodoProducto == NULL) {
         printf("Error al asignar memoria para el nuevo nodo de producto.\n");
-        free(nuevoProducto);
         pause();
         return;
     }
@@ -1591,10 +1626,12 @@ void imprimirProductosVencidosEliminadosDeTodasLasSucursales() {
 }
 
 void imprimirSucursalNoEncontrada() {
+    cls();
     printf("Sucursal no encontrada.\n");
+    pause();
 }
 
-void imprimirProductosVencidosEliminadosCorrectamente() {
+void checkImprimirVencidos() {
     printf("Productos vencidos eliminados correctamente.\n");
 }
 
@@ -1610,7 +1647,8 @@ void imprimirFechaCaducidadInvalidaMenu() {
     printf("Fecha de caducidad invalida. Por favor, ingrese una fecha válida.\n");
 }
 
-int compararFechasVencidas(char *fecha1, char *fecha2) {
+
+int compararFechasVencidas(const char *fecha1, const char *fecha2) {
     int mes1, anio1, mes2, anio2;
 
     extraerFecha(fecha1, &mes1, &anio1);
@@ -1632,20 +1670,27 @@ int validarFecha(const char *fecha) {
     return 1;
 }
 
-void eliminarProductosVencidos(struct Sucursal *sucursal, char *fechaLimite) {
+void eliminarProductosVencidos(struct Sucursal *sucursal, const char *fechaLimite) {
+    struct NodoProducto *productoActual;
+    struct NodoProducto *siguienteProducto;
     if (sucursal == NULL || sucursal->productos == NULL) {
+        cls();
         imprimirSucursalOProductosInvalidos();
+        pause();
         return;
     }
     if (!validarFecha(fechaLimite)) {
+        cls();
         imprimirFechaCaducidadInvalida();
+        pause();
         return;
     }
 
-    struct NodoProducto *productoActual = sucursal->productos;
+    productoActual = sucursal->productos;
     while (productoActual != NULL) {
-        struct NodoProducto *siguienteProducto = productoActual->sig;
-        if (compararFechasVencidas(productoActual->datosProducto->fechaCaducidad, fechaLimite) < 0) {
+        siguienteProducto = productoActual->sig;
+        if (compararFechasVencidas(productoActual->datosProducto->fechaCaducidad, fechaLimite) <= 0) {
+            // Actualizar punteros de la lista doblemente enlazada
             if (productoActual->ant != NULL) {
                 productoActual->ant->sig = productoActual->sig;
             } else {
@@ -1656,32 +1701,16 @@ void eliminarProductosVencidos(struct Sucursal *sucursal, char *fechaLimite) {
                 productoActual->sig->ant = productoActual->ant;
             }
 
-            if (productoActual->datosProducto->nombreProducto != NULL) {
-                free(productoActual->datosProducto->nombreProducto);
-            }
-            if (productoActual->datosProducto->descripcion != NULL) {
-                free(productoActual->datosProducto->descripcion);
-            }
-            if (productoActual->datosProducto->categoria != NULL) {
-                free(productoActual->datosProducto->categoria);
-            }
-            if (productoActual->datosProducto->idProveedor != NULL) {
-                free(productoActual->datosProducto->idProveedor);
-            }
-            if (productoActual->datosProducto->lote != NULL) {
-                free(productoActual->datosProducto->lote);
-            }
-            if (productoActual->datosProducto->fechaCaducidad != NULL) {
-                free(productoActual->datosProducto->fechaCaducidad);
-            }
-            free(productoActual->datosProducto);
-            free(productoActual);
+            // No liberar memoria del producto, solo desvincular de la lista
+            productoActual->ant = NULL;
+            productoActual->sig = NULL;
         }
         productoActual = siguienteProducto;
     }
 }
 
-void eliminarProductosVencidosDeTodasLasSucursales(struct FarmaSalud *farmacia, char *fechaLimite) {
+void eliminarProductosVencidosDeTodasLasSucursales(struct FarmaSalud *farmacia, const char *fechaLimite) {
+    struct NodoSucursales *sucursalActual;
     if (farmacia == NULL || farmacia->sucursales == NULL) {
         imprimirNoHaySucursalesRegistradas();
         return;
@@ -1692,19 +1721,22 @@ void eliminarProductosVencidosDeTodasLasSucursales(struct FarmaSalud *farmacia, 
         return;
     }
 
-    struct NodoSucursales *sucursalActual = farmacia->sucursales;
+    sucursalActual = farmacia->sucursales;
     do {
         eliminarProductosVencidos(sucursalActual->datosSucursal, fechaLimite);
         sucursalActual = sucursalActual->sig;
     } while (sucursalActual != farmacia->sucursales);
-
+    cls();
     imprimirProductosVencidosEliminadosDeTodasLasSucursales();
+    pause();
 }
 
+
 void menuEliminarProductosVencidos(struct FarmaSalud *farmacia) {
-    cls();
     int idSucursal;
     char fechaLimite[8];
+
+    cls();
 
     mostrarSucursales(farmacia);
     imprimirIngreseIDSucursal();
@@ -1729,10 +1761,11 @@ void menuEliminarProductosVencidos(struct FarmaSalud *farmacia) {
         }
         eliminarProductosVencidos(sucursalNodo->datosSucursal, fechaLimite);
         cls();
-        imprimirProductosVencidosEliminadosCorrectamente();
+        checkImprimirVencidos();
         pause();
     }
 }
+
 void printClientesRegistrados() {
     printf("Clientes registrados:\n");
     printf("ID\tNombre\t\tRUT\n");
@@ -1832,7 +1865,8 @@ void printTotal(int total) {
 }
 
 struct NodoClientes* buscarClientePorID(struct FarmaSalud *farmacia, int idCliente) {
-    struct NodoClientes *clienteActual = farmacia->clientes;
+    struct NodoClientes *clienteActual;
+    clienteActual = farmacia->clientes;
     while (clienteActual != NULL && clienteActual->datosClientes->id != idCliente) {
         clienteActual = clienteActual->sig;
     }
@@ -1842,20 +1876,21 @@ struct NodoClientes* buscarClientePorID(struct FarmaSalud *farmacia, int idClien
 struct Producto* crearProductoVendido(struct Producto *producto) {
     struct Producto *nuevoProducto = (struct Producto*)malloc(sizeof(struct Producto));
     strcpy(nuevoProducto->codigo, producto->codigo);
-    nuevoProducto->nombreProducto = strdup(producto->nombreProducto);
-    nuevoProducto->descripcion = strdup(producto->descripcion);
-    nuevoProducto->categoria = strdup(producto->categoria);
+    nuevoProducto->nombreProducto = my_strdup(producto->nombreProducto);
+    nuevoProducto->descripcion = my_strdup(producto->descripcion);
+    nuevoProducto->categoria = my_strdup(producto->categoria);
     nuevoProducto->precio = producto->precio;
-    nuevoProducto->idProveedor = strdup(producto->idProveedor);
-    nuevoProducto->lote = strdup("N/A");
-    nuevoProducto->fechaCaducidad = strdup("N/A");
+    nuevoProducto->idProveedor = my_strdup(producto->idProveedor);
+    nuevoProducto->lote = my_strdup("N/A");
+    nuevoProducto->fechaCaducidad = my_strdup("N/A");
     nuevoProducto->cantidad = 1;
     nuevoProducto->requiereReceta = producto->requiereReceta;
     return nuevoProducto;
 }
 
 struct Producto* buscarProductoEnSucursal(struct Sucursal *sucursal, char *codigoProducto) {
-    struct NodoProducto *productoNodo = sucursal->productos;
+    struct NodoProducto *productoNodo;
+    productoNodo = sucursal->productos;
     while (productoNodo != NULL) {
         if (strcmp(productoNodo->datosProducto->codigo, codigoProducto) == 0) {
             return productoNodo->datosProducto;
@@ -1877,7 +1912,8 @@ void agregarProductoAVendidos(struct Sucursal *sucursal, struct Producto *produc
 }
 
 struct Producto* buscarProductoEnVendidos(struct NodoProducto *productosVendidos, char *codigoProducto) {
-    struct NodoProducto *productoNodo = productosVendidos;
+    struct NodoProducto *productoNodo;
+    productoNodo = productosVendidos;
     while (productoNodo != NULL) {
         if (strcmp(productoNodo->datosProducto->codigo, codigoProducto) == 0) {
             return productoNodo->datosProducto;
@@ -1888,15 +1924,16 @@ struct Producto* buscarProductoEnVendidos(struct NodoProducto *productosVendidos
 }
 
 void mostrarClientes(struct FarmaSalud *farmacia) {
-    struct NodoClientes *actual = farmacia->clientes;
-    
+    struct NodoClientes *actual;
+    actual = farmacia->clientes;
+
     if (actual == NULL) {
         printNoHayClientesRegistrados();
         return;
     }
 
     printClientesRegistrados();
-    
+
     while (actual != NULL) {
         printClienteInfo(actual->datosClientes->id, actual->datosClientes->rutCliente);
         actual = actual->sig;
@@ -1905,11 +1942,23 @@ void mostrarClientes(struct FarmaSalud *farmacia) {
 
 void realizarCompra(struct FarmaSalud *farmacia) {
     int idSucursal, idCliente, cantidadCompras, cantidadProducto, i, j;
+    struct Producto **productosComprados;  // Array de punteros a struct Producto
+    int *cantidades;  // Array de cantidades
+    int *productosRequierenReceta;  // Array de flags para requerir receta
+    struct NodoClientes *cliente;
+    struct NodoSucursales *sucursal;
+    struct Producto *producto;
+    struct Producto *productoVendido;
+    int espacio;
     char codigoProducto[10];
-    struct NodoSucursales *sucursal = NULL;
-    struct NodoClientes *cliente = NULL;
-    int esClienteRegistrado = 0;
-    int tieneReceta = 0;
+    int esClienteRegistrado;
+    int tieneReceta;
+    int total;
+    sucursal = NULL;
+    cliente = NULL;
+    esClienteRegistrado = 0;
+    tieneReceta = 0;
+
 
     cls();
     mostrarSucursales(farmacia);
@@ -1955,16 +2004,17 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 
     cls();
     printIngreseCantidadProductos();
-    if (scanf("%d", &cantidadCompras) != 1 || cantidadCompras <= 0) {
+    espacio = 10000 - espacioRestante(sucursal -> datosSucursal);
+    if (scanf("%d", &cantidadCompras) != 1 || cantidadCompras <= 0 || cantidadCompras > espacio) {
         printCantidadProductosInvalida();
         pause();
         return;
     }
     cls();
 
-    struct Producto *productosComprados[cantidadCompras];
-    int cantidades[cantidadCompras];
-    int productosRequierenReceta[cantidadCompras];
+    productosComprados = (struct Producto **)malloc(cantidadCompras * sizeof(struct Producto *));
+    cantidades = (int *)malloc(cantidadCompras * sizeof(int));
+    productosRequierenReceta = (int *)malloc(cantidadCompras * sizeof(int));
 
     for (i = 0; i < cantidadCompras; i++) {
         printIngreseCodigoProducto(i);
@@ -1982,7 +2032,7 @@ void realizarCompra(struct FarmaSalud *farmacia) {
         }
         cls();
 
-        struct Producto *producto = buscarProductoEnSucursal(sucursal->datosSucursal, codigoProducto);
+        producto = buscarProductoEnSucursal(sucursal->datosSucursal, codigoProducto);
         if (producto == NULL) {
             printProductoNoEncontrado();
             pause();
@@ -2021,7 +2071,7 @@ void realizarCompra(struct FarmaSalud *farmacia) {
         if (productosRequierenReceta[i]) {
             productosComprados[i]->cantidad -= cantidades[i];
 
-            struct Producto *productoVendido = buscarProductoEnVendidos(sucursal->datosSucursal->productosVendidos, productosComprados[i]->codigo);
+            productoVendido = buscarProductoEnVendidos(sucursal->datosSucursal->productosVendidos, productosComprados[i]->codigo);
             if (productoVendido == NULL) {
                 productoVendido = crearProductoVendido(productosComprados[i]);
                 agregarProductoAVendidos(sucursal->datosSucursal, productoVendido);
@@ -2053,7 +2103,7 @@ void realizarCompra(struct FarmaSalud *farmacia) {
             printProductoInfo(productosComprados[i]->nombreProducto, cantidades[i], productosComprados[i]->precio * cantidades[i]);
         }
     }
-    int total = 0;
+    total = 0;
     for (i = 0; i < cantidadCompras; i++) {
         if (productosRequierenReceta[i]) {
             total += productosComprados[i]->precio * cantidades[i];
@@ -2067,7 +2117,8 @@ void realizarCompra(struct FarmaSalud *farmacia) {
 // Giovanni v v v v v v
 // Controlador
 void eliminarProducto(struct NodoProducto **productoActual, struct NodoSucursales *sucursalActual) {
-    struct NodoProducto *siguienteProducto = (*productoActual)->sig;
+    struct NodoProducto *siguienteProducto;
+    siguienteProducto = (*productoActual)->sig;
     if ((*productoActual)->ant != NULL) {
         (*productoActual)->ant->sig = (*productoActual)->sig;
     } else {
@@ -2079,16 +2130,6 @@ void eliminarProducto(struct NodoProducto **productoActual, struct NodoSucursale
         (*productoActual)->sig->ant = (*productoActual)->ant;
     }
 
-    // Liberar memoria del producto
-    free((*productoActual)->datosProducto->nombreProducto);
-    free((*productoActual)->datosProducto->descripcion);
-    free((*productoActual)->datosProducto->categoria);
-    free((*productoActual)->datosProducto->idProveedor);
-    free((*productoActual)->datosProducto->lote);
-    free((*productoActual)->datosProducto->fechaCaducidad);
-    free((*productoActual)->datosProducto);
-    free(*productoActual);
-
     *productoActual = siguienteProducto;
 }
 
@@ -2099,6 +2140,7 @@ void imprimirActualizacionInventario() {
 
 // Función principal
 void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
+    struct NodoProducto *productoActual;
     struct NodoSucursales *sucursalActual;
 
     if (farmacia == NULL || farmacia->sucursales == NULL) {
@@ -2110,8 +2152,6 @@ void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
 
     // Iterar sobre cada sucursal
     do {
-        struct NodoProducto *productoActual;
-
         if (sucursalActual->datosSucursal == NULL || sucursalActual->datosSucursal->productos == NULL) {
             sucursalActual = sucursalActual->sig;
             continue;
@@ -2133,213 +2173,354 @@ void actualizarInventariosSucursales(struct FarmaSalud *farmacia) {
     imprimirActualizacionInventario();
     pause();
 }
-int contarVentasProducto(struct NodoProducto *productosVendidos, char *codigoProducto) {
-    int totalVentas = 0;
-    struct NodoProducto *productoActual;
 
-    productoActual = productosVendidos->sig;
-
-    while (productoActual != productosVendidos) {
-        if (strcmp(productoActual->datosProducto->codigo, codigoProducto) == 0) {
-            totalVentas += productoActual->datosProducto->cantidad;
-        }
-        productoActual = productoActual->sig;
-    }
-    return totalVentas;
-}
-
-struct Producto *productoMasVendido(struct FarmaSalud *farma) {
-    struct Producto *productoMasVendido = NULL;
-    struct NodoSucursales *sucursalActual;
-    struct NodoProducto *productoActual;
-    struct Producto *producto;
-    int maxVentas = 0;
-    int ventasProducto;
-
-    if (!farma || !farma->sucursales) return NULL;
-
-    sucursalActual = farma->sucursales->sig;
-    while (sucursalActual != farma->sucursales) {
-        if (sucursalActual && sucursalActual->datosSucursal && sucursalActual->datosSucursal->productosVendidos) {
-            productoActual = sucursalActual->datosSucursal->productosVendidos->sig;
-            while (productoActual != sucursalActual->datosSucursal->productosVendidos) {
-                if (productoActual && productoActual->datosProducto) {
-                    producto = productoActual->datosProducto;
-                    ventasProducto = contarVentasProducto(sucursalActual->datosSucursal->productosVendidos,producto->codigo);
-                    if (ventasProducto > maxVentas) {
-                        maxVentas = ventasProducto;
-                        productoMasVendido = producto;
-                    }
-                }
-                productoActual = productoActual->sig;
-            }
-        }
-        sucursalActual = sucursalActual->sig;
-    }
-    return productoMasVendido;
-}
-
-struct Sucursal* sucursalConMasVentas(struct FarmaSalud *farmaSalud) {
-    struct NodoSucursales *nodoActual;
-    struct Sucursal *sucursalConMasVentas = NULL;
+struct Sucursal *getSucursalConMasVentas(struct NodoSucursales *head) {
+    struct NodoSucursales *rec;
+    struct Sucursal *sucursalMasVentas = NULL;
     int maxVentas = -1;
+    int contadorMax = 0;
 
-    if (!farmaSalud || !farmaSalud->sucursales) return NULL;
-
-    nodoActual = farmaSalud->sucursales->sig; 
-
-    while (nodoActual != farmaSalud->sucursales) { 
-        if (nodoActual->datosSucursal->cantidadDeVentas > maxVentas) {
-            maxVentas = nodoActual->datosSucursal->cantidadDeVentas;
-            sucursalConMasVentas = nodoActual->datosSucursal;
-        }
-        nodoActual = nodoActual->sig;
-    }
-
-    return sucursalConMasVentas;
-}
-
-struct Clientes* clienteConMasCompras(struct FarmaSalud *farmaSalud) {
-    struct NodoClientes *nodoActual;
-    struct Clientes *clienteConMasCompras = NULL;
-    int maxCompras = -1;
-
-    if (!farmaSalud || !farmaSalud->clientes) return NULL;
-
-    nodoActual = farmaSalud->clientes->sig;
-
-    while (nodoActual && nodoActual != farmaSalud->clientes) {
-        if (nodoActual->datosClientes && nodoActual->datosClientes->numCompras > maxCompras) {
-            maxCompras = nodoActual->datosClientes->numCompras;
-            clienteConMasCompras = nodoActual->datosClientes;
-        }
-        nodoActual = nodoActual->sig;
-    }
-
-    return clienteConMasCompras;
-}
-
-
-int contarProductos(struct NodoArbolProducto *raiz) {
-    int contador = 0;
-    struct NodoArbolProducto *pila[1000]; 
-    int top = 0; 
-    struct NodoArbolProducto *nodoActual;
-
-    if (!raiz) return 0;
-
-    pila[top++] = raiz;
-    while (top > 0) {
-        nodoActual = pila[--top];
-        contador++;
-        if (nodoActual->izq) pila[top++] = nodoActual->izq;
-        if (nodoActual->der) pila[top++] = nodoActual->der;
-    }
-    return contador;
-}
-
-struct Proveedor* proveedorConMasProductos(struct FarmaSalud *farmaSalud) {
-    struct NodoProveedor *nodoActual;
-    struct Proveedor *proveedorConMasProductos = NULL;
-    int maxProductos = -2;
-    int numProductos;
-
-    if (!farmaSalud || !farmaSalud->proveedores) return NULL;
-
-    nodoActual = farmaSalud->proveedores->sig;
-    while (nodoActual && nodoActual != farmaSalud->proveedores) {
-        if (nodoActual->datosProveedor && nodoActual->datosProveedor->productos) {
-            numProductos = contarProductos(nodoActual->datosProveedor->productos);
-            if (numProductos > maxProductos) {
-                maxProductos = numProductos;
-                proveedorConMasProductos = nodoActual->datosProveedor;
+    if (head != NULL) {
+        rec = head;
+        do {
+            if (sucursalMasVentas == NULL || rec->datosSucursal->cantidadDeVentas > maxVentas) {
+                maxVentas = rec->datosSucursal->cantidadDeVentas;
+                sucursalMasVentas = rec->datosSucursal;
+                contadorMax = 1;
+            } else if (rec->datosSucursal->cantidadDeVentas == maxVentas) {
+                contadorMax++;
             }
-        }
-        nodoActual = nodoActual->sig;
+            rec = rec->sig;
+        } while (rec != head);
     }
-    return proveedorConMasProductos;
+
+    if (contadorMax > 1) {
+        return NULL;
+    }
+
+    return sucursalMasVentas;
 }
 
-void mostrarInforme(struct FarmaSalud *farmacia) {
+void mostrarSucursalConMasVentas(struct FarmaSalud *farmaSalud) {
     struct Sucursal *sucursalMasVentas;
-    struct Producto *productoMasVendidoResult;
-    struct Proveedor *proveedorMasProductos;
-    struct Clientes *clienteMasCompras;
 
-    if (!farmacia) {
-        printf("La farmacia no está inicializada.\n");
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        cls();
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    sucursalMasVentas = getSucursalConMasVentas(farmaSalud->sucursales);
+    if (!sucursalMasVentas) {
+        cls();
+        printf("\nHay más de una sucursal con la misma cantidad de ventas.\n");
+        return;
+    }
+
+    cls();
+    printf("\nLa sucursal con más ventas es:\n");
+    printf("ID: %d\n", sucursalMasVentas->id);
+    printf("Nombre: %s\n", sucursalMasVentas->nombre);
+    printf("Dirección: %s\n", sucursalMasVentas->direccion);
+    printf("Cantidad de Ventas: %d\n", sucursalMasVentas->cantidadDeVentas);
+}
+
+float calcularEdadPromedioClientes(struct FarmaSalud *farmaSalud) {
+    int totalClientes = 0;
+    int sumaEdades = 0;
+    struct NodoClientes *rec = farmaSalud->clientes;
+
+    if (!farmaSalud || !farmaSalud->clientes) {
+        printf("\nNo existen clientes en el sistema.\n");
+        return 0.0;
+    }
+
+    // Sumar las edades de todos los clientes
+    while (rec) {
+        sumaEdades += rec->datosClientes->edadCliente;
+        totalClientes++;
+        rec = rec->sig;
+    }
+
+    if (totalClientes == 0) {
+        return 0.0;
+    }
+
+    return (float)sumaEdades / totalClientes;
+}
+
+void mostrarEdadPromedioClientes(struct FarmaSalud *farmaSalud) {
+    float edadPromedio = calcularEdadPromedioClientes(farmaSalud);
+    printf("\nLa edad promedio de los clientes es: %.2f\n", edadPromedio);
+}
+
+float calcularPromedioVentas(struct FarmaSalud *farmaSalud) {
+    int totalVentas = 0;
+    int contadorSucursales = 0;
+    struct NodoSucursales *rec = farmaSalud->sucursales;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return 0.0;
+    }
+
+    // Sumar las ventas de todas las sucursales
+    do {
+        totalVentas += rec->datosSucursal->cantidadDeVentas;
+        contadorSucursales++;
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    if (contadorSucursales == 0) {
+        return 0.0;
+    }
+
+    return (float)totalVentas / contadorSucursales;
+}
+
+int contarSucursalesConVentasBajoPromedio(struct FarmaSalud *farmaSalud) {
+    float promedioVentas = calcularPromedioVentas(farmaSalud);
+    int contadorSucursales = 0;
+    struct NodoSucursales *rec = farmaSalud->sucursales;
+
+    if (promedioVentas == 0.0) {
+        return 0;
+    }
+
+    // Contar las sucursales con ventas menores que el promedio
+    do {
+        if (rec->datosSucursal->cantidadDeVentas < promedioVentas) {
+            contadorSucursales++;
+        }
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    return contadorSucursales;
+}
+
+void mostrarPorcentajeSucursalesConVentasBajoPromedio(struct FarmaSalud *farmaSalud) {
+    int totalSucursales = 0;
+    float porcentaje;
+    int sucursalesBajoPromedio;
+    struct NodoSucursales *rec = farmaSalud->sucursales;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
         pause();
         return;
     }
-    cls();
 
-    sucursalMasVentas = sucursalConMasVentas(farmacia);
-    productoMasVendidoResult = productoMasVendido(farmacia);
-    proveedorMasProductos = proveedorConMasProductos(farmacia);
-    clienteMasCompras = clienteConMasCompras(farmacia);
+    do {
+        totalSucursales++;
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
 
-    printf("     Informe De FarmaSalud\n");
-    printf("===============================\n");
-    if (sucursalMasVentas)
-        printf("-Sucursal con más ventas: %s\n\n", sucursalMasVentas->nombre);
-    else
-        printf("-Sucursal con más ventas: N/A\n\n");
+    sucursalesBajoPromedio = contarSucursalesConVentasBajoPromedio(farmaSalud);
+    porcentaje = ((float)sucursalesBajoPromedio / totalSucursales) * 100;
 
-    if (productoMasVendidoResult)
-        printf("-Producto más vendido: %s\n\n", productoMasVendidoResult->nombreProducto);
-    else
-        printf("-Producto más vendido: N/A\n\n");
-
-    if (proveedorMasProductos)
-        printf("-Proveedor con más productos: %s\n\n", proveedorMasProductos->nombre);
-    else
-        printf("-Proveedor con más productos: N/A\n\n");
-
-    if (clienteMasCompras)
-        printf("-Cliente con más compras: %s\n\n", clienteMasCompras->rutCliente);
-    else
-        printf("-Cliente con más compras: N/A\n\n");
-
+    printf("El porcentaje de sucursales con ventas por debajo del promedio es: %.2f%%\n", porcentaje);
     pause();
 }
 
-/*
+float calcularPorcentajeClientesAfiliados(struct FarmaSalud *farmaSalud) {
+    int totalClientes = 0;
+    int totalAfiliados = 0;
+    struct NodoClientes *rec = farmaSalud->clientes;
 
-███╗   ███╗███████╗███╗   ██╗██╗   ██╗
-████╗ ████║██╔════╝████╗  ██║██║   ██║
-██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║
-██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║
-██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝
-╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝
+    if (!farmaSalud || !farmaSalud->clientes) {
+        printf("\nNo existen clientes en el sistema.\n");
+        return 0.0;
+    }
 
-*/
+    // Contar el total de clientes y los afiliados
+    while (rec) {
+        if (rec->datosClientes->afiliado) {
+            totalAfiliados++;
+        }
+        totalClientes++;
+        rec = rec->sig;
+    }
 
-void menuPrincipal(struct FarmaSalud *farmacia) {
-    int opcion;
+    if (totalClientes == 0) {
+        return 0.0;
+    }
+
+    return ((float)totalAfiliados / totalClientes) * 100;
+}
+
+void mostrarPorcentajeClientesAfiliados(struct FarmaSalud *farmaSalud) {
+    float porcentajeAfiliados = calcularPorcentajeClientesAfiliados(farmaSalud);
+    printf("El porcentaje de clientes afiliados es: %.2f%%\n", porcentajeAfiliados);
+}
+
+void mostrarEstadisticas(struct FarmaSalud *farmaSalud) {
+    struct NodoSucursales *rec = farmaSalud->sucursales;
+    int totalVentas = 0;
+    int maxVentas = -1;
+    int minVentas = rec->datosSucursal->cantidadDeVentas; // Inicializa con el primer valor real de ventas
+    int idSucursalMenosVentas = rec->datosSucursal->id; // Inicializa con el primer ID de sucursal
+    int contadorSucursales = 0;
+
+    if (!farmaSalud || !farmaSalud->sucursales) {
+        printf("\nNo existen sucursales en el sistema.\n");
+        return;
+    }
+
+    // Calcular el total de ventas y encontrar la sucursal con más y menos ventas
     do {
+        int ventas = rec->datosSucursal->cantidadDeVentas;
+        totalVentas += ventas;
+        if (ventas > maxVentas) {
+            maxVentas = ventas;
+        }
+        if (ventas < minVentas) {
+            minVentas = ventas;
+            idSucursalMenosVentas = rec->datosSucursal->id;
+        }
+        contadorSucursales++;
+        rec = rec->sig;
+    } while (rec != farmaSalud->sucursales);
+
+    // Imprimir estadísticas
+    printf("\n\nEstadísticas de Ventas de Sucursales:\n");
+    printf("Total de Sucursales: %d\n", contadorSucursales);
+    printf("Total de Ventas: %d\n", totalVentas);
+    printf("Promedio de Ventas por Sucursal: %.2f\n", (float)totalVentas / contadorSucursales);
+    printf("Sucursal con menos ventas (ID): %d\n", idSucursalMenosVentas);
+    if (idSucursalMenosVentas == -1) {
+        printf("La sucursal con menos ventas no tiene un ID válido asignado.\n");
+    }
+}
+
+void generarDatosDePrueba(struct FarmaSalud *farmacia) {
+    struct Producto *prod1, *prod2, *prod3, *prod4, *prod5, *prod6;
+    struct Producto *compras1[2], *compras2[2], *compras3[2], *compras4[2];
+    struct NodoClientes *cliente1, *cliente2, *cliente3, *cliente4;
+    struct NodoSucursales *sucursal1, *sucursal2, *sucursal3;
+    struct NodoProveedor *proveedor1, *proveedor2, *proveedor3;
+    struct Producto *producto1, *producto2, *producto3, *producto4, *producto5;
+    struct Producto *producto6;
+
+    prod1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Cápsulas", "Antidepresivo", 6327, "Lab. de Chile", "DRU30", "02/2024", 1, 1);
+    prod2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actúa sobre el sistema nervioso central, con propiedades ansiolíticas.", "Ansiolítico", 5007, "Lab. de Chile", "K3935", "05/2024", 1, 1);
+    prod3 = crearProductoFalso("3", "Tapsin Día-Noche Plus 18 Comp", "Comprimidos Recubiertos rápido alivio de los síntomas de la gripe", "Antigripal", 2575, "Lab. Maver", "39DMS", "06/2024", 1, 0);
+    prod4 = crearProductoFalso("4", "Tapsín Día Limón 6 Un.", "Para el alivio sintomático de las molestias del resfrío y la gripe.", "Antigripal", 2500, "Lab. Maver", "KEMBWAL4", "02/2025", 2, 0);
+    prod5 = crearProductoFalso("5", "100 Whey Protein Cookies Cream", "Frasco de Proteina 857.5G", "Proteina", 58990, "PharmaCorp", "GIO4HUM4D", "02/2004", 1, 0);
+    prod6 = crearProductoFalso("6", "Sustenan Testosterona 250 mg", "Para aliviar la alergia", "Salud Hombre", 32500, "PharmaCorp", "RGFP74", "10/2022", 1, 1);
+
+    compras1[0] = prod1; compras1[1] = prod2;
+    compras2[0] = prod3; compras2[1] = prod4;
+    compras3[0] = prod5; compras3[1] = prod6;
+    compras4[0] = prod1; compras4[1] = prod3;
+
+    // Creación de clientes
+    cliente1 = crearClienteConsole(1, "8032837-5", 25, 1, compras1, 2);
+    agregarClienteConsole(farmacia, cliente1);
+    cliente2 = crearClienteConsole(2, "22222222-2", 25, 0, compras2, 2);
+    agregarClienteConsole(farmacia, cliente2);
+    cliente3 = crearClienteConsole(3, "33333333-3", 30, 1, compras3, 2);
+    agregarClienteConsole(farmacia, cliente3);
+    cliente4 = crearClienteConsole(4, "44444444-4", 35, 0, compras4, 2);
+    agregarClienteConsole(farmacia, cliente4);
+
+    // Creación de sucursales
+    sucursal1 = crearSucursalConsole(1, "Kennedy", "Apoquindo 234, Santiago", 100);
+    agregarSucursalConsole(farmacia, sucursal1);
+    sucursal2 = crearSucursalConsole(2, "Los Heroes", "Metro Pedro de Valdivia, Santiago", 200);
+    agregarSucursalConsole(farmacia, sucursal2);
+    sucursal3 = crearSucursalConsole(3, "La Florida", "Vicuña Mackenna 4500, Santiago", 150);
+    agregarSucursalConsole(farmacia, sucursal3);
+
+    // Creación de proveedores
+    proveedor1 = crearProveedorConsole(1, "Lab. de Chile", "Av. Marathon 1315", "90322000-7");
+    agregarProveedorConsole(farmacia, proveedor1);
+    proveedor2 = crearProveedorConsole(2, "Lab. Maver", "Las Encinas 1777", "98765432-1");
+    agregarProveedorConsole(farmacia, proveedor2);
+    proveedor3 = crearProveedorConsole(3, "PharmaCorp", "Av. Providencia 123", "90321000-8");
+    agregarProveedorConsole(farmacia, proveedor3);
+
+    // Creación de productos de prueba
+    producto1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Cápsulas", "Antidepresivo", 6327, "Lab. de Chile", "N/A", "N/A", -1, 1);
+    producto2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actúa sobre el sistema nervioso central, con propiedades ansiolíticas.", "Ansiolítico", 5007, "Lab. de Chile", "N/A", "N/A", -1, 1);
+    producto3 = crearProductoFalso("3", "Tapsin Día-Noche Plus 18 Comp", "Comprimidos Recubiertos rápido alivio de los síntomas de la gripe", "Antigripal", 2575, "Lab. Maver", "N/A", "N/A", -1, 0);
+    producto4 = crearProductoFalso("4", "Tapsín Día Limón 6 Un.", "Para el alivio sintomático de las molestias del resfrío y la gripe.", "Antigripal", 2500, "Lab. Maver", "N/A", "N/A", -1, 0);
+    producto5 = crearProductoFalso("5", "100 Whey Protein Cookies Cream", "Frasco de Proteina 857.5G", "Proteina", 58990, "PharmaCorp", "N/A", "N/A", -1, 0);
+    producto6 = crearProductoFalso("6", "Sustenan Testosterona 250 mg", "Para aliviar la alergia", "Salud Hombre", 32500, "PharmaCorp", "N/A", "N/A", -1, 1);
+
+    // Agregar productos a proveedores
+    agregarProductoAProveedor(proveedor1->datosProveedor, producto1);
+    agregarProductoAProveedor(proveedor1->datosProveedor, producto2);
+
+    agregarProductoAProveedor(proveedor2->datosProveedor, producto3);
+    agregarProductoAProveedor(proveedor2->datosProveedor, producto4);
+
+    agregarProductoAProveedor(proveedor3->datosProveedor, producto5);
+    agregarProductoAProveedor(proveedor3->datosProveedor, producto6);
+
+    // Agregar productos de prueba a las sucursales
+    agregarProductoASucursal(sucursal1->datosSucursal, prod1);
+    agregarProductoASucursal(sucursal1->datosSucursal, prod2);
+    agregarProductoASucursal(sucursal1->datosSucursal, prod3);
+    agregarProductoASucursal(sucursal1->datosSucursal, prod4);
+
+    agregarProductoASucursal(sucursal2->datosSucursal, prod4);
+    agregarProductoASucursal(sucursal2->datosSucursal, prod5);
+    agregarProductoASucursal(sucursal2->datosSucursal, prod6);
+
+    agregarProductoASucursal(sucursal3->datosSucursal, prod1);
+    agregarProductoASucursal(sucursal3->datosSucursal, prod2);
+    agregarProductoASucursal(sucursal3->datosSucursal, prod3);
+    agregarProductoASucursal(sucursal3->datosSucursal, prod4);
+    agregarProductoASucursal(sucursal3->datosSucursal, prod5);
+    agregarProductoASucursal(sucursal3->datosSucursal, prod6);
+    return;
+}
+
+int menuPrincipal(struct FarmaSalud *farmacia) {
+    int opcion;
+    printf("Hola");
+    while (1) { // Bucle infinito que se controla con un break
         cls();
-        printf("\n--- FarmaSalud ---\n");
+        printf("\n ------ FarmaSalud -----\n");
+        printf("---------------------------\n");
+        printf("|- - C l i e n t e s - -| \n");
+        printf("---------------------------\n");
         printf("1. leerClientes\n");
         printf("2. crearCliente\n");
         printf("3. eliminarCliente\n");
+        printf("---------------------------");
+        printf("\n|- - S u c u r s a l - -| \n");
+        printf("---------------------------\n");
         printf("4. actualizarSucursales\n");
         printf("5. leerSucursales\n");
         printf("6. crearSucursal\n");
         printf("7. eliminarSucursal\n");
+        printf("---------------------------");
+        printf("\n|- - P r o v e e d o r - -| \n");
+        printf("---------------------------\n");
         printf("8. crearProveedor\n");
         printf("9. leerProveedor\n");
         printf("10. eliminarProveedor\n");
         printf("11. agregarProductoProveedor\n");
+        printf("---------------------------");
+        printf("\n|- -     S t o c k     - -| \n");
+        printf("---------------------------\n");
         printf("12. transferirProductosProveedorASucursal\n");
         printf("13. agregarProductoASucursal\n");
         printf("14. eliminarProductosVencidos\n");
         printf("15. realizarCompra\n");
-        printf("16. Ver Informes\n"); 
-
-        printf("\n17. Salir\n"); 
+        printf("---------------------------");
+        printf("\n|- -  I n f o r m e s  - -| \n");
+        printf("---------------------------\n");
+        printf("16. Ver Informes\n");
+        printf("---------------------------");
+        printf("\n|- -  S a l i d a  - -| \n");
+        printf("---------------------------\n");
+        printf("17. agregarCasosDePrueba\n");
+        printf("18. Salir\n");
+        printf("---------------------------\n");
         printf("\nSeleccione una opcion: ");
         scanf("%d", &opcion);
-
         switch (opcion) {
             case 1:
                 leerClientes(farmacia);
@@ -2388,142 +2569,41 @@ void menuPrincipal(struct FarmaSalud *farmacia) {
                 actualizarInventariosSucursales(farmacia);
                 break;
             case 16:
-                mostrarInforme(farmacia);
+
+                mostrarSucursalConMasVentas(farmacia);
+                mostrarEstadisticas(farmacia);
+                mostrarPorcentajeClientesAfiliados(farmacia);
+                mostrarPorcentajeSucursalesConVentasBajoPromedio(farmacia);
                 break;
-            case 17: // Actualizar opción de salida
+            case 17:
+                generarDatosDePrueba(farmacia);
+                cls();
+                printf("Datos de prueba generados.\n");
+                pause();
+                break;
+
+            case 18: // Actualizar opción de salida
                 printf("Saliendo...\n");
-                exit(0);
-                break;
+                return 0; // Indica que se desea salir
+
             default:
                 printf("Opcion no valida. Intente nuevamente.\n");
                 break;
         }
-    } while (opcion != 17);
+    }
 }
 
 int main() {
     struct FarmaSalud *farmacia;
     farmacia = (struct FarmaSalud *)malloc(sizeof(struct FarmaSalud));
 
+
     farmacia->clientes = NULL;
     farmacia->sucursales = NULL;
     farmacia->proveedores = NULL;
 
-    // Inicialización de datos de prueba
-    struct Producto prod1 = {"1", "Ibuprofeno", "Recomendado para el dolor de garganta", "Anti-inflamatorio", 100, "Bioequivalente", "Lote A", "10/2020", 8, 0};
-    struct Producto prod2 = {"2", "Condones", "Ultra resistente y ultra delgado", "Anticonceptivo", 200, "Condoneria Nacional", "Lote B", "06/2019", 10, 1};
-    struct Producto prod3 = {"3", "Paracetamol", "Recomendado para el dolor de cabeza", "Analgesico", 300, "Lab. de Chile", "Lote C", "12/2022", 9, 0}; // Producto vencido
-    struct Producto prod4 = {"4", "Tapsin", "Perfecto Para los resfriados", "Analgésico", 400, "Tapsin Chile", "Lote D", "02/2017", 40, 1};
-    struct Producto prod5 = {"5", "Amoxicilina", "Antibiótico de amplio espectro", "Antibiótico", 500, "Lab. de Chile", "Lote E", "11/2025", 50, 1};
-    struct Producto prod6 = {"6", "Loratadina", "Para aliviar la alergia", "Antihistamínico", 600, "PharmaCorp", "Lote F", "10/2024", 60, 0};
-    struct Producto prod7 = {"7", "Diclofenaco", "Alivia el dolor e inflamación", "Analgesico", 700, "Lab. de Chile", "Lote G", "09/2026", 70, 0};
-    struct Producto prod8 = {"8", "Aspirina", "Reduce el dolor y la fiebre", "Analgesico", 800, "Bioequivalente", "Lote H", "08/2029", 80, 0};
-    struct Producto prod9 = {"9", "Omeprazol", "Para el tratamiento de la acidez", "Antiácido", 900, "PharmaCorp", "Lote I", "07/2016", 90, 1};
-    struct Producto prod10 = {"10", "Vitamina C", "Suplemento vitamínico", "Suplemento", 1000, "Lab. Maver", "Lote J", "06/2026", 100, 0};
+    // Ejecutar el menú principal una vez
+    menuPrincipal(farmacia);
 
-    // Creación de compras de prueba
-    struct Producto* compras1[] = {&prod1, &prod2};
-    struct Producto* compras2[] = {&prod3, &prod4};
-    struct Producto* compras3[] = {&prod5, &prod6};
-    
-    
-    struct Producto* compras4[] = {&prod7, &prod8};
-    struct Producto* compras5[] = {&prod9, &prod10};
-    struct Producto* compras6[] = {&prod1, &prod3};
-    struct Producto* compras7[] = {&prod2, &prod4};
-    struct Producto* compras8[] = {&prod5, &prod7};
-    struct Producto* compras9[] = {&prod6, &prod8};
-    struct Producto* compras10[] = {&prod9, &prod1};
-
-    // Creación de clientes
-    struct NodoClientes* cliente1 = crearClienteConsole(1, "8032837-5", 25, 1, compras1, 2);
-    agregarClienteConsole(farmacia, cliente1);
-    struct NodoClientes* cliente2 = crearClienteConsole(2, "22222222-2", 25, 0, compras2, 2);
-    agregarClienteConsole(farmacia, cliente2);
-    struct NodoClientes* cliente3 = crearClienteConsole(3, "33333333-3", 30, 1, compras3, 2);
-    agregarClienteConsole(farmacia, cliente3);
-    struct NodoClientes* cliente4 = crearClienteConsole(4, "44444444-4", 35, 0, compras4, 2);
-    agregarClienteConsole(farmacia, cliente4);
-    struct NodoClientes* cliente5 = crearClienteConsole(5, "55555555-5", 40, 1, compras5, 2);
-    agregarClienteConsole(farmacia, cliente5);
-    struct NodoClientes* cliente6 = crearClienteConsole(6, "66666666-6", 45, 0, compras6, 2);
-    agregarClienteConsole(farmacia, cliente6);
-    struct NodoClientes* cliente7 = crearClienteConsole(7, "77777777-7", 50, 1, compras7, 2);
-    agregarClienteConsole(farmacia, cliente7);
-    struct NodoClientes* cliente8 = crearClienteConsole(8, "88888888-8", 55, 0, compras8, 2);
-    agregarClienteConsole(farmacia, cliente8);
-    struct NodoClientes* cliente9 = crearClienteConsole(9, "99999999-9", 60, 1, compras9, 2);
-    agregarClienteConsole(farmacia, cliente9);
-    struct NodoClientes* cliente10 = crearClienteConsole(10, "10101010-1", 65, 0, compras10, 2);
-    agregarClienteConsole(farmacia, cliente10);
-
-    // Creación de sucursales
-    struct NodoSucursales* sucursal1 = crearSucursalConsole(1, "Kennedy", "Apoquindo 234, Santiago", 100);
-    agregarSucursalConsole(farmacia, sucursal1);
-    struct NodoSucursales* sucursal2 = crearSucursalConsole(2, "Los Heroes", "Metro Pedro de Valdivia, Santiago", 200);
-    agregarSucursalConsole(farmacia, sucursal2);
-    struct NodoSucursales* sucursal3 = crearSucursalConsole(3, "La Florida", "Vicuña Mackenna 4500, Santiago", 150);
-    agregarSucursalConsole(farmacia, sucursal3);
-    struct NodoSucursales* sucursal4 = crearSucursalConsole(4, "Providencia", "Providencia 1234, Santiago", 180);
-    agregarSucursalConsole(farmacia, sucursal4);
-
-    // Creación de proveedores
-    struct NodoProveedor* proveedor1 = crearProveedorConsole(1, "Lab. de Chile", "Av. Marathon 1315", "90322000-7");
-    agregarProveedorConsole(farmacia, proveedor1);
-    struct NodoProveedor* proveedor2 = crearProveedorConsole(2, "Lab. Maver", "Las Encinas 1777", "98765432-1");
-    agregarProveedorConsole(farmacia, proveedor2);
-    struct NodoProveedor* proveedor3 = crearProveedorConsole(3, "PharmaCorp", "Av. Providencia 123", "90321000-8");
-    agregarProveedorConsole(farmacia, proveedor3);
-    struct NodoProveedor* proveedor4 = crearProveedorConsole(4, "Bioequivalente", "Av. Apoquindo 456", "90323000-9");
-    agregarProveedorConsole(farmacia, proveedor4);
-
-    // Creación de productos de prueba
-    struct Producto* producto1 = crearProductoFalso("1", "Sertralina 100mg 30 Comp", "Antidepresivo en forma de Cápsulas", "Antidepresivo", 6327, "Lab. de Chile", "N/A", "N/A", -1, 1);
-    struct Producto* producto2 = crearProductoFalso("2", "Clonazepam 2 Mg 30 Comp", "Actúa sobre el sistema nervioso central, con propiedades ansiolíticas.", "Ansiolítico", 5007, "Lab. de Chile", "N/A", "N/A", -1, 1);
-    struct Producto* producto3 = crearProductoFalso("3", "Tapsin Día-Noche Plus 18 Comp", "Comprimidos Recubiertos rápido alivio de los síntomas de la gripe", "Antigripal", 2575, "Lab. Maver", "N/A", "N/A", -1, 0);
-    struct Producto* producto4 = crearProductoFalso("4", "Tapsín Día Limón 6 Un.", "Para el alivio sintomático de las molestias del resfrío y la gripe.", "Antigripal", 2500, "Lab. Maver", "N/A", "N/A", -1, 0);
-    struct Producto* producto5 = crearProductoFalso("5", "Amoxicilina 500mg", "Antibiótico de amplio espectro", "Antibiótico", 5800, "Lab. de Chile", "N/A", "N/A", -1, 1);
-    struct Producto* producto6 = crearProductoFalso("6", "Loratadina 10mg", "Para aliviar la alergia", "Antihistamínico", 1200, "PharmaCorp", "N/A", "N/A", -1, 0);
-    struct Producto* producto7 = crearProductoFalso("7", "Omeprazol 20mg", "Para el tratamiento de la acidez", "Antiácido", 2700, "PharmaCorp", "N/A", "N/A", -1, 1);
-    struct Producto* producto8 = crearProductoFalso("8", "Aspirina 500mg", "Reduce el dolor y la fiebre", "Analgesico", 2500, "Bioequivalente", "N/A", "N/A", -1, 0);
-    struct Producto* producto9 = crearProductoFalso("9", "Vitamina C 1000mg", "Suplemento vitamínico", "Suplemento", 4500, "Lab. Maver", "N/A", "N/A", -1, 0);
-    struct Producto* producto10 = crearProductoFalso("10", "Paracetamol 500mg", "Analgésico y antipirético", "Analgésico", 3500, "Lab. de Chile", "N/A", "N/A", -1, 0);
-
-    // Agregar productos a proveedores
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto1);
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto2);
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto5);
-    agregarProductoAProveedor(proveedor1->datosProveedor, producto10);
-
-    agregarProductoAProveedor(proveedor2->datosProveedor, producto3);
-    agregarProductoAProveedor(proveedor2->datosProveedor, producto4);
-    agregarProductoAProveedor(proveedor2->datosProveedor, producto9);
-
-    agregarProductoAProveedor(proveedor3->datosProveedor, producto6);
-    agregarProductoAProveedor(proveedor3->datosProveedor, producto7);
-
-    agregarProductoAProveedor(proveedor4->datosProveedor, producto8);
-
-// Agregar productos de prueba a las sucursales
-    agregarProductoASucursal(sucursal1->datosSucursal, &prod1);
-    agregarProductoASucursal(sucursal1->datosSucursal, &prod2);
-    agregarProductoASucursal(sucursal1->datosSucursal, &prod3);
-
-    agregarProductoASucursal(sucursal2->datosSucursal, &prod4);
-    agregarProductoASucursal(sucursal2->datosSucursal, &prod5);
-    agregarProductoASucursal(sucursal2->datosSucursal, &prod6);
-
-    agregarProductoASucursal(sucursal3->datosSucursal, &prod7);
-    agregarProductoASucursal(sucursal3->datosSucursal, &prod8);
-    agregarProductoASucursal(sucursal3->datosSucursal, &prod9);
-
-    agregarProductoASucursal(sucursal4->datosSucursal, &prod10);
-    agregarProductoASucursal(sucursal4->datosSucursal, &prod1);
-    agregarProductoASucursal(sucursal4->datosSucursal, &prod2);
-
-    while (1) {
-        cls();
-        menuPrincipal(farmacia);
-    }
     return 0;
 }
